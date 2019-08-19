@@ -1,4 +1,4 @@
-# 模拟器启动问题
+# 一、模拟器启动问题
 
 ## 使用Genymotion模拟器启动项目
 
@@ -46,7 +46,7 @@ adb -s {seria number} install xxx.apk 在指定设备上安装apk
 
 
 
-# 基础知识
+# 二、Gradle基础知识
 
 ## 安卓Gradle配置文件
 
@@ -180,7 +180,7 @@ productFlavors {
 
 
 
-## Activity生命周期
+# 三、Activity生命周期
 
 <img src="https://upload-images.jianshu.io/upload_images/215430-4bd5c7b4d06e0dac.png">
 
@@ -315,9 +315,161 @@ sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以
 
 ​	selector: 定义一些页面中和交互相关的样式。比如按钮的按压状态、是否禁用、checkbox的选中状态等等。
 
+​	
 
 
-## ListView、GridView
+
+## SplashScreen
+
+一般app从click启动，到进入MainActivity，中间会有一段空白页面的时间。这一段时间，一般系统会用来做初始化工作的。但是空白的时间太长，会降低客户的体验效果。所以一般我们会在app启动后加一个SplashActivity，用来做缓冲。
+
+```xml
+<application
+        android:name=".app.Application"
+        android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="false"
+        android:theme="@style/AppTheme"
+        android:networkSecurityConfig="@xml/network_security_config"
+       tools:replace="android:label,android:icon,android:theme,android:allowBackup,android:supportsRtl">
+   			<!-- 指明样式主题 -->
+        <activity
+            android:name=".main.ui.SplashActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme" 
+            >
+          <!-- 告诉app，SplashActivity是启动后第一个进入的主页面 -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+</application>
+```
+
+一般Splash的屏幕都是全屏的页面，所以在设置好SplashActivity后，我们还需要设置一下SplashTheme，来设置一下页面的样式。
+
+```xml
+<style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+  <!-- 设置window的背景图片，默认是白屏 -->
+  <!--  除了图片，也可以设置drawable -->
+  <item name="android:windowBackground">@mipmap/launch_bg</item>
+  <!-- 设置全屏，默认是false -->
+  <item name="android:windowFullscreen">true</item>
+  <item name="android:fitsSystemWindows">true</item>
+  <item name="android:windowNoTitle">true</item>
+  <item name="android:clipToPadding">true</item>
+  <item name="android:windowTranslucentNavigation">true</item>
+</style>
+```
+
+在SplashActivity里，一般还会判断做一下引导页和倒计时欢迎页面；引导页只在安装后第一次使用时出现。
+
+```java
+在Activity的onCreate里判断
+public void startApp() {
+    boolean firstlaunch = SPEx.get("firstlaunch", true);
+    if (firstlaunch) {
+      SPEx.set("firstlaunch", false);
+      Intent intent = new Intent(getActivity(), BootPageActivity.class);
+      getActivity().startActivity(intent);
+    } else {
+      Intent intent = new Intent(getActivity(), WelcomeActivity.class);
+      getActivity().startActivity(intent);
+    }
+    getActivity().finish();
+  }
+```
+
+倒计时欢迎页面关键代码：
+
+```java
+public Handler mHandler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+      super.handleMessage(msg);
+      // 跳转到主页面
+      Intent intent = new Intent(act, MainActivity.class);
+      startActivity(intent);
+      //执行一次后销毁本页面
+      finish();
+    }
+};
+
+// 在onResume或者其他生命周期方法里调用
+mHandler.sendEmptyMessageDelayed(0, n * 1000) // 倒计时n秒
+```
+
+
+
+## 全屏处理
+
+两种方式：一种通过style的theme主题配置；一种通过代码来控制全屏或者取消全屏；
+
+方法1：xml配置式
+
+```xml
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+			<item name="android:windowFullscreen">false</item>
+  </style>
+</resources>
+```
+
+
+
+方法2：java编程式
+
+```java
+//全屏
+getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+// 取消全屏
+getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+```
+
+
+
+
+
+## 其他
+
+### 安卓的三个bar：
+
+**状态栏(Status Bar)：**屏幕最上面的，显示时间等
+
+**标题栏(Title Bar)：**应用的标题
+
+**导航栏(Navigation Bar)：**最下面的反馈按钮
+
+
+
+### 如何隐藏StatusBar
+
+```java
+// 隐藏title
+if(getSupportActionBar()!=null){
+  getSupportActionBar().hide();
+}
+```
+
+
+
+### 如何在Fragment里面添加Toolbar
+
+
+
+
+
+# 
+
+## 列表视图
+
+### 1.ListView
 
 ​	**基础属性**：
 
@@ -327,46 +479,131 @@ sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以
 
 
 
-## RecyclerView
+### 2.GridView
 
-### 	基础布局
+> GridView和ListView的用法基本一致，只是布局变化了，会以宫格的形式展示。
+>
+> GridView可以结合BaseAdapter使用，也可以结合SimpleAdapter使用
 
-### 	Adapter
+#### 2.1结合BaseAdapter
 
-> ​	每一个listview都需要adapter，用来提供数据
+```java
+class GridViewAdapter extends BaseAdapter { // 自己写一个Adapter类，继承BaseAdapter
+  
+   private Context context;
+   private Inflater mInflater 
+   
+   public GridViewAdapter(Context context) {
+   	 this.mInflater = LayoutInflater.from(context);
+     this.list = list;
+   }
 
-- ​	创建一个Adapter继承RecyclerView.Adapter，在Adapter里实现对应的方法。见下面代码		
-- ​	创建ViewHolder继承RecyclerView.ViewHolder
-- ​	把ViewHolder传递给Adapter
-- ​	
+  @Override
+  public View getView(int position, View convertView, ViewGroup parent) {
+    // 这个地方是返回一个视图
+    // 第一种：不做任何处理，每次都重新创建view
+    View view = mInflater.inflate(R.layout.item_filter_exchange_list, null);
+    TextView textView = convertView.findViewById(R.id.exch_name);
+    textView.setText(list.get(position).getExch_name());
+    return view;
+    
+    // 第二种：通过converView来
+    if (convertView == null) {
+      convertView = mInflater.inflate(R.layout.item_filter_exchange_list, null);
+    }
+    TextView textView = convertView.findViewById(R.id.exch_name);
+    textView.setText(list.get(position).getExch_name());
+    return convertView;
+  }
+} 
+
+```
+
+
+
+#### 2.2结合SimpleAdapter
+
+
+
+
+
+### 3.RecyclerView
+
+> RecyclerView是GroupView的子类，每一个列表项都作为一个View的对象来显示。
+
+RecyclerView需要Adapter和ViewHolder结合来使用
+
+#### 	3.1Adapter的作用
+
+​	每一个listview都需要adapter。在RecyclerView里，adapter负责两件事情：
+
+1. 创建必要的ViewHolder以及对应的视图，提供给RecyclerView
+2. 负责根据传入的位置，找到对应的model，绑定到ViewHolder上；
+
+Adapter的实现步骤：
+
+​	a.创建一个Adapter继承RecyclerView.Adapter，在Adapter里实现对应的方法。
+
+​	b.创建ViewHolder继承RecyclerView.ViewHolder
 
 ```java
 // RecyclerView.Adapter实现代码
+// 可以自定义一个ViewHolder的类，传入给Adapter作为泛型。
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHodler> {
+  
+  private LayoutInflater myLayoutInflater;
+  private Context mContext;
+  private List<String> list;
+
+
+  public RecyclerViewAdapter(Context context) {
+    this.mContext = context;
+    myLayoutInflater = LayoutInflater.from(context);
+  }
+  
+  public void setList(List<String> list) {
+    this.list = list;
+  }
+
+  // 自定义的ViewHolder类
+  public static class MyViewHodler extends RecyclerView.ViewHolder {
+    public TextView textView;
+    public MyViewHodler(@NonNull View itemView) {
+      super(itemView);
+      textView = itemView.findViewById(R.id.rcv_text);
+    }
+  }
   @Override
   public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-    // 这个方法是为了个每一个list-item从layout文件inflate出一个view。但是这个方法的返回对象是一个ViewHolder.
-    // 可以自定义一个ViewHolder的类，传入给Adapter作为泛型。
-    return null;
+    // 这个方法是为了个每一个item从layout文件inflate出一个view。
+    // 这个方法的返回对象是一个ViewHolder.
+    View view = myLayoutInflater.inflate(R.layout.layout_recycler_item, viewGroup, false);
+    MyViewHodler viewHolder = new MyViewHodler(view);
+    return viewHolder;
   }
 
   @Override
-  public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-
+  public void onBindViewHolder(@NonNull MyViewHodler viewHolder, int i) {
+    // 传入的位置，找到对应的model，绑定到ViewHolder上
+    TextView textView = viewHolder.textView;
+    String text = list.get(i);
+    textView.setText(text);
   }
 
   @Override
   public int getItemCount() {
     return list.size();
   }
+}
 ```
+
+
 
 ### 第三方Adapter
 
 BRVAH: https://www.jianshu.com/p/b343fcff51b0
 
 使用：
-
-
 
 ```
 notifyDataSetChanged
@@ -376,9 +613,15 @@ notifyDataSetChanged
 
 ## Fragment
 
-- ### 静态添加Fragment
+> Fragment可以展示整个屏幕或者屏幕的某一部分UI，由activity来托管。
+>
+> Fragment可以灵活的应用在不同的地方，不会受到限制。
 
-  静态添加fragment分几个个步骤：
+### 使用Fragment的两种方式
+
+- #### 一、静态添加Fragment
+
+  静态添加fragment分几个步骤：
 
   1.在activity.xml布局文件里声明fragment
 
@@ -418,53 +661,160 @@ notifyDataSetChanged
   }
   ```
 
-  3.创建fragment的xml 
+  3.创建fragment的布局xml ，此处代码省略
 
   
 
-- ### 动态添加Fragment
+- #### 二、动态添加Fragment
 
-  也可以通过编程，将fragment动态添加到某一个ViewGroup里。
+  动态添加fragment的方式是唯一可以在运行时控制fragment的方式。我们可以通过代码编程，将fragment动态添加、替换、删除。动态添加分为以下几个步骤：
 
-  1. 获取fragmentManager
-  2. 开始事物
-  3. 创建fragment，add或者replace到某一个ViewGroup里面
-  4. 提交事务
+  1. 定义容器视图
+  
+     ```xml
+     <?xml version="1.0" encoding="utf-8"?>
+     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+     <!-- 虽然是动态添加fragment，但是也需要在Activity的视图中为fragment安排位置 -->
+     <FrameLayout
+             android:id="@+id/fragment_container"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent" />
+     </LinearLayout>
+     ```
+  
+     使用FrameLayout来作为fragment的容器视图，当然一个托管的Activity可以有多个容器视图。
+  
+     
+  
+  2. 创建fragment类
+  
+     ```java
+     public class CrimeListFragment extends Fragment {
+     
+       private RecyclerView mRecyclerView;
+     
+       private List<CrimeBean> list;
+     
+       private CrimeAdapter mCrimeAdapter;
+     
+       public static CrimeListFragment createInstance() {
+         CrimeListFragment fragment = new CrimeListFragment();
+         return fragment;
+       }
+     
+       /**
+        * onCreate方法是public的，需要被托管的Activity调用
+        * onCreate方法并没有创建fragment视图，视图是在onCreateView里创建的
+        * @param savedInstanceState
+        */
+       @Override
+       public void onCreate(@Nullable Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         list = DataServer.getCrimes(100);
+       }
+     
+       /**
+        * inflater和container是用来生成fragment视图的必须参数
+        * savedInstanceState可以用来恢复视图数据
+        * @param inflater
+        * @param container
+        * @param savedInstanceState
+        * @return
+        */
+       @Nullable
+       @Override
+       public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+         View view = inflater.inflate(R.layout.fragment_crime_list, container,false);
+         mRecyclerView = view.findViewById(R.id.rv_crime_list);
+         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+         updateUI();
+         return view;
+       }
+     
+       private void updateUI() {
+         mCrimeAdapter = new CrimeAdapter(list);
+         mRecyclerView.setAdapter(mCrimeAdapter);
+         mCrimeAdapter.setOnItemClickListener(this);
+       }
+     
+     
+       @Override
+       public void onActivityResult(int requestCode, int resultCode, Intent data) {
+         super.onActivityResult(requestCode, resultCode, data);
+       }
+     }
+     ```
+  
+     
+  
+  3. 获取fragmentManager，添加fragment到Activity中
+  
+     ```java
+     public class CrimeActivity extends AppCompatActivity {
+     
+       @Override
+       protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_crime);
+     //    获取fragmentManager
+         FragmentManager fragmentManager = getSupportFragmentManager();
+     //    通过fragmentManager找到内存中的fragment
+         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+         if (fragment == null) {
+           fragment = CrimeListFragment.createInstance();
+           // 开启事物
+           FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+           fragmentTransaction.add(R.id.fragment_container, fragment);
+            // 提交事物
+           fragmentTransaction.commit();
+         }
+       }
+     }
+     ```
+  
+     
 
+### Fragment的事物管理
 
-  ```java
-  FragmentManager fragmentManager = getFragmentManager();
-  FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-  Fragment fragment = AFragment.createInstance("我是FragmentA");
-  fragmentTransaction.add(R.id.fragment_container, fragment); // ViewGroup是一LinearLayout或者RelativeLayout
-  fragmentTransaction.commit();
-  ```
+事物的顺序：beginTransaction —> add/remove/replace... —> commit
+
+### Fragment的生命周期
+
+fragment的声明周期类似于activity，但是它的生命周期不是由系统来管理，而是由Activity来管理。具体如下图：
+
+![](http://pvhgkdx46.bkt.clouddn.com/fragment_lifecycle.png)
+
+​	当向运行中的Activity添加fragment时，FragmentManger会立即执行fragment的必要方法，保持fragment和Activity两者状态一致。以下方法会依次被调用：
+
+- onAttach(Activity)
+
+- onCreate(Bundle): 
+- onCreateView(...): 系统会在Fragment首次绘制时调用此方法。如果需要绘制UI，需要在这个方法里返回UI的根视图
+- onActivityCreated(Bundle)
+- onStart
+- onResume 
 
   
 
-- ### Fragment的事物管理
+### getSupportFragmentManager、getChildFragmentManager的区别
 
-  事物的顺序：beginTransistion —> add/remove/replace... —> commit
+getChildFragmentManager： 返回一个私有的FragmentManager，这个manager是属于当前Fragment内部的
 
-- ### Fragment的生命周期
+getSupportFragmentManager： 返回Activity的FragmentManager，他能管理属于Activy的fragment。
 
-  <img src="https://developer.android.com/images/fragment_lifecycle.png?hl=zh-CN">
-
-  
-
-  - onCreate:  Fragment初始化时被调用，可以在这里初始化组件
-  - onCreateView: 系统会在Fragment首次绘制时调用此方法。如果需要绘制UI，需要在这个方法里返回UI的根视图
-  - onPause: 
+所以主要的不同点在于：每个Fragment有他们自己内部的`FragmentManager`，他们能管理自己内部的`Fragment`。但是其他FragmentManager能管理整个activity的。
 
 
 
-- ### getSupportFragmentManager、getChildFragmentManager的区别
+### Fragment和Activity间传递消息
 
-  getChildFragmentManager： 返回一个私有的FragmentManager，这个manager是属于当前Fragment内部的
 
-  getSupportFragmentManager： 返回Activity的FragmentManager，他能管理属于Activy的fragment。
 
-  所以主要的不同点在于：每个Fragment有他们自己内部的`FragmentManager`，他们能管理自己内部的`Fragment`。但是其他FragmentManager能管理整个activity的。
+
+
+最后：不要滥用fragment。一个页面中，最好的设计是存在2~3个fragment。
 
 
 
@@ -492,13 +842,37 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 ### PageAdapter
 
-
-
 ### FragmentPagerAdapter
 
 
 
-# 布局知识
+# Adapter
+
+## BaseAdater
+
+
+
+# EventBus使用
+
+## 前言
+
+EventBus原理：通过事件类型，来进行订阅发布
+
+![image-20190812150412158](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-12-070412.png)
+
+
+
+// todo 待补充
+
+
+
+
+
+
+
+
+
+# 
 
 ## TabLayout
 
@@ -659,21 +1033,45 @@ handler.set
 
 ```
 
-# MVP框架
-
-### 基本框架思想
-
-类似于mvc框架，mvp是安卓开发中常用的编程思维框架。
-
-**m**：model/bean 主要负责处理业务逻辑
-
-**v**: activity/fragment 视图
-
-**p**: presenter 桥接model和view的一些工作
 
 
+## 消息传递
 
-BHEX的设计模式
+方式1：Bundle
+
+```java
+Date date = (Date) getArguments().getSerializable(CRIME_DATE); // 通过传入的argument来读取
+
+```
+
+
+
+方式2：Intent  // todo 
+
+```
+Activity.RESULT_OK
+
+```
+
+
+
+
+
+# 四、编程框架
+
+## MVP
+
+为了解决mvc中，逻辑处理与视图展示无法分离的问题；
+
+**m**：model/bean 数据层，主要负责处理业务逻辑
+
+**v**:  activity/fragment 视图层，只用来展示界面，逻辑处理交给presenter来处理；
+
+**p**:  presenter 展示层，和view一一对应；
+
+
+
+
 
 ```java
 // 基础类
@@ -694,9 +1092,7 @@ onResume -->
 
 
 
-
-
-item_market_list_layout.xml 是RecycleView的item布局
+## Flux框架
 
 
 
@@ -704,7 +1100,72 @@ item_market_list_layout.xml 是RecycleView的item布局
 
 
 
-# 三方组件
+## 事件总线
+
+- ### Bus
+
+  文档链接：[http://square.github.io/otto/](http://square.github.io/otto/)
+
+- ### EventBus
+
+  文档链接：[http://greenrobot.org/eventbus/documentation/delivery-threads-threadmode/](http://greenrobot.org/eventbus/documentation/delivery-threads-threadmode/)
+
+  事件处理模式
+
+  ​	1. ThreadMode.POSTING: 
+
+  ​	订阅者被调用的线程和提交事件的线程是同一个线程，
+
+  ​	这个模式下，开销最小，因为它完全不需要切换线程；
+
+  
+
+  ​	2. ThreadMode.MAIN：在主线程中处理。一般会涉及到UI的处理。
+
+  ​	3. ThreadMode.MAIN_ORDERED： 在主线程中处理，并且严格按照提交的顺序，并保持一致。
+
+  ​	4. ThreadMode.BACKGROUND：
+
+  ​	5. ThreadMode.ASYNC：
+
+  ​	
+
+  ```java
+  // Called in the same thread (default)
+  // ThreadMode is optional here
+  @Subscribe(threadMode = ThreadMode.POSTING)
+  public void onMessage(MessageEvent event) {
+      log(event.message);
+  }
+  ```
+
+  
+
+
+
+## RxJava
+
+RxJava概述
+
+R：reactive响应式的，x:代表任何的意思。Rxjava表示以java语言实现的响应式的编程。
+
+Rxjava核心
+
+响应式编程核心思想就是观察者模式。本质上要求`观察者(A)`高度敏感的关注`被观察者(B)`的状态变化。当B状态发生变化时，A需要做出及时的反应。
+
+一般观察者模式有两种：主动模式、被动模式；
+
+主动的观察者模式是：`观察者`主动去监听`被观察者`状态变化
+
+被动的观察者模式是：`观察者`向`被观察者`订阅消息，`被观察者`状态发生变化时，向订阅者发送消息.
+
+Rxjava的模式是被动观察者模式
+
+
+
+
+
+# 五、三方组件
 
 ## SmartRefreshLayout 
 
@@ -724,4 +1185,117 @@ item_market_list_layout.xml 是RecycleView的item布局
 
 1.交易盘口： BookListView
 
-2.TopBar 包含了下拉币对
+2.TopBar 包含了交易界面里面的下拉币对
+
+
+
+# 六、升级策略
+
+## 强制更新策略
+
+当发布新的版本时，或者有一些改动较大的功能时，往往需要强制用户更新版本。
+
+一般检测的策略是根据版本号来判断。在app启动时，检测本地app的版本号。如果用户安装的版本号 < 最新的版本号，通过弹出toast的方式，强制app更新。 
+
+检测最新的版本可以通过一个简单的json文件来实现。以下是我在实际项目中用到的一种方式：
+
+```java
+// checkVersionUpdate
+// 在MainActivity的onCreate方法里, 检测app的版本
+UtilsApi.RequestCheckVersionUpdate(context, new SimpleResponseListener<UpdateResponse>() {
+      @Override
+      public void onSuccess(UpdateResponse data) {
+        super.onSuccess(data);
+        if (CodeUtils.isSuccess(data, false)) {
+          // 比较当前版本和服务器上的版本
+          if (DevicesUtil.getAppVersion(context) >= data.versionCode) {
+            if (showToast) {
+              ToastUtils.showLong(context, context.getString(R.string.string_version_new));
+            }
+            return;
+          }
+          String url = data.downloadUrl;
+          String descp = data.newFeatures;
+          boolean forceUpdate = data.needForceUpdate;
+          if (data.needUpdate == true && !TextUtils.isEmpty(url)) {
+            // 弹出强制更新dialog
+            showForceUpdateDialog(context, url, descp, forceUpdate);
+          }
+        }
+      }
+
+      @Override
+      public void onError(Throwable error) {
+        super.onError(error);
+      }
+    });
+```
+
+```java
+/**
+   * showForceUpdateDialog
+   */
+  private static void showForceUpdateDialog(final Context context, final String url, String descp, final boolean forceUpdate) {
+    final VersionUpdateDialog builder = new VersionUpdateDialog(context);
+    builder.setTitle(context.getString(R.string.string_version_find_new));
+    builder.setMessage(descp);
+    if (forceUpdate == true) {
+      builder.setCancelable(false);
+      builder.setCanceledOnTouchOutside(false);
+    }
+    builder.setPositiveButton(context.getString(R.string.string_version_update), new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        // 我们系统里面是通过浏览器去下载安装包的方式更新应用
+        // 如果需要，还可以做到通过启动下载线程的方式更新应用包，这种方式体验会更好。
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        if (builder.isShowing()) {
+          builder.dismiss();
+        }
+      }
+    });
+    builder.setNegativeButton(context.getString(R.string.string_version_cancel), new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        // 取消的操作
+        if (builder.isShowing()) {
+          builder.dismiss();
+        }
+      }
+    });
+    builder.setNegativeButtonEnable(!forceUpdate);
+    builder.show();
+  }
+```
+
+
+
+也可以通过第三方平台来实现，比如[腾讯的buggly](https://bugly.qq.com/v2/product/apps/a14de22571?pid=1)：
+
+`buggly`支持全量更新和热更新两种模式，还可以通过配置的方式来选择是否强制更新。
+
+图1：全量更新
+
+![image-20190819213051898](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-19-133053.png)
+
+
+
+图2：发布补丁
+
+![image-20190819213012111](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-19-133013.png)
+
+
+
+Buggy底层的检测策略应该一样，都是通过versionCode来比较，并且会校验MD5值。
+
+关于Buggly的其他用法，参考后面的[集成平台-Buggly](#Buggly)
+
+
+
+
+
+
+
+# 七、集成平台
+
+## Buggly
