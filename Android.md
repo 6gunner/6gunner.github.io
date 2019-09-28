@@ -184,22 +184,23 @@ productFlavors {
 
 <img src="https://upload-images.jianshu.io/upload_images/215430-4bd5c7b4d06e0dac.png">
 
-### 完整生命周期
+上图展示了整个Activity所有相关的生命周期，所有的生命周期可以看成3种不同级别的闭环。
+
+### 全局生命周期
 
 ```mermaid
 graph LR
-onCreate --> onStart
-onStart --> onResume
-onResume --> onPause
-onPause --> onStop
-onStop --> onDestroy
+onCreate --> onDestroy
+
 ```
+
+第一种闭环：onCreate -> onDestroy。当Activity创建时，系统会调用activity的onCreate方法；当Activity被销毁时，系统则会触发onDestroy方法，释放内存；
 
 通常在onCreate时完成下面几件事：
 
-1）实例化组件，并且将组件放置在屏幕上(setContentView)
+1）实例化组件，并设置页面视图(setContentView)
 
-2) 引用已实例化的组件
+2)  引用已实例化的组件(findViewById)
 
 3）为组件设置监听器
 
@@ -207,9 +208,34 @@ onStop --> onDestroy
 
 
 
-### AB组件跳转生命周期
+### 可视化生命周期
 
-A组件打开时：
+```mermaid
+graph LR
+onStart --> onStop
+
+```
+
+第二种闭环：onStart -> onStop。当系统调用Activity的onStart方法之后，页面就可以进入可视化阶段。当Activity进入到onStop生命周期时，当前activity就进入到不可视阶段；
+
+
+
+### 可交互生命周期
+
+```mermaid
+graph LR
+onResume --> onPause
+```
+
+第三种闭环：onResume->onPause。当Activity进入onResume时，当前Activity必须位于系统调用栈的最顶层，此时Activity可以处理一些用户的交互。当Activity进入onPause时，用户失去了与此activity交互的能力，界面变得不可操作。
+
+
+
+### 几种生命周期变化的过程
+
+- #### 通过返回键来跳转不同Activity
+
+当Activity-A被创建时，Activity-A经历了下面3个生命周期过程
 
 ```mermaid
 graph LR
@@ -217,7 +243,7 @@ onCreate --> onStart
 onStart --> onResume
 ```
 
-B组件打开时, A组件进入onPause
+从A跳转到B时, 需要等A进入onPause生命周期之后，B才开始进入onCreate生命周期，之后开始进入B其它的生命周期
 
 ```mermaid
 graph LR
@@ -226,11 +252,9 @@ B --> C[B组件onStart]
 C --> D[B组件onResume]
 D --> E[A组件onStop]
 
-
-
 ```
 
-返回A组件时，B组件先进入onPause
+从B返回A组件时，B组件先进入onPause周期，如果A组件在这段时间内没有被系统回收，那A组件不需要进入onCreate周期，直接进入到onRestart，一直到onResume周期；
 
 ```mermaid
 graph LR
@@ -241,51 +265,243 @@ D --> E[B页面Stop]
 E --> F[B页面destroy]
 ```
 
+最后B进入到onStop周期，最后被系统销毁，进入onDestroy周期；
 
 
-### Home返回主屏生命周期
+
+- #### 通过Home键跳转到系统界面再恢复时
+
+当前Activity会经历以下几个生命周期过程：
+
+首先Activity会进入onPause周期，因为可能会被系统回收，所以会进入到onSaveInstanceState周期，再进入到onStop周期，然后系统会切回到系统的主页面。==注：onSaveInstanceState需要在onPause之后进去，因为避免用户的输入状态没有被保存；== 如果在系统因为内存过高，回收了当前Avtivity的内存，那么Activity还会进入onDestroy周期；
+
+当用户从Home界面再回到当前Activity时：当前Activity会先进入到onRestart生命周期，==如果之前系统回收了该Activity，那么会先进入到onCreate周期==； 然后进入onStart周期，再进入onRestoreInstanceState周期，最后进入到onResume周期，恢复视图；
 
 ```mermaid
 graph TD
-运行界面 -->|onPause|暂停
-暂停 -->|onStop|离开前台
-离开前台 --onSaveInstanceState
-离开前台 -->|onRestart|恢复可见
-恢复可见 -->|onStart|进入前台
-进入前台 -->|onResume|恢复前台
+onPause --> onSaveInstanceState
+onSaveInstanceState --> onStop
+onStop --> 离开
+离开 -.->  onDestory
+
+恢复 -.-> onCreate 
+onCreate -.-> onRestart
+onRestart --> onStart
+onStart --> onRestoreInstanceState
+onRestoreInstanceState --> onResume
 
 ```
 
 
 
-### 设备旋转与Activity生命周期
+- #### 设备旋转时
+
 
 设备旋转时，系统会销毁当前Activity实例，然后创建一个新的Activity实例。
 
 原理：
 
-​	设置配置是用来描述设备当前状态的一系列特征。特征包括：屏幕方向、屏幕密度、屏幕尺寸、键盘类型、底座模式、语言等。在应用运行时，只要`设备配置`发生了改变，Android就会销毁当前Activity，重新创建新的activity。
+​	`设置配置`是用来描述设备当前状态的一系列特征。特征包括：屏幕方向、屏幕密度、屏幕尺寸、键盘类型、底座模式、语言等。
 
-​	因为屏幕发生旋转时，方向改变了，所以设备配置发生了变化，因此activity会重新创建。
+​	==在应用运行时，只要`设备配置`发生了改变，Android就会销毁当前Activity，重新创建新的activity。==
+
+​	因次，当屏幕发生旋转时，方向改变了，所以设备配置发生了变化，因此activity会重新创建。
+
+整个activity的生命周期过程如下：
+
+```mermaid
+graph LR
+onPause --> onSaveInstanceState
+onSaveInstanceState --> onStop
+onStop --> onCreate
+onCreate --> onStart
+onStart --> onRestoreSavedInstance
+```
 
 
 
-onSave
 
 
 
-## 布局样式
 
-### 4种应用资源
+# 四、布局样式篇
+
+## 3.1 Theme
+
+#### Theme版本变化
+
+| 主题                        |                            |
+| --------------------------- | -------------------------- |
+| android:Theme               | API 1 开始                 |
+| android:Theme.Holo          | API 11（android3.0） 开始  |
+| android:Theme.DeviceDefault | API 14（android4.0） 开始  |
+| android:Theme.Material      | API 21（android5.0） 开始  |
+| Theme.AppCompat             | 兼容包AppCompat_v7中的主题 |
+
+在Android 5.0 （API 21）之后，引入了Material Design。5.0以上的版本，如果想用Material Design，需要引入support-library支持库。
+
+#### 如何自定义主题颜色
+
+![img](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-30-020046.png)
 
 1. **colorPrimary** 应用的主要色调，actionBar默认使用该颜色，Toolbar导航栏的底色
 2. **colorPrimaryDark** 应用的主要暗色调，statusBarColor默认使用该颜色
 3. **statusBarColor** 状态栏颜色，默认使用colorPrimaryDark
 4. **colorAccent** CheckBox，RadioButton，SwitchCompat等一般控件的选中效果默认采用该颜色
 
+```xml
+其他配置：
+colorPrimary                     应用的主要色调，actionBar默认使用该颜色，Toolbar导航栏的底色
+colorPrimaryDark             应用的主要暗色调，statusBarColor默认使用该颜色
+textColorPrimary            应用的主要文字颜色，actionBar的标题文字默认使用该颜色
+statusBarColor                 状态栏颜色，默认使用colorPrimaryDark
+windowBackground          窗口背景颜色
+navigationBarColor           底部栏颜色
+colorForeground              应用的前景色，ListView的分割线，switch滑动区默认使用该颜色
+colorBackground              应用的背景色，popMenu的背景默认使用该颜色
+colorAccent                  CheckBox，RadioButton等一般控件的选中效果默认采用该颜色
+colorControlNormal          CheckBox，RadioButton等默认状态的颜色。
+editTextColor：               默认EditView输入框字体的颜色。
+textColor                      Button，textView的文字颜色
+
+// styles.xml
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+</resources>
+```
+
+#### 如何使用主题
+
+```xml
+<application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme" -- 这里指定主题
+
+        >
+```
 
 
-### 安卓单位
+
+
+
+## 3.2 导航栏
+
+Android系统的历史演变中，也出现了以下几种Bar的变化；
+
+TitleBar、ActionBar(原生)、Toolbar(支持库)、AppBar
+
+![è¿éåå¾çæè¿°](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-29-234805.png)
+
+
+
+在Android 3.0 的版本里，所有使用Theme.Holo主题的Activity都会包含actionBar；当 app 运行在 Andriod 3.0 以下版本（不低于 Android 2.1）时，如果要添加 action bar，需要加载 Android Support 库。
+
+### 如何隐藏StatusBar
+
+**状态栏(Status Bar)：**屏幕最上面的，显示时间等
+
+**导航栏(Navigation Bar)：**最下面的反馈按钮
+
+```java
+// 隐藏title
+if(getSupportActionBar()!=null){
+  getSupportActionBar().hide();
+}
+```
+
+
+
+### 如何在NoActionBar时向Activity里添加Toolbar
+
+1. 引入支持库 `implementation 'com.android.support:appcompat-v7:28.0.0'`
+
+2. 确保Activity继承AppCompatActivity
+
+3. 使用NoActionBar的主题背景
+
+   ```xml
+   <application
+           android:allowBackup="true"
+           android:icon="@mipmap/ic_launcher"
+           android:label="@string/app_name"
+           android:networkSecurityConfig="@xml/network_security_config"
+           android:roundIcon="@mipmap/ic_launcher_round"
+           android:supportsRtl="true"
+           android:theme="@style/AppTheme.NoActionBar">
+   ```
+
+4. 向布局中，添加toolbar
+
+   ```xml
+   <android.support.v7.widget.Toolbar
+          android:id="@+id/my_toolbar"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          android:background="?attr/colorPrimary"
+          android:elevation="4dp"
+          android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+          app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+   ```
+
+5. 在Activity的onCreate方法中，调用 Activity 的 `setSupportActionBar()` 方法，将Toolbar作为ActionBar
+
+   ```java
+     @Override
+       protected void onCreate(Bundle savedInstanceState) {
+           super.onCreate(savedInstanceState);
+           setContentView(R.layout.activity_my);
+           Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+           setSupportActionBar(myToolbar);
+       }
+   ```
+
+
+
+
+### 如何在导航栏添加菜单
+
+1、添加菜单(新建Menu Resource File)
+
+![image-20190913144308681](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-09-13-064309.png)
+
+2、添加菜单item
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_item_new_crime"
+        android:icon="@drawable/ic_menu_send"
+        android:title="@string/new_crime"
+        app:showAsAction="ifRoom|withText"
+        />
+</menu>
+```
+
+3、新建菜单按钮图标
+
+![image-20190913145037569](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-09-13-065038.png)
+
+新建Image Asset，类型选择Action Bar and Tab Icons，选择Asset Type为Clip Art，然后从Clip Art里面选择；
+
+4、在代码里设置菜单栏
+
+![image-20190913153152649](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-09-13-073153.png)
+
+## 安卓单位
 
 > px、dp、dip、sp
 
@@ -309,21 +525,379 @@ sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以
 
 
 
-## Drawable
+## Dialog
+
+
+
+
+
+
+
+## 3.2 Drawable
 
 ​	shape: 定义一些形状。最常见的比如矩形，圆角矩形，椭圆。
 
 ​	selector: 定义一些页面中和交互相关的样式。比如按钮的按压状态、是否禁用、checkbox的选中状态等等。
 
-​	
+​	// todo 待完善
+
+
+
+## 3.3 通用布局—TabLayout
+
+tablayout是单独的design support中, 想要用tablayout, 需要在gradle里单独引用他
+
+```
+implementation 'com.android.support:design:28.0.0-rc02'
+```
+
+- ### 简单使用
+
+1）在布局文件中声明Tablayout
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+```
+
+2) 在Activity或者Fragment的onCreate周期中，手动创建tab，并且绑定tab clickListener
+
+```java
+@Override
+protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_tab_layout);
+    mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
+    // 添加多个tab
+    for (int i = 0; i < title.length; i++) {
+        TabLayout.Tab tab = mTabLayout.newTab();
+        tab.setText(title[i]);
+        mTabLayout.addTab(tab);
+    }
+    // 给tab设置点击事件
+    mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            Toast.makeText(getApplicationContext(), title[tab.getPosition()], Toast.LENGTH_SHORT).show();
+        }
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+        }
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {
+        }
+    });
+}
+```
+
+
+
+- ### 与ViewPager结合使用
+
+  1) 先在布局文件中放好TabLayout和ViewPager：
+
+```xml
+...
+<android.support.design.widget.TabLayout
+        android:id="@+id/tab"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:tabIndicatorColor="@color/colorPrimaryDark"
+        app:tabIndicatorHeight="3dp"
+        />
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:id="@+id/tab_view_pager"
+        />
+...
+```
+
+
+
+2）设置TabLayout和ViewPager相互关联
+
+```java
+public class TabViewActivity extends BaseCoreActivity {
+
+    private List<Fragment> mFragment = new ArrayList<>();
+
+  @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_tab_view);
+      // 1. 声明布局中的tablayout
+      mTabLayout = findViewById(R.id.tab);
+      // 2. 声明viewpager
+      mViewPager = findViewById(R.id.tab_view_pager);
+      // 3. 初始化fragments
+      initFragments();
+      // 4. 为viewPager声明FragmentPagerAdapter类的实例
+      mViewPager.setAdapter(new TabFragmentPagerAdapter(mFragment, getSupportFragmentManager()));
+      // 5. 设置tabLayout的启动viewPager,这个方法会创建tab，并且重置title
+      mTabLayout.setupWithViewPager(mViewPager, false);
+      // 6. 最后设置每个tab的text
+      for (int i = 0; i < TAB_TITLES.length; i++) {
+        mTabLayout.getTabAt(i).setText(TAB_TITLES[i]);
+      }
+    }
+
+    /**
+     * 添加Fragment
+     */
+    private void initFragments() {
+      for (int i = 0; i < TAB_TITLES.length; i++) {
+        mFragment.add(new TabFragment());
+      }
+    }
+}
+```
+
+
+
+
+
+## 3.4 通用布局—FrameLayout
+
+FrameLayout是最简单的ViewGroup组件，它不以特定的方式来安排子视图的位置；FrameLayout子视图的位置排列取决于他们各自的android:layout_gravity属性
+
+### Fragment
+
+> 首先介绍一下Fragment:
+>
+> Fragment可以展示整个屏幕或者屏幕的某一部分UI，由activity来托管；Fragment可以灵活的应用在不同的地方，不会受到限制。
+
+### 使用Fragment的两种方式
+
+- #### 一、静态添加Fragment
+
+  静态添加fragment分几个步骤：
+
+  1.在activity.xml布局文件里声明fragment
+
+  ```xml
+  <?xml version="1.0" encoding="utf-8"?>
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+    	<!-- android:name 属性指定要在布局中实例化的 Fragment 类 -->
+      <!-- fragment必须用id或者tag作为唯一标识。-->
+      <fragment android:name="com.example.news.ArticleListFragment"
+              android:id="@+id/list"
+              android:layout_weight="1"
+              android:layout_width="0dp"
+              android:layout_height="match_parent" />
+      <fragment android:name="com.example.news.ArticleReaderFragment"
+              android:id="@+id/viewer"
+              android:layout_weight="2"
+              android:layout_width="0dp"
+              android:layout_height="match_parent" />
+  </LinearLayout>
+  ```
+
+  当系统创建这个activity时，会去实例化Fragment的类，并且调用它的onCreateView()方法,来替换这个fragment。
+
+  2.创建一个类，继承fragment类，重写onCreateView
+
+  ```java
+  public static class ExampleFragment extends Fragment {
+      @Override
+      public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                               Bundle savedInstanceState) {
+          // Inflate the layout for this fragment
+          return inflater.inflate(R.layout.example_fragment, container, false);
+      }
+  }
+  ```
+
+  3.创建fragment的布局xml ，此处代码省略
+
+  
+
+- #### 二、动态添加Fragment
+
+  动态添加fragment的方式是唯一可以在运行时控制fragment的方式。我们可以通过代码编程，将fragment动态添加、替换、删除。动态添加分为以下几个步骤：
+
+  1. 定义容器视图
+
+     ```xml
+     <?xml version="1.0" encoding="utf-8"?>
+     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+     <!-- 虽然是动态添加fragment，但是也需要在Activity的视图中为fragment安排位置 -->
+     <FrameLayout
+             android:id="@+id/fragment_container"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent" />
+     </LinearLayout>
+     ```
+
+     使用FrameLayout来作为fragment的容器视图，当然一个托管的Activity可以有多个容器视图。
+
+     
+
+  2. 创建fragment类
+
+     ```java
+     public class CrimeListFragment extends Fragment {
+     
+       private RecyclerView mRecyclerView;
+     
+       private List<CrimeBean> list;
+     
+       private CrimeAdapter mCrimeAdapter;
+     
+       public static CrimeListFragment createInstance() {
+         CrimeListFragment fragment = new CrimeListFragment();
+         return fragment;
+       }
+     
+       /**
+        * onCreate方法是public的，需要被托管的Activity调用
+        * onCreate方法并没有创建fragment视图，视图是在onCreateView里创建的
+        * @param savedInstanceState
+        */
+       @Override
+       public void onCreate(@Nullable Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         list = DataServer.getCrimes(100);
+       }
+     
+       /**
+        * inflater和container是用来生成fragment视图的必须参数
+        * savedInstanceState可以用来恢复视图数据
+        * @param inflater
+        * @param container
+        * @param savedInstanceState
+        * @return
+        */
+       @Nullable
+       @Override
+       public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+         View view = inflater.inflate(R.layout.fragment_crime_list, container,false);
+         mRecyclerView = view.findViewById(R.id.rv_crime_list);
+         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+         updateUI();
+         return view;
+       }
+     
+       private void updateUI() {
+         mCrimeAdapter = new CrimeAdapter(list);
+         mRecyclerView.setAdapter(mCrimeAdapter);
+         mCrimeAdapter.setOnItemClickListener(this);
+       }
+     
+     
+       @Override
+       public void onActivityResult(int requestCode, int resultCode, Intent data) {
+         super.onActivityResult(requestCode, resultCode, data);
+       }
+     }
+     ```
+
+     
+
+  3. 获取fragmentManager，添加fragment到Activity中
+
+     ```java
+     public class CrimeActivity extends AppCompatActivity {
+     
+       @Override
+       protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_crime);
+     //    获取fragmentManager
+         FragmentManager fragmentManager = getSupportFragmentManager();
+     //    通过fragmentManager找到内存中的fragment
+         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+         if (fragment == null) {
+           fragment = CrimeListFragment.createInstance();
+           // 开启事物
+           FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+           fragmentTransaction.add(R.id.fragment_container, fragment);
+            // 提交事物
+           fragmentTransaction.commit();
+         }
+       }
+     }
+     ```
+
+     
+
+### Fragment的事物管理
+
+事物的顺序：beginTransaction —> add/remove/replace... —> commit
+
+### Fragment的生命周期
+
+fragment的声明周期类似于activity，但是它的生命周期不是由系统来管理，而是由Activity来管理。具体如下图：
+
+![](http://pvhgkdx46.bkt.clouddn.com/fragment_lifecycle.png)
+
+​	当向运行中的Activity添加fragment时，FragmentManger会立即执行fragment的必要方法，保持fragment和Activity两者状态一致。以下方法会依次被调用：
+
+- onAttach(Activity)
+
+- onCreate(Bundle): 
+
+- onCreateView(...): 系统会在Fragment首次绘制时调用此方法。如果需要绘制UI，需要在这个方法里返回UI的根视图
+
+- onActivityCreated(Bundle)
+
+- onStart
+
+- onResume 
+
+  
+
+### getSupportFragmentManager、getChildFragmentManager的区别
+
+getChildFragmentManager： 返回一个私有的FragmentManager，这个manager是属于当前Fragment内部的
+
+getSupportFragmentManager： 返回Activity的FragmentManager，他能管理属于Activy的fragment。
+
+所以主要的不同点在于：每个Fragment有他们自己内部的`FragmentManager`，他们能管理自己内部的`Fragment`。但是其他FragmentManager能管理整个activity的。
+
+
+
+### Fragment和Activity间传递消息
+
+
+
+最后：不要滥用fragment。一个页面中，最好的设计是存在2~3个fragment。
+
+
+
+
+
+## 3.5 高阶布局——ConstraintLayout
+
+约束布局
 
 
 
 ## SplashScreen
 
-一般app从click启动，到进入MainActivity，中间会有一段空白页面的时间。这一段时间，一般系统会用来做初始化工作的。但是空白的时间太长，会降低客户的体验效果。所以一般我们会在app启动后加一个SplashActivity，用来做缓冲。
+一般app从click启动，到进入MainActivity，中间会有一段空白页面的时间。这一段时间，一般系统会用来做初始化工作的。在一个Activity打开时，如果该Activity所属的Application还没有启动，系统会为这个Activity创建一个进程；每创建一个进程，都会执行一次Application的onCreate()方法；在Application的onCreate方法中执行耗时间的操作，就会出现白屏。
+
+如果空白的时间太长，会降低客户的体验效果。所以一般我们会在app启动后加一个SplashActivity，用来做缓冲。
 
 ```xml
+
 <application
         android:name=".app.Application"
         android:allowBackup="false"
@@ -356,7 +930,7 @@ sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以
 ```xml
 <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
   <!-- 设置window的背景图片，默认是白屏 -->
-  <!--  除了图片，也可以设置drawable -->
+  <!-- 另外：除了图片，也可以设置drawable，不过我还不会用drawable画一个页面出来 -->
   <item name="android:windowBackground">@mipmap/launch_bg</item>
   <!-- 设置全屏，默认是false -->
   <item name="android:windowFullscreen">true</item>
@@ -365,6 +939,9 @@ sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以
   <item name="android:clipToPadding">true</item>
   <item name="android:windowTranslucentNavigation">true</item>
 </style>
+
+
+
 ```
 
 在SplashActivity里，一般还会判断做一下引导页和倒计时欢迎页面；引导页只在安装后第一次使用时出现。
@@ -402,7 +979,22 @@ public Handler mHandler = new Handler() {
 
 // 在onResume或者其他生命周期方法里调用
 mHandler.sendEmptyMessageDelayed(0, n * 1000) // 倒计时n秒
+  
+  /** 这种方式也可以
+  new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent=new Intent(act, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }, 3000);**/
 ```
+
+
+
+需要注意的是，有一些教程让配置：android:windowIsTranslucent 为true
+他的原理是将背景颜色设置为透明色，在启动页出现前屏幕一直显示桌面。这样会给人一种app没有点到的错觉，不建议设置。
 
 
 
@@ -434,38 +1026,15 @@ getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
 
-
-
-## 其他
-
-### 安卓的三个bar：
-
-**状态栏(Status Bar)：**屏幕最上面的，显示时间等
-
-**标题栏(Title Bar)：**应用的标题
-
-**导航栏(Navigation Bar)：**最下面的反馈按钮
+## 安卓适配刘海屏
 
 
 
-### 如何隐藏StatusBar
-
-```java
-// 隐藏title
-if(getSupportActionBar()!=null){
-  getSupportActionBar().hide();
-}
-```
-
-
-
-### 如何在Fragment里面添加Toolbar
+### 
 
 
 
 
-
-# 
 
 ## 列表视图
 
@@ -485,7 +1054,8 @@ if(getSupportActionBar()!=null){
 >
 > GridView可以结合BaseAdapter使用，也可以结合SimpleAdapter使用
 
-#### 2.1结合BaseAdapter
+- #### 2.1 结合BaseAdapter
+
 
 ```java
 class GridViewAdapter extends BaseAdapter { // 自己写一个Adapter类，继承BaseAdapter
@@ -521,7 +1091,8 @@ class GridViewAdapter extends BaseAdapter { // 自己写一个Adapter类，继�
 
 
 
-#### 2.2结合SimpleAdapter
+- #### 2.2 结合SimpleAdapter
+
 
 
 
@@ -533,7 +1104,8 @@ class GridViewAdapter extends BaseAdapter { // 自己写一个Adapter类，继�
 
 RecyclerView需要Adapter和ViewHolder结合来使用
 
-#### 	3.1Adapter的作用
+- #### 	Adapter的作用
+
 
 ​	每一个listview都需要adapter。在RecyclerView里，adapter负责两件事情：
 
@@ -599,222 +1171,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
 
-### 第三方Adapter
-
-BRVAH: https://www.jianshu.com/p/b343fcff51b0
-
-使用：
-
-```
-notifyDataSetChanged
-```
 
 
 
-## Fragment
-
-> Fragment可以展示整个屏幕或者屏幕的某一部分UI，由activity来托管。
->
-> Fragment可以灵活的应用在不同的地方，不会受到限制。
-
-### 使用Fragment的两种方式
-
-- #### 一、静态添加Fragment
-
-  静态添加fragment分几个步骤：
-
-  1.在activity.xml布局文件里声明fragment
-
-  ```xml
-  <?xml version="1.0" encoding="utf-8"?>
-  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:orientation="horizontal"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-    	<!-- android:name 属性指定要在布局中实例化的 Fragment 类 -->
-      <!-- fragment必须用id或者tag作为唯一标识。-->
-      <fragment android:name="com.example.news.ArticleListFragment"
-              android:id="@+id/list"
-              android:layout_weight="1"
-              android:layout_width="0dp"
-              android:layout_height="match_parent" />
-      <fragment android:name="com.example.news.ArticleReaderFragment"
-              android:id="@+id/viewer"
-              android:layout_weight="2"
-              android:layout_width="0dp"
-              android:layout_height="match_parent" />
-  </LinearLayout>
-  ```
-
-  当系统创建这个activity时，会去实例化Fragment的类，并且调用它的onCreateView()方法,来替换这个fragment。
-
-  2.创建一个类，继承fragment类，重写onCreateView
-
-  ```java
-  public static class ExampleFragment extends Fragment {
-      @Override
-      public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                               Bundle savedInstanceState) {
-          // Inflate the layout for this fragment
-          return inflater.inflate(R.layout.example_fragment, container, false);
-      }
-  }
-  ```
-
-  3.创建fragment的布局xml ，此处代码省略
-
-  
-
-- #### 二、动态添加Fragment
-
-  动态添加fragment的方式是唯一可以在运行时控制fragment的方式。我们可以通过代码编程，将fragment动态添加、替换、删除。动态添加分为以下几个步骤：
-
-  1. 定义容器视图
-  
-     ```xml
-     <?xml version="1.0" encoding="utf-8"?>
-     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">
-     <!-- 虽然是动态添加fragment，但是也需要在Activity的视图中为fragment安排位置 -->
-     <FrameLayout
-             android:id="@+id/fragment_container"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent" />
-     </LinearLayout>
-     ```
-  
-     使用FrameLayout来作为fragment的容器视图，当然一个托管的Activity可以有多个容器视图。
-  
-     
-  
-  2. 创建fragment类
-  
-     ```java
-     public class CrimeListFragment extends Fragment {
-     
-       private RecyclerView mRecyclerView;
-     
-       private List<CrimeBean> list;
-     
-       private CrimeAdapter mCrimeAdapter;
-     
-       public static CrimeListFragment createInstance() {
-         CrimeListFragment fragment = new CrimeListFragment();
-         return fragment;
-       }
-     
-       /**
-        * onCreate方法是public的，需要被托管的Activity调用
-        * onCreate方法并没有创建fragment视图，视图是在onCreateView里创建的
-        * @param savedInstanceState
-        */
-       @Override
-       public void onCreate(@Nullable Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         list = DataServer.getCrimes(100);
-       }
-     
-       /**
-        * inflater和container是用来生成fragment视图的必须参数
-        * savedInstanceState可以用来恢复视图数据
-        * @param inflater
-        * @param container
-        * @param savedInstanceState
-        * @return
-        */
-       @Nullable
-       @Override
-       public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-         View view = inflater.inflate(R.layout.fragment_crime_list, container,false);
-         mRecyclerView = view.findViewById(R.id.rv_crime_list);
-         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-         updateUI();
-         return view;
-       }
-     
-       private void updateUI() {
-         mCrimeAdapter = new CrimeAdapter(list);
-         mRecyclerView.setAdapter(mCrimeAdapter);
-         mCrimeAdapter.setOnItemClickListener(this);
-       }
-     
-     
-       @Override
-       public void onActivityResult(int requestCode, int resultCode, Intent data) {
-         super.onActivityResult(requestCode, resultCode, data);
-       }
-     }
-     ```
-  
-     
-  
-  3. 获取fragmentManager，添加fragment到Activity中
-  
-     ```java
-     public class CrimeActivity extends AppCompatActivity {
-     
-       @Override
-       protected void onCreate(Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_crime);
-     //    获取fragmentManager
-         FragmentManager fragmentManager = getSupportFragmentManager();
-     //    通过fragmentManager找到内存中的fragment
-         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
-         if (fragment == null) {
-           fragment = CrimeListFragment.createInstance();
-           // 开启事物
-           FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-           fragmentTransaction.add(R.id.fragment_container, fragment);
-            // 提交事物
-           fragmentTransaction.commit();
-         }
-       }
-     }
-     ```
-  
-     
-
-### Fragment的事物管理
-
-事物的顺序：beginTransaction —> add/remove/replace... —> commit
-
-### Fragment的生命周期
-
-fragment的声明周期类似于activity，但是它的生命周期不是由系统来管理，而是由Activity来管理。具体如下图：
-
-![](http://pvhgkdx46.bkt.clouddn.com/fragment_lifecycle.png)
-
-​	当向运行中的Activity添加fragment时，FragmentManger会立即执行fragment的必要方法，保持fragment和Activity两者状态一致。以下方法会依次被调用：
-
-- onAttach(Activity)
-
-- onCreate(Bundle): 
-- onCreateView(...): 系统会在Fragment首次绘制时调用此方法。如果需要绘制UI，需要在这个方法里返回UI的根视图
-- onActivityCreated(Bundle)
-- onStart
-- onResume 
-
-  
-
-### getSupportFragmentManager、getChildFragmentManager的区别
-
-getChildFragmentManager： 返回一个私有的FragmentManager，这个manager是属于当前Fragment内部的
-
-getSupportFragmentManager： 返回Activity的FragmentManager，他能管理属于Activy的fragment。
-
-所以主要的不同点在于：每个Fragment有他们自己内部的`FragmentManager`，他们能管理自己内部的`Fragment`。但是其他FragmentManager能管理整个activity的。
-
-
-
-### Fragment和Activity间传递消息
-
-
-
-
-
-最后：不要滥用fragment。一个页面中，最好的设计是存在2~3个fragment。
 
 
 
@@ -874,145 +1233,6 @@ EventBus原理：通过事件类型，来进行订阅发布
 
 # 
 
-## TabLayout
-
-tablayout是单独的design support中, 想要用tablayout, 需要在gradle里单独引用他
-
-```
-implementation 'com.android.support:design:28.0.0-rc02'
-```
-
-
-
-### 1.简单使用
-
-1）在布局文件中声明Tablayout
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical">
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-</LinearLayout>
-```
-
-2) 在Activity或者Fragment的onCreate周期中，手动创建tab，并且绑定tab clickListener
-
-```java
-@Override
-protected void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_tab_layout);
-    mTabLayout = (TabLayout) findViewById(R.id.tabLayout);
-    // 添加多个tab
-    for (int i = 0; i < title.length; i++) {
-        TabLayout.Tab tab = mTabLayout.newTab();
-        tab.setText(title[i]);
-        mTabLayout.addTab(tab);
-    }
-    // 给tab设置点击事件
-    mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-        @Override
-        public void onTabSelected(TabLayout.Tab tab) {
-            Toast.makeText(getApplicationContext(), title[tab.getPosition()], Toast.LENGTH_SHORT).show();
-        }
-        @Override
-        public void onTabUnselected(TabLayout.Tab tab) {
-        }
-        @Override
-        public void onTabReselected(TabLayout.Tab tab) {
-        }
-    });
-}
-```
-
-
-
-### 2.与ViewPager结合
-
-#### 1）先在布局文件中放好TabLayout和ViewPager：
-
-```xml
-<android.support.design.widget.TabLayout
-        android:id="@+id/tab"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:tabIndicatorColor="@color/colorPrimaryDark"
-        app:tabIndicatorHeight="3dp"
-        />
-
-    <android.support.v4.view.ViewPager
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:id="@+id/tab_view_pager"
-        />
-```
-
-
-
-2）设置TabLayout和ViewPager相互关联
-
-```java
-@Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_tab_view);
-    // 1. 声明布局中的tablayout
-    mTabLayout = findViewById(R.id.tab);
-    // 2. 声明viewpager
-    mViewPager = findViewById(R.id.tab_view_pager);
-    // 3. 初始化fragments
-    initFragments();
-    // 4. 为viewPager声明FragmentPagerAdapter类的实例
-    mViewPager.setAdapter(new TabFragmentPagerAdapter(mFragment, getSupportFragmentManager()));
-    // 5. 设置tabLayout的启动viewPager,这个方法会创建tab，并且重置title
-    mTabLayout.setupWithViewPager(mViewPager, false);
-    // 6. 最后设置每个tab的text
-    for (int i = 0; i < TAB_TITLES.length; i++) {
-      mTabLayout.getTabAt(i).setText(TAB_TITLES[i]);
-    }
-  }
-
-  /**
-   * 添加Fragment
-   */
-  private void initFragments() {
-    for (int i = 0; i < TAB_TITLES.length; i++) {
-      mFragment.add(new TabFragment());
-    }
-  }
-```
-
-
-
-## FrameLayout
-
-FrameLayout是最简单的ViewGroup组件，它不以特定的方式来安排子视图的位置。
-
-FrameLayout子视图的位置排列取决于他们各自的android:layout_gravity属性
-
-
-
-
-
-## 布局重用<include/>
-
-<include/>可以
-
-
-
-
-
-
-
 
 
 
@@ -1052,6 +1272,87 @@ Date date = (Date) getArguments().getSerializable(CRIME_DATE); // 通过传入�
 Activity.RESULT_OK
 
 ```
+
+
+
+# 数据存储
+
+文件存储的5种方式：
+
+1.SharedPreferences
+
+2.文件存储
+
+3.ContentProvider
+
+4.SQLite
+
+5.网络存储
+
+
+
+## 文件存储
+
+安卓文件存储分为内部存储和外部存储两大块；
+
+### 内部存储
+
+app有一个自己专用的存储目录：`/data/data/${PackageName}`.这个目录里存放了WebView 缓存页面信息，SharedPreferences 和 数据库数据等信息。
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-09-14-022102.png" width="400" />
+
+系统会自动在package的目录里面创建几个子目录, 通过context的方法来获取
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-09-14-024334.png" />
+
+- `File getFilesDir()`：返回内部存储的Files文件夹
+- `File getCacheDir()`：返回内部存储的cache文件夹
+- `File getCodeCacheDir()` ：返回内部存储的code_cache文件夹，要求Android5.0+
+- `File getDataDir()`  ： 返回内部存储的根文件夹，要求Android7.0+
+
+```java
+Context context = getContext();
+// 内部存储
+String fileStreamPath = context.getFileStreamPath("").getAbsolutePath();
+String filesDir = context.getFilesDir().getAbsolutePath();
+String enviornmentDataDir = Environment.getDataDirectory().getAbsolutePath();
+DebugLog.d("file--", "fileStreamPath: " + fileStreamPath);
+DebugLog.d("file--", "filesDir: " + filesDir);
+DebugLog.d("file--", "enviornmentDataDir: " + enviornmentDataDir);
+
+// 文件写
+FileOutputStream fos = getActivity().openFileOutput("hello.txt", Context.MODE_PRIVATE);
+fos.write("Hello World".getBytes());
+fos.close();
+
+```
+
+> 当用户卸载 App 时，系统自动删除 data/data/package 目录文件夹及其内容。
+
+
+
+### 外部存储
+
+>  内部存储文件都是私有的，但是因为空间有限，所以Android在外部存储空间中也提供了特殊的目录来存储私有文件。目录如下：
+
+```
+/storage/emulated/0/Android/data/${package}
+
+extraFileDir: /storage/emulated/0/Android/data/com.example.koda.imagewrapper/files
+externalCacheDir: /storage/emulated/0/Android/data/com.example.koda.imagewrapper/cache
+
+```
+
+​	除了一些私有目录之外，还有一些目录是公用的。比如说用户通过APP来保存的图片、下载的文件。这些内容一般不希望随着APP卸载而被清除，所以Android单独开辟了一个目录来存放。 开发者可以通过 Environment 类提供的方法`getExternalStoragePublicDirectory`直接获取相应目录的绝对路径。
+
+Android默认创建了几个不同的类型目录，通过传递不同的 type 参数类型可以获取到目录：
+
+```
+ /storage/emulated/0/Music
+ /storage/emulated/0/Download
+```
+
+
 
 
 
@@ -1179,7 +1480,20 @@ Rxjava的模式是被动观察者模式
 
 - SmartRefreshFooter 各种Footer的集成，除了Layout自带的Footer，其它都在这个包中.
 
-  
+
+
+
+## 第三方Adapter
+
+BRVAH: https://www.jianshu.com/p/b343fcff51b0
+
+使用：
+
+```
+notifyDataSetChanged
+```
+
+
 
 ## BHOP组件
 
