@@ -1,5 +1,16 @@
 # 						CI&CD实践DevOps
 
+## 准备工作
+
+### Vagrant
+
+```shell
+# 如果设置共享目录失败
+vagrant plugin install vagrant-vbguest
+```
+
+
+
 ## Docker简介
 
 ### Docker是什么？
@@ -229,19 +240,21 @@ docker inspect
 
 # 删除contaienr
 [vagrant@docker-host ~]$ docker container ls -aq # 列出所有container的id
-[vagrant@docker-host ~]$ docker rm $(docker container ls -a)  #删除所有的container
+[vagrant@docker-host ~]$ docker rm $(docker container ls -aq)  #删除所有的container
 
 ```
 
 #### 如何根据base image来创建自己的image
 
-##### 1.commit新的base image
+##### 方法1：commit新的base image
+
+> 不要使用这种方式，不好管理
 
 ```sh
 [vagrant@docker-host ~]$ docker commit agitated_panini coda/centos-vim # agitated_panini是container的名称
 ```
 
-##### 2.通过Dockerfile来创建base image
+##### 方法2：通过Dockerfile来创建base image
 
 ```dockerfile
 FROM centos
@@ -311,7 +324,7 @@ RUN yum install -y vim
 
 - RUN & CMD & ENTRYPOINT
 
-  ```
+  ```shell
   #RUN 用来执行命令，并且创建新的Image	Layer
   #CMD 设置容器启动后默认执行的命令和参数
   #ENTRYPOINT 设置容器启动时运行的命令

@@ -324,9 +324,9 @@ onStart --> onRestoreSavedInstance
 
 
 
-# 四、布局样式篇
+# 四、
 
-## 3.1 Theme
+## Theme
 
 #### Theme版本变化
 
@@ -395,7 +395,7 @@ textColor                      Button，textView的文字颜色
 
 
 
-## 3.2 导航栏
+## 导航栏
 
 Android系统的历史演变中，也出现了以下几种Bar的变化；
 
@@ -501,7 +501,9 @@ if(getSupportActionBar()!=null){
 
 ![image-20190913153152649](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-09-13-073153.png)
 
-## 安卓单位
+
+
+## 常用单位
 
 > px、dp、dip、sp
 
@@ -515,6 +517,10 @@ dp/dip: dp和dip是同一种单位，都是指"设备独立像素"。在屏幕�
 
 sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以根据用户的字体大小偏好来缩放。
 
+
+
+
+
 我们新建一个Android项目后应该可以看到很多drawable文件夹，分别对应不同的dpi
 
 - drawable-ldpi (dpi=120, density=0.75)
@@ -523,27 +529,222 @@ sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以
 - drawable-xhdpi (dpi=320, density=2)
 - drawable-xxhdpi (dpi=480, density=3)
 
-
-
-## Dialog
-
+![utf-8' '4118241-b9efe56e539626c0](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-10-131151.png)
 
 
 
+#### 
 
 
 
-## 3.2 Drawable
-
-​	shape: 定义一些形状。最常见的比如矩形，圆角矩形，椭圆。
-
-​	selector: 定义一些页面中和交互相关的样式。比如按钮的按压状态、是否禁用、checkbox的选中状态等等。
-
-​	// todo 待完善
 
 
+## Drawable
 
-## 3.3 通用布局—TabLayout
+### 什么是Drawable？
+
+字面上可以理解为`可绘制物`，表示可以在Canvas上绘制的对象。
+
+图片、颜色、形状都可以是Drawable
+
+### 常用的Drawable类型
+
+① **Shape Drawables** - 定义具有个性化属性的形状。比如矩形、圆角矩形、椭圆等。
+
+② **StateList Drawables** - 定义用于不同状态的Drawable。一般是selector类型
+
+③ **LayerList Drawables** - 定义分组在一起成为复合结果的Drawable
+
+④ **NinePatch Drawables** - 具有可伸缩区域的PNG图片，以允许适当调整大小
+
+⑤ **Vector Drawables** - 定义复杂的基于XML的矢量图像
+
+
+
+#### Shape Drawable
+
+在drawable目录下面创建一个drawable资源：
+
+stroke_shape.xml
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <corners android:radius="4dp" />
+    <stroke android:width="4dp"
+        android:color="#C1E1A6"
+        />
+    <padding
+        android:left="20dp"
+        android:top="20dp"
+        android:right="20dp"
+        android:bottom="20dp"
+        />
+</shape>
+```
+
+在textview的background属性里应用：
+
+```xml
+<TextView
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"
+   android:background="@drawable/stroke_shape"
+   android:textColor="#ffffff"
+   android:text="@string/hello_world" />
+```
+
+drawables可以应用于任何View及ViewGroup，通常是通过background属性来设置Drawable资源的。
+
+------
+
+
+
+#### StateListDrawable
+
+一般会根据不同的状态，通过多个不同的图像来表示相同的图形；
+
+比如设置Button的按下、聚焦、失焦等状态时的背景颜色。
+
+![img](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-10-123436.png)
+
+场景1:在drawable目录下面创建一个xml资源——selector_button.xml
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:state_pressed="true"
+        android:state_enabled="true"
+        android:drawable="@drawable/button_pressed" />
+    <item
+        android:state_focused="true"
+        android:state_enabled="true"
+        android:drawable="@drawable/button_focused" />
+    <item
+        android:state_enabled="true"
+        android:drawable="@drawable/button_enabled" />
+  	<item
+        android:state_enabled="false"
+        android:drawable="@drawable/button_disabled" />
+  	<item
+        android:state_focused="false"
+        android:state_enabled="false"
+        android:drawable="@drawable/button_disabled_focused" />
+  	<item
+        android:drawable="@drawable/button_normal" />
+</selector>
+```
+
+设置到`background`属性上
+
+```xml
+Button
+        android:text="LifeCycle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:background="@drawable/shape_solid"
+        />
+```
+
+场景2：也可以设置不同状态下的字体颜色
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true" android:color="#ffff0000"/> 
+    <item android:state_focused="true" android:color="#ff0000ff"/>
+    <item android:state_selected="true" android:color="#ff0000ff"/>
+    <item android:color="#ff000000"/> 
+</selector>
+```
+
+将它设置到任意`color`属性上
+
+```xml
+<Button
+        android:text="MVPActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:textColor="@drawable/selector_button"
+    />
+```
+
+**注**：踩过坑的，不然会报错；
+
+　　==1、selector作为drawable背景用时，item**必须**使用**android:drawable**属性指定；==
+
+　　==2、selector作为color时，item**必须**使用**android:color**属性指定；==
+
+------
+
+
+
+#### LayerList Drawable
+
+可以用来绘制多个图层，后面的图层会叠加在上一个图层上面。可以通过left/top/right/bottom来移动图层；
+
+常见的使用场景：
+
+① [View边框阴影]
+
+② [View单边添加边框]
+
+③ [View分层背景]
+
+④ [View卡片背景]
+
+⑤ [绘制三角形]
+
+
+
+------
+
+#### Nine-Patch
+
+可以伸缩
+
+------
+
+
+
+#### ColorDrawable
+
+#### BitmapDrawable
+
+```java
+Resources res = getResources();
+Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.adt_48);
+BitmapDrawable bitmapDrawable = new BitmapDrawable(res, bmp);
+bitmapDrawable.setTileModeX(TileMode.MIRROR);
+bitmapDrawable.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+```
+
+​	
+
+通过代码如何获取颜色
+
+```java
+Resources resources = mContext.getResources();
+@Deprecate // 过时了
+int text_selected_color = resources.getColor(R.color.text_pressed);
+
+// 新的方式
+ContextCompat.getColor(mContext, R.color.white)
+```
+
+
+
+
+
+### 资源匹配目录 ：res、drawable与mipmap的区别
+
+
+
+## 通用布局—TabLayout
 
 tablayout是单独的design support中, 想要用tablayout, 需要在gradle里单独引用他
 
@@ -1040,11 +1241,65 @@ getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 ### 1.ListView
 
-​	**基础属性**：
+#### 视图：
 
-​	**Adapter**:  创建一个LlistAdapter继承BaseAdapter
+在xml里声明一个ListView控件
 
-​	**监听器**:  每一个item都可以去绑定clickListener
+#### 适配器：	
+
+​	**Adapter**:  创建一个`MyListAdapter`继承`BaseAdapter`，也可以用Android自带的`ArrayAdapter`; 
+
+​	将listView的适配器设置为此处创建的Adapter实例；
+
+#### 监听器:  
+
+​	clickListener：如果需要对list-item的点击事情做监听，可以在listView的实例上添加onItemClickListener;
+
+
+
+代码：
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.list.ui.ListViewActivity">
+    <ListView
+        android:id="@+id/lv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:divider="@color/colorPrimary"
+        android:dividerHeight="1dp"
+        android:scrollbars="none"
+    />
+</LinearLayout>
+```
+
+```java
+@Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_list_view);
+    mlv = findViewById(R.id.lv);
+    // 这里的例子是用了ArrayAdapter，需要传list-item的视图，list—item_text的id，数组
+    adapter = new ArrayAdapter<String>(this, R.layout.layout_list_item_text, R.id.lv_item_text, datas);
+    mlv.setAdapter(adapter);
+    mlv.setOnItemClickListener(new ListView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(ListViewActivity.this, datas[position], Toast.LENGTH_SHORT).show();
+      }
+    });
+  }
+```
+
+自定义Adapter
+
+```
+
+```
 
 
 
@@ -1205,9 +1460,23 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 
 
-# Adapter
 
-## BaseAdater
+
+## Dialog
+
+```java
+
+```
+
+
+
+## DialogFragment
+
+
+
+#### 修改DialogFragment样式
+
+## 
 
 
 
