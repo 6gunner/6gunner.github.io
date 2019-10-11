@@ -1192,9 +1192,7 @@ mHandler.sendEmptyMessageDelayed(0, n * 1000) // 倒计时n秒
         }, 3000);**/
 ```
 
-
-
-需要注意的是，有一些教程让配置：android:windowIsTranslucent 为true
+**踩坑**：需要注意的是，有一些教程让配置：android:windowIsTranslucent 为true
 他的原理是将背景颜色设置为透明色，在启动页出现前屏幕一直显示桌面。这样会给人一种app没有点到的错觉，不建议设置。
 
 
@@ -1480,17 +1478,7 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 
 
-# EventBus使用
 
-## 前言
-
-EventBus原理：通过事件类型，来进行订阅发布
-
-![image-20190812150412158](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-12-070412.png)
-
-
-
-// todo 待补充
 
 
 
@@ -1508,19 +1496,33 @@ EventBus原理：通过事件类型，来进行订阅发布
 
 
 
-# 事件传递
+## 多线程
 
-## 事件的处理方式：
+4种多线程使用方式，4种场景
 
+### 方式1：Handler + Thread
 
+通过handler send message或post runnable对象; 然后handler会把message或者runnable对象传递到消息队列中。UI线程获取到Runnable或者message时，会去运行runnable的run方法，或者处理消息；
 
-### Handler处理
+**post runnable**
 
-handler.set
+```
 
 ```
 
-```
+**send message**
+
+
+
+适用场景： 
+
+在多个异步任务的更新UI
+
+
+
+方式2：EmptyMessage
+
+
 
 
 
@@ -1678,7 +1680,15 @@ onResume -->
 
 - ### EventBus
 
-  文档链接：[http://greenrobot.org/eventbus/documentation/delivery-threads-threadmode/](http://greenrobot.org/eventbus/documentation/delivery-threads-threadmode/)
+  EventBus原理：通过事件类型，来进行订阅发布
+
+  ![image-20190812150412158](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-12-070412.png)
+
+  
+
+  // todo 待补充
+
+- 文档链接：[http://greenrobot.org/eventbus/documentation/delivery-threads-threadmode/](http://greenrobot.org/eventbus/documentation/delivery-threads-threadmode/)
 
   事件处理模式
 
@@ -1701,15 +1711,15 @@ onResume -->
   ​	
 
   ```java
-  // Called in the same thread (default)
+// Called in the same thread (default)
   // ThreadMode is optional here
   @Subscribe(threadMode = ThreadMode.POSTING)
   public void onMessage(MessageEvent event) {
       log(event.message);
   }
   ```
-
   
+  ## 
 
 
 
