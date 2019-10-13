@@ -1500,49 +1500,190 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 4种多线程使用方式，4种场景
 
+https://www.jianshu.com/p/5225824ec967
+
 ### 方式1：Handler + Thread
 
 通过handler send message或post runnable对象; 然后handler会把message或者runnable对象传递到消息队列中。UI线程获取到Runnable或者message时，会去运行runnable的run方法，或者处理消息；
 
+工作原理如下：
+
+![2839011-7036df5ffea97ec2](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-12-060238.jpg)
+
 **post runnable**
 
+```java
+// 首先创建在主线程里创建一个Handler，它会自动绑定到MainThread中
+private Handler handler=new Handler();
+
+// 通过handler来处理业务：我这里的处理逻辑是，当点击按钮时，通过handler post一个runnable，然后去修改主线程的UI
+class MyClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+          System.out.println("main thread id " + Thread.currentThread().getId());
+          Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+              Drawable drawable = getResources().getDrawable(R.drawable.ic_launcher_background, null);
+              imageView.setImageDrawable(drawable);
+              System.out.println("sub thread id " + Thread.currentThread().getId());
+            }
+          };
+          handler.post(runnable);
+        }
+    }
 ```
 
+打印结果：
+
+```verilog
+2019-10-11 21:01:26.469 10849-10849/com.koda.demo I/System.out: main thread id 2
+2019-10-11 21:01:26.479 10849-10849/com.koda.demo I/System.out: sub thread id 2
 ```
+
+两个线程其实就是同一个线程，说明handler post线程最后是交给主线程处理的；
+
+
 
 **send message**
 
+```java
+// 声明handler，并且重写handleMessage方法
+private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            System.out.println("handler thread : " + Thread.currentThread().getName());
+            // 会接收到msg消息；
+            if (msg.what == 1) {
+                Drawable drawable = getResources().getDrawable(R.drawable.ic_launcher_foreground, null);
+                imageView.setImageDrawable(drawable);
+            }
+        }
+    };
+    
+// 向handler发送message
+new Thread() {
+  @Override
+  public void run() {
+    try {
+      // System.out.println("send thread : " + Thread.currentThread().getName());
+      // 模拟处理事件，然后异步通知handler
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    Message message = new Message();
+    message.what = 1;
+    message.arg1 = 1;
+    handler.sendMessage(message);
+  }
+}.start();
+```
+
+主线程会接收到消息，然后进行处理
+
+```verilog
+2019-10-12 09:58:43.761 21083-21135/com.koda.demo I/System.out: send thread : Thread-4
+2019-10-12 09:58:43.762 21083-21083/com.koda.demo I/System.out: handler thread : main
+```
+
+#### 使用注意：
+
+##### **内存泄露**：
+
+由于这里`Handler`声明的是一个匿名内部类；而java里非静态内部类和匿名内部类都会默认持有外部类的引用。所以这里handler持有了Activity实例的引用。
+
+当Activity发生重绘（旋转设备或者意外）而导致销毁时，如果handler的消息队列里还有没处理好的消息，那么消息实例会持有handler的引用，而handler引用了Activity的实例，最终导致Activity内存无法被回收，而新的Activity创建。最终导致泄露；
+
+![944365-fb0840209b472094](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-13-025150.png)
+
+解决方案：静态内部类 + 弱引用
+
+因为java中静态内部类不默认持有外部类的引用。所以handler实例不会引用Activity实例；同时，如果加上**使用WeakReference弱引用Activity**，GC在进行垃圾回收时，就会忽略handler，回收Activity的内存。
+
+```java
+    // 设置为：静态内部类
+    private static class FHandler extends Handler{
+        // 定义 弱引用实例
+        private WeakReference<Activity> reference;
+
+        // 在构造方法中传入需持有的Activity实例
+        public FHandler(Activity activity) {
+            // 使用WeakReference弱引用持有Activity实例
+            reference = new WeakReference<Activity>(activity); }
+
+        // 通过复写handlerMessage() 从而确定更新UI的操作
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    Log.d(TAG, "收到线程1的消息");
+                    break;
+                case 2:
+                    Log.d(TAG, " 收到线程2的消息");
+                    break;
+            }
+        }
+    }
+```
 
 
-适用场景： 
+
+参考文章：https://www.jianshu.com/p/ed9e15eff47a
+
+#### 适用场景： 
 
 在多个异步任务的更新UI
 
+![utf-8' '944365-4a64038632c4c88f](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-13-024411.png)
 
-
-方式2：EmptyMessage
-
-
+缺点:  编写代码复杂，创建和销毁线程其实是需要消耗资源的；
 
 
 
-## 消息传递
+------
 
-方式1：Bundle
+
+
+### 方式2：AsyncTask
+
+**作用**:
+
+1. #### 实现多线程
+
+   在工作线程中执行任务，如 耗时任务；
+
+2. #### 异步通信、消息传递
+
+   **实现工作线程 & 主线程（UI线程）之间的通信**，即：将工作线程的执行结果传递给主线程，从而在主线程中执行相关的`UI`操作；
+
+**使用**：
 
 ```java
-Date date = (Date) getArguments().getSerializable(CRIME_DATE); // 通过传入的argument来读取
+public abstract class AsyncTask<Params, Progress, Result> { 
+ ... 
+}
 
 ```
 
+AsyncTask类中参数为3种泛型类型，控制AsyncTask子类执行线程任务时各个阶段的返回类型
+
+a. Params：开始异步任务执行时传入的参数类型	
+
+​	![image-20191012175944886](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-12-100005.png)
 
 
-方式2：Intent  // todo 
 
-```
-Activity.RESULT_OK
+b.Progress：异步任务执行过程中，返回进度值的类型。类型和onProgressUpdate()方法的入参数一致
 
-```
+​	![image-20191012180527997](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-12-100528.png)
+
+
+
+c. Result：异步任务执行完成后，返回的结果类型，与doInBackground()的返回值类型保持一致
+
+
 
 
 
