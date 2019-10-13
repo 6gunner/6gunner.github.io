@@ -1685,6 +1685,106 @@ c. Result：异步任务执行完成后，返回的结果类型，与doInBackgro
 
 
 
+使用注意：
+
+
+
+
+
+### 方式3：HandlerThread
+
+#### 介绍
+
+先总结一下`Handler`异步通信机制中的相关概念
+
+| 概念                 | 定义                                          | 作用                                                         | 备注                                                         |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 主线程               | 当app启动时，会自动开启一个主线程             | 用来渲染UI，处理事件                                         |                                                              |
+| 子线程               | 一般是手动的开启线程                          | 执行耗时操作（比如网络请求）                                 |                                                              |
+| 消息Message          | 作为在线程间进行通信的媒介                    | 用来定义传递的消息                                           |                                                              |
+| 消息队列MessageQueue |                                               | 用来存储handler发送的消息                                    |                                                              |
+| 消息处理器Handler    | 主线程与子线程的通信<br/>线程消息的主要处理者 | 发送消息到message queue<br/>处理looper发送过来的消息         |                                                              |
+| 循环器Looper         | 消息队列与处理者的媒介                        | 不断的从消息队列中获取消息<br/>将消息发送给对应处理的handler | 每个线程中只能有1个looper<br/>1个looper可以绑定多个线程的handler |
+
+HandlerThread的本质是：继承`Thread`类 & 封装`Handler`类
+
+#### 使用
+
+HandlerThread的使用步骤分为5步
+
+```java
+public class HandlerLearnActivity extends AppCompatActivity {
+
+    private Handler handler, mainHandler;
+
+    private HandlerThread handlerThread;
+
+    private Button button1;
+    private Button button2;
+    private Button button3;
+    private TextView textView;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_handler_learn);
+
+        System.out.println("Main Thread : " + Thread.currentThread().getName());
+        mainHandler = new Handler();
+        // 步骤1：创建HandlerThread实例对象
+        // 传入参数 = 线程名字，作用 = 标记该线程
+        handlerThread = new HandlerThread("HandlerLearnActivity");
+        // 步骤2：启动线程
+        handlerThread.start();
+      	// 步骤3：声明worker handler
+      	// 作用：关联HandlerThread的Looper对象、实现消息处理操作 & 与Main线程进行通信
+        handler = new Handler(handlerThread.getLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                if (msg.what == 1) {
+                  // 当前执行线程 = mHandlerThread所创建的工作线程
+                    System.out.println("Work Thread : " + Thread.currentThread().getName());
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                  	// 通过主线程Handler.post方法进行在主线程的UI更新操作
+                    mainHandler.post(() -> {
+                        System.out.println("Main Thread : " + Thread.currentThread().getName());
+                        textView.setText("我爱学习");
+                    });
+                }
+            }
+        };
+        initView();
+        initEvent();
+    }
+ //步骤4：使用工作线程Handler向工作线程的消息队列发送消息
+ //在工作线程中，当消息循环时,取出对应消息 & 在工作线程执行相关操作
+    private void initEvent() {
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Message message = new Message();
+                message.what = 1;
+                handler.sendMessage(message);
+            }
+        });
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Message message = new Message();
+                message.what = 3;
+                handler.sendMessage(message);
+            }
+        });
+    }
+}
+```
+
 
 
 # 数据存储
