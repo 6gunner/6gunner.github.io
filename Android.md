@@ -1787,6 +1787,143 @@ public class HandlerLearnActivity extends AppCompatActivity {
 
 
 
+### 方式4：IntentService
+
+#### 作用
+
+创建1个工作子线程来处理多线程任务；
+
+#### 使用步骤
+
+步骤1：定义 `IntentService`的子类，需复写`onHandleIntent()`方法
+步骤2：在`Manifest.xml`中注册服务
+步骤3：在`Activity`中开启`Service`服务
+
+####  实例
+
+1. 定义子类
+
+   ```java
+   public class MyIntentService extends IntentService {
+       // 处理耗时任务；
+       @Override
+       protected void onHandleIntent(Intent intent) {
+           String taskName = intent.getStringExtra("taskName");
+           switch (taskName) {
+               case "task1":
+                   Log.i("myIntentService", "do task1 start");
+                   try {
+                       int i = 0;
+                       while(i < 5) {
+                           Thread.sleep(1000);
+                           i++;
+                           Log.i("myIntentService", "等待" + i + " s");
+                       }
+                   } catch (InterruptedException e) {
+                       e.printStackTrace();
+                   }
+                   Log.i("myIntentService", "do task1 finished");
+                   break;
+               case "task2":
+                   Log.i("myIntentService", "do task2 finished");
+                   break;
+               default:
+                   break;
+           }
+       }
+   
+       public MyIntentService() {
+           super("MyIntentService");
+       }
+   
+       @Override
+       public void onCreate() {
+           DebugLog.d("myIntentService created");
+           super.onCreate();
+       }
+   
+       @Override
+       public void onStart(Intent intent, int startId) {
+           DebugLog.d("myIntentService start");
+           super.onStart(intent, startId);
+       }
+   
+       // 默认将intent放入任务队列
+       @Override
+       public int onStartCommand(Intent intent, int flags, int startId) {
+           DebugLog.d("myIntentService start command");
+           return super.onStartCommand(intent, flags, startId);
+       }
+   
+       @Override
+       public void onDestroy() {
+           DebugLog.d("myIntentService start destroy");
+           super.onDestroy();
+       }
+   }
+   ```
+
+   
+
+2. 在Manifest.xml中注册服务
+
+   ```xml
+   <service android:name=".views.thread_message.MyIntentService">
+     <intent-filter>
+       <!-- 通过action来过滤intent -->
+       <action android:name="com.example.koda.intent_service" />
+     </intent-filter>
+   </service>
+   ```
+
+3. 在Activity中开启Service服务
+
+   ```java
+   @Override
+       protected void onCreate(Bundle savedInstanceState) {
+           super.onCreate(savedInstanceState);
+           setContentView(R.layout.activity_intent_service_learn);
+   
+           Intent intent1 = new Intent("com.example.koda.intent_service");
+         	// 设置IntentService所在应用的app包名；
+           intent1.setPackage("com.example.koda.imagewrapper");
+           intent1.putExtra("taskName", "task1");
+           startService(intent1);
+   
+           Intent intent2 = new Intent("com.example.koda.intent_service");
+           intent2.setPackage("com.example.koda.imagewrapper");
+           intent2.putExtra("taskName", "task2");
+           startService(intent2);
+       }
+   ```
+
+   
+
+运行日志：
+
+```verilog
+2019-10-13 21:54:01.047 22134-22134/ D/MyIntentService.java: [onCreate:43]myIntentService created
+2019-10-13 21:54:01.049 22134-22134/ D/MyIntentService.java: [onStartCommand:56]myIntentService start command
+2019-10-13 21:54:01.050 22134-22134/ D/MyIntentService.java: [onStart:49]myIntentService start
+2019-10-13 21:54:01.051 22134-22500/ I/myIntentService: do task1 start
+2019-10-13 21:54:01.052 22134-22134/ D/MyIntentService.java: [onStartCommand:56]myIntentService start command
+2019-10-13 21:54:01.052 22134-22134/ D/MyIntentService.java: [onStart:49]myIntentService start
+  2019-10-13 21:57:25.379 22746-22795/ I/myIntentService: 等待1 s
+2019-10-13 21:57:26.380 22746-22795/ I/myIntentService: 等待2 s
+2019-10-13 21:57:27.381 22746-22795/ I/myIntentService: 等待3 s
+2019-10-13 21:57:28.384 22746-22795/ I/myIntentService: 等待4 s
+2019-10-13 21:57:29.385 22746-22795/ I/myIntentService: 等待5 s
+2019-10-13 21:54:06.052 22134-22500/ I/myIntentService: do task1 finished
+2019-10-13 21:54:06.056 22134-22500/ I/myIntentService: do task2 finished
+2019-10-13 21:54:06.060 22134-22134/ D/MyIntentService.java: [onDestroy:62]myIntentService start destroy
+```
+
+从上面的日志看出来，task1和task2是按顺序执行的；因为所有的任务都在同一个`Thread looper`里执行，所以必须task1完成才会执行task2；
+
+
+
+
+
 # 数据存储
 
 文件存储的5种方式：
