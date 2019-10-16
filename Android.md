@@ -1472,6 +1472,8 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 
 
+声明周期顺序：onCreateDialog -> onCreateView
+
 #### 修改DialogFragment样式
 
 ## 
