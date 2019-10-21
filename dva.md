@@ -41,3 +41,24 @@ const PageComponet = dynamic({
 })
 ```
 
+
+
+## Redux-Saga
+
+重新定义side-effects为`Effects`
+
+
+
+yield 调用另一个effects
+
+```javascript
+yield put({
+  type: 'user/getusergroupinfo',
+  payload,
+});
+ //直到监听到结束才继续
+yield take('user/getusergroupinfo/@@end')
+```
+
+
+
