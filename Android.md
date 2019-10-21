@@ -46,7 +46,7 @@ adb -s {seria number} install xxx.apk 在指定设备上安装apk
 
 
 
-# 二、Gradle基础知识
+# 二、Gradle
 
 ## 安卓Gradle配置文件
 
@@ -741,6 +741,14 @@ ContextCompat.getColor(mContext, R.color.white)
 
 
 ### 资源匹配目录 ：res、drawable与mipmap的区别
+
+
+
+## getString
+
+### `%1$s,%1$d,%1$f`
+
+
 
 
 
