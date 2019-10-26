@@ -1508,13 +1508,19 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 ## 多线程
 
-4种多线程使用方式，4种场景
+> 4种多线程使用方式，4种场景
+>
+> https://www.jianshu.com/p/5225824ec967
 
-https://www.jianshu.com/p/5225824ec967
+
 
 ### 方式1：Handler + Thread
 
-通过handler send message或post runnable对象; 然后handler会把message或者runnable对象传递到消息队列中。UI线程获取到Runnable或者message时，会去运行runnable的run方法，或者处理消息；
+使用介绍：
+
+1.在主线程创建handler实例对象；
+
+2.通过handler的`send message` 方法或`post runnable`方法; 然后handler会把message或者runnable对象传递到消息队列中。UI线程获取到Runnable或者message时，会去运行runnable的run方法，或者处理消息；
 
 工作原理如下：
 
