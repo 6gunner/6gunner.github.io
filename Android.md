@@ -324,7 +324,7 @@ onStart --> onRestoreSavedInstance
 
 
 
-# 四、
+# 四、样式篇
 
 ## Theme
 
@@ -503,37 +503,80 @@ if(getSupportActionBar()!=null){
 
 
 
-## 常用单位
+## Android单位
 
 > px、dp、dip、sp
+>
+> 安卓的单位里常用的就是dp、sp
 
-px: 像素
-
-dpi:  每英寸点数，即每英寸包含像素个数。比如320X480分辨率的手机，宽2英寸，高3英寸, 每英寸包含的像素点的数量为320/2=160dpi（横向）或480/3=160dpi（纵向），160就是这部手机的dpi，横向和纵向的这个值都是相同的
+px:  代表着像素，做过web端开发的应该能理解。
 
 density: 屏幕密度 = dpi/160;
 
+dpi:  每英寸点数，即每英寸包含像素个数。比如320X480分辨率的手机，宽2英寸，高3英寸, 每英寸包含的像素点的数量为320/2=160dpi（横向）或480/3=160dpi（纵向），160就是这部手机的dpi，横向和纵向的这个值都是相同的
+
 dp/dip: dp和dip是同一种单位，都是指"设备独立像素"。在屏幕密度dpi = 160屏幕上，1dp = 1px
 
-sp: 和dp很类似，一般用来设置字体大小，和dp的区别是它可以根据用户的字体大小偏好来缩放。
+sp: 和dp很类似，一般用来设置字体大小。它和dp的区别是，sp会根据用户的字体大小偏好来缩放。
 
 
 
+安卓获取一些像素的工具类
 
+```java
+public class PixelUtils {
 
-我们新建一个Android项目后应该可以看到很多drawable文件夹，分别对应不同的dpi
+    /**
+     * 获取状态栏的高度
+     * @param context
+     * @return
+     */
+    public static int getStatusBarHeight(Context context) {
+        int result = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
 
-- drawable-ldpi (dpi=120, density=0.75)
-- drawable-mdpi (dpi=160, density=1)
-- drawable-hdpi (dpi=240, density=1.5)
-- drawable-xhdpi (dpi=320, density=2)
-- drawable-xxhdpi (dpi=480, density=3)
+    /**
+     * 获得屏幕高度
+     *
+     * @return
+     */
+    public static int getScreenWidth() {
+        WindowManager wm = (WindowManager) CApplication.getInstance()
+                .getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        return outMetrics.widthPixels;
+    }
 
-![utf-8' '4118241-b9efe56e539626c0](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-10-131151.png)
+    /**
+     * 获得屏幕宽度
+     *
+     * @return
+     */
+    public static int getScreenHeight() {
+        WindowManager wm = (WindowManager) CApplication.getInstance()
+                .getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        return outMetrics.heightPixels;
+    }
 
+    public static int dp2px(float value) {
+        final float scale = CApplication.getInstance().getResources().getDisplayMetrics().density;
+        return (int) (value * scale + 0.5f);
+    }
 
-
-#### 
+    public static int px2dp(float value) {
+        final float scale = CApplication.getInstance().getResources().getDisplayMetrics().density;
+        return (int) (value / scale + 0.5f);
+    }
+}
+```
 
 
 
@@ -738,21 +781,69 @@ ContextCompat.getColor(mContext, R.color.white)
 
 
 
+## Drawable - 资源
+
+我们新建一个Android项目后应该可以看到很多drawable文件夹，分别对应不同的dpi
+
+- drawable-ldpi (dpi=120, density=0.75)
+- drawable-mdpi (dpi=160, density=1)
+- drawable-hdpi (dpi=240, density=1.5)
+- drawable-xhdpi (dpi=320, density=2)
+- drawable-xxhdpi (dpi=480, density=3)
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-10-131151.png" alt="utf-8' '4118241-b9efe56e539626c0" style="zoom:50%;" />
+
+
+
+#### 
+
 
 
 ### 资源匹配目录 ：res、drawable与mipmap的区别
 
 
 
-## getString
+### 
 
-### `%1$s,%1$d,%1$f`
+## 全屏处理
+
+两种方式：一种通过style的theme主题配置；一种通过代码来控制全屏或者取消全屏；
+
+方法1：xml配置式
+
+```xml
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+			<item name="android:windowFullscreen">false</item>
+  </style>
+</resources>
+```
 
 
 
+方法2：java编程式
+
+```java
+//全屏
+getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+// 取消全屏
+getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+```
 
 
-## 通用布局—TabLayout
+
+## 安卓适配刘海屏
+
+
+
+### 
+
+
+
+# 布局篇
+
+## tabLayout
 
 tablayout是单独的design support中, 想要用tablayout, 需要在gradle里单独引用他
 
@@ -878,7 +969,7 @@ public class TabViewActivity extends BaseCoreActivity {
 
 
 
-## 3.4 通用布局—FrameLayout
+## FrameLayout
 
 FrameLayout是最简单的ViewGroup组件，它不以特定的方式来安排子视图的位置；FrameLayout子视图的位置排列取决于他们各自的android:layout_gravity属性
 
@@ -1093,7 +1184,7 @@ getSupportFragmentManager： 返回Activity的FragmentManager，他能管理属�
 
 
 
-## 3.5 高阶布局——ConstraintLayout
+## ConstraintLayout
 
 约束布局
 
@@ -1205,45 +1296,13 @@ mHandler.sendEmptyMessageDelayed(0, n * 1000) // 倒计时n秒
 
 
 
-## 全屏处理
-
-两种方式：一种通过style的theme主题配置；一种通过代码来控制全屏或者取消全屏；
-
-方法1：xml配置式
-
-```xml
-<resources xmlns:tools="http://schemas.android.com/tools">
-	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-			<item name="android:windowFullscreen">false</item>
-  </style>
-</resources>
-```
-
-
-
-方法2：java编程式
-
-```java
-//全屏
-getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-// 取消全屏
-getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-```
-
-
-
-## 安卓适配刘海屏
-
-
-
-### 
 
 
 
 
 
-## 列表视图
+
+# 列表篇
 
 ### 1.ListView
 
@@ -1434,7 +1493,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
 
+# 其他
 
+## getString
+
+在android代码里，经常需要用到多语言。通常的解决方案都是用xml声明好对应的字符串，然后在代码里面引用这个字符串对应的id即可。
+
+举个例子
+
+```
+
+```
+
+
+
+
+
+### `%1$s,%1$d,%1$f`
 
 
 
@@ -1490,9 +1565,7 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 
 
-
-
-
+ActionSheet
 
 
 
@@ -1940,7 +2013,7 @@ public class HandlerLearnActivity extends AppCompatActivity {
 
 
 
-# 数据存储
+## 数据存储
 
 文件存储的5种方式：
 
@@ -2023,7 +2096,7 @@ Android默认创建了几个不同的类型目录，通过传递不同的 type �
 
 
 
-# 四、编程框架
+# 框架篇
 
 ## MVP
 
@@ -2070,13 +2143,13 @@ onResume -->
 
 - ### Bus
 
-  文档链接：[http://square.github.io/otto/](http://square.github.io/otto/)
+  > 文档链接：[http://square.github.io/otto/](http://square.github.io/otto/)
 
 - ### EventBus
 
   EventBus原理：通过事件类型，来进行订阅发布
 
-  ![image-20190812150412158](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-12-070412.png)
+  <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-12-070412.png" alt="image-20190812150412158" style="zoom:50%;" />
 
   
 
@@ -2167,12 +2240,6 @@ notifyDataSetChanged
 ```
 
 
-
-## BHOP组件
-
-1.交易盘口： BookListView
-
-2.TopBar 包含了交易界面里面的下拉币对
 
 
 
