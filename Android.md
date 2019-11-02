@@ -2192,11 +2192,11 @@ onResume -->
 
 ## RxJava
 
-RxJava概述
+### RxJava概述
 
 R：reactive响应式的，x:代表任何的意思。Rxjava表示以java语言实现的响应式的编程。
 
-Rxjava核心
+### Rxjava核心思想
 
 响应式编程核心思想就是观察者模式。本质上要求`观察者(A)`高度敏感的关注`被观察者(B)`的状态变化。当B状态发生变化时，A需要做出及时的反应。
 
@@ -2206,7 +2206,45 @@ Rxjava核心
 
 被动的观察者模式是：`观察者`向`被观察者`订阅消息，`被观察者`状态发生变化时，向订阅者发送消息.
 
-Rxjava的模式是被动观察者模式
+==Rxjava的模式是被动观察者模式==
+
+### Rxjava1解读
+
+![image-20191102131511286](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-11-02-051512.png)
+
+**Observable**：被观察者、
+
+通过create方法来创建一个被观察者对象；
+
+通过subscribe方法来注册一个观察者；
+
+**Observer**: 观察者
+
+作为Observable的subscribe方法的参数；
+
+**Subscription**：订阅
+
+用来描述`Observable`于`Observer`对象间的关系
+
+通过unsubscribe方法来取消订阅
+
+**OnSubscribe**:  被订阅时的事件
+
+当订阅时，会触发此接口的call方法，
+
+他是`Observable`的内部接口，用来发送数据；
+
+`Observable对象`的`subscribe`调用了hook.onSubscribeStart方法，实际上就是调用了的`OnSubscribe`对象的call方法；
+
+**Subscriber**：订阅者
+
+实现了`Observer`和`Subscription`接口；
+
+是call回调方法的参数；
+
+
+
+Rxjava2解读
 
 
 
