@@ -2388,6 +2388,6 @@ Buggy底层的检测策略应该一样，都是通过versionCode来比较，并�
 
 
 
-# 七、集成平台
+# 七、内存分析
 
-## Buggly
+## LeakCanary
