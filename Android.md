@@ -320,13 +320,37 @@ onStart --> onRestoreSavedInstance
 
 
 
+### 几种在页面里初始化组件的方式以及区别
 
+方式1：LayoutInflater;
+
+## LayoutInflater
+
+layoutInflater是一个将xml布局文件转换为View对象的工具
+
+1. ### 获取LayoutInflater
+
+   ```java
+   LayoutInflater inflater = LayoutInflater.from(context); 
+   ```
+
+2. #### 将Layout转化为View
+
+   ```java
+   convertView = mLayoutInflater.inflate(R.layout.layout_grid_item, null);
+   ```
+
+
+
+方式2: findViewById
+
+方式3：
 
 
 
 # 四、样式篇
 
-## Theme
+## Theme主题
 
 #### Theme版本变化
 
@@ -395,7 +419,7 @@ textColor                      Button，textView的文字颜色
 
 
 
-## 导航栏
+## 导航栏样式
 
 Android系统的历史演变中，也出现了以下几种Bar的变化；
 
@@ -582,7 +606,7 @@ public class PixelUtils {
 
 
 
-## Drawable
+## Drawable资源
 
 ### 什么是Drawable？
 
@@ -756,19 +780,7 @@ Button
 
 #### ColorDrawable
 
-#### BitmapDrawable
-
-```java
-Resources res = getResources();
-Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.adt_48);
-BitmapDrawable bitmapDrawable = new BitmapDrawable(res, bmp);
-bitmapDrawable.setTileModeX(TileMode.MIRROR);
-bitmapDrawable.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-```
-
-​	
-
-通过代码如何获取颜色
+**通过代码如何获取颜色**
 
 ```java
 Resources resources = mContext.getResources();
@@ -781,7 +793,21 @@ ContextCompat.getColor(mContext, R.color.white)
 
 
 
-## Drawable - 资源
+#### BitmapDrawable
+
+```java
+Resources res = getResources();
+Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.adt_48);
+BitmapDrawable bitmapDrawable = new BitmapDrawable(res, bmp);
+bitmapDrawable.setTileModeX(TileMode.MIRROR);
+bitmapDrawable.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+```
+
+​	
+
+
+
+### Drawable 文件
 
 我们新建一个Android项目后应该可以看到很多drawable文件夹，分别对应不同的dpi
 
@@ -799,7 +825,7 @@ ContextCompat.getColor(mContext, R.color.white)
 
 
 
-### 资源匹配目录 ：res、drawable与mipmap的区别
+### res、drawable与mipmap的区别
 
 
 
@@ -833,15 +859,151 @@ getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
 
+## Shadow阴影的处理
+
+```java
+public static void setShadowDrawable(View view, int shapeRadius, int shadowColor, int shadowRadius, int offsetX, int offsetY) {
+  ShadowDrawable drawable = new ShadowDrawable.Builder()
+    .setShapeRadius(shapeRadius)
+    .setShadowColor(shadowColor)
+    .setShadowRadius(shadowRadius)
+    .setOffsetX(offsetX)
+    .setOffsetY(offsetY)
+    .builder();
+  view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+  ViewCompat.setBackground(view, drawable);
+}
+```
+
+
+
+## 字体样式
+
+如果想使用样式，请使用textAppearance属性
+
+如果单纯的指定加粗的话，使用textStyle属性
+
+```xml
+<TextView
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:text="@string/string_margin_safety_tip"
+          android:textAppearance="@style/Body_Grey"
+          />
+```
+
+
+
+
+
+
+
 ## 安卓适配刘海屏
 
 
 
-### 
+#五、弹框篇
+
+## ViewPager的使用
+
+ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStatePagerAdapter
+
+### PageAdapter
+
+### FragmentPagerAdapter
 
 
 
-# 布局篇
+
+
+## Dialog的使用
+
+```java
+
+```
+
+
+
+## DialogFragment
+
+> Android比较推荐采用DialogFragment实现Dialog。因为它完全能够实现Dialog的所有功能，并且还能因为他继承Fragment, 所以能复用Fragment的生命周期管理，被后台杀死后还能自动恢复。
+
+### 使用DialogFragment的两种方式
+
+**方式1：继承DialogFragment，重写onCreateDialog(Bundle savedInstanceState)方法**
+
+```java
+  @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        return new AlertDialog.Builder(getActivity()).setTitle("Title").setMessage("onCreateDialog")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+ 
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dismiss();
+                    }
+                }).setNegativeButton("取消", null)
+                .create();
+    }
+```
+
+
+
+**方式2：继承DialogFragment，实现onCreateView(LayoutInflater inflater, ViewGroup container) 方法**
+
+```java
+ @Override
+ public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+   View view = inflater.inflate(R.layout.dialog_custom, container, false);
+   //视图初始化，事件监听
+   
+   return view;
+ }
+```
+
+
+
+两种方式对应的应用场景不同, 方式1一般适用于代替传统的Dialig对话框，UI简单，功能单一；方式2适合创建复杂的内容弹框，或者全屏展示的。
+
+
+
+### DialogFragment生命周期：
+
+```
+onCreateDialog -> onCreateView
+```
+
+
+
+DialogFragment样式修改：
+
+其实，Dialog, DialogFragment, Activity 能看到的界面,都是基于Window显示的; 所以修改DialogFragment样式本质上都是修改window。唯一不同点在于获取window对象的方法不同。
+
+Dialog获取window的方法： getWindow();
+
+DialogFragment获取window的方法: getDialog().getWindow(); 
+
+
+
+#### **修改dialogFragment中window宽度和高度**
+
+## 
+
+
+
+
+
+ActionSheet
+
+
+
+
+
+# 
+
+
+
+# 六、布局篇
 
 ## tabLayout
 
@@ -1182,8 +1344,6 @@ getSupportFragmentManager： 返回Activity的FragmentManager，他能管理属�
 
 
 
-
-
 ## ConstraintLayout
 
 约束布局
@@ -1495,83 +1655,65 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 # 其他
 
-## getString
+## getString的使用
 
 在android代码里，经常需要用到多语言。通常的解决方案都是用xml声明好对应的字符串，然后在代码里面引用这个字符串对应的id即可。
 
 举个例子
 
+```xml
+<string name="test">hello %s</string>
 ```
 
-```
-
-
-
-
-
-### `%1$s,%1$d,%1$f`
-
-
-
-## LayoutInflater
-
-layoutInflater是一个将xml布局文件转换为View对象的工具
-
-1. ### 获取LayoutInflater
-
-   ```java
-   LayoutInflater inflater = LayoutInflater.from(context); 
-   ```
-
-2. #### 将Layout转化为View
-
-   ```java
-   convertView = mLayoutInflater.inflate(R.layout.layout_grid_item, null);
-   ```
-
-
-
-## ViewPager
-
-ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStatePagerAdapter
-
-### PageAdapter
-
-### FragmentPagerAdapter
-
-
-
-
-
-## Dialog
+假设需要把%s换成用户的名字，在代码里怎么写呢？
 
 ```java
+String formatStr = getString(R.string.test), getName());
+```
+
+对于多个参数的情况, 需要加序号，例如：
+
+```xml
+<string name="string_withdraw_tips1">提示：最小提现数量%1$s %2$s , 24小时最大提现数量: %3$s %4$s</string>
+```
+
+其中 `1$` , `2$` 表明了插入顺序，getString() 方法中填入的参数 第一个插入到 `1$` 的位置，第二个插入到 `2$` 的位置。
+
+使用实例：
+
+```java
+String s1 = getString(R.string.string_withdraw_tips1, "0.1", "BTC", "20", "BTC");
+Log.d("getString", s1);
+// 11253-11253/com.koda.demo D/getString: 提示：最小提现数量0.1 BTC , 24小时最大提现数量: 20 BTC
+```
+
+如果我们写反了顺序，比如：
+
+```
+<string name="string_withdraw_tips1">提示：最小提现数量%1$s %2$s , 24小时最大提现数量: %4$s %3$s</string>
+```
+
+那么对应的传参也要换一个顺序：
+
+```java
+String s2 = getString(R.string.string_withdraw_tips2, "0.1", "BTC", "BTC", "30");
+Log.d("test_string", s2);
+// 11253-11253/com.koda.demo D/getString: 提示：最小提现数量0.1 BTC , 24小时最大提现数量: 30 BTC
+
 
 ```
 
+其他的，假如说需要加空格、或者0，或者小数的话，就要用到下面的格式了。
 
+**格式说明**：
 
-## DialogFragment
+%n$ms：代表输出的是字符串，n代表是第几个参数，设置m的值可以在输出之前放置空格 
 
+%n$md：代表输出的是整数，n代表是第几个参数，设置m的值可以在输出之前放置空格，也可以设为0m,在输出之前放置m个0 
 
+%n$mf：代表输出的是浮点数，n代表是第几个参数，设置m的值可以控制小数位数，如m=2.2时，输出格式为00.00 
 
-声明周期顺序：onCreateDialog -> onCreateView
-
-#### 修改DialogFragment样式
-
-## 
-
-
-
-
-
-ActionSheet
-
-
-
-
-
-# 
+### 
 
 
 
