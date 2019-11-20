@@ -1655,7 +1655,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 # 其他
 
-## getString的使用
+## 1 getString的使用
 
 在android代码里，经常需要用到多语言。通常的解决方案都是用xml声明好对应的字符串，然后在代码里面引用这个字符串对应的id即可。
 
@@ -1721,7 +1721,7 @@ Log.d("test_string", s2);
 
 
 
-## 多线程
+## 2 多线程
 
 > 4种多线程使用方式，4种场景
 >
@@ -1819,6 +1819,10 @@ new Thread() {
 2019-10-12 09:58:43.762 21083-21083/com.koda.demo I/System.out: handler thread : main
 ```
 
+
+
+
+
 #### 使用注意：
 
 ##### **内存泄露**：
@@ -1863,15 +1867,29 @@ new Thread() {
 
 参考文章：https://www.jianshu.com/p/ed9e15eff47a
 
+
+
+##### 定时任务：
+
+另一个要注意的点是：
+
+handler可以postDelay来做延迟执行。但是**不要用这个方法**做循环的定时任务；因为postDelay的任务最终也是交给主线程去完成的；
+
+
+
 #### 适用场景： 
 
 在多个异步任务的更新UI
 
 ![utf-8' '944365-4a64038632c4c88f](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-13-024411.png)
 
-缺点:  编写代码复杂，创建和销毁线程其实是需要消耗资源的；
+**缺点**:  编写代码复杂，创建和销毁线程其实是需要消耗资源的；
 
 
+
+#### API
+
+removeMessage 可以移除任务队列里面的消息
 
 ------
 
@@ -2273,15 +2291,118 @@ onResume -->
 
 
 
+## 网络组件
+
+OkHttp
+
+使用OkHttpClient 的时候需要**注意**以下几点：
+
+1. 最好只使用一个共享的OkHttpClient 实例，将所有的网络请求都通过这个实例处理。因为每个OkHttpClient 实例都有自己的连接池和线程池，重用这个实例能降低延时，减少内存消耗，而重复创建新实例则会浪费资源。
+2. OkHttpClient的线程池和连接池在空闲的时候会自动释放，所以一般情况下不需要手动关闭，但是如果出现极端内存不足的情况，可以使用以下代码释放内存：
+
+```java
+client.dispatcher().executorService().shutdown();   //清除并关闭线程池
+client.connectionPool().evictAll();                 //清除并关闭连接池
+client.cache().close();                             //清除cache
+```
+
+
+
+## WebSocket框架
+
+1.开源框架选择
+
+市面上比较多的博客里写到用： [java-websocket](https://github.com/TooTallNate/Java-WebSocket)。
+
+再基于网上某一个大神的封装，思路清晰，设计的很合理，做起业务起来一定很舒适。
+
+> 参考连接：https://github.com/0xZhangKe/WebSocketDemo/tree/master/doc；
+>
+> 另一篇博客，有空阅读https://www.jianshu.com/p/7b919910c892
+
+
+
+看到项目里面已经有人用过okhttp3提供的websocket封装了功能。okhttp3是项目里面封装网络请求用到的开源框架，一直在更新，再加上前人的逻辑代码已经存在，那么久索性沿用他们的代码；后续如果新的项目尝试用一下第一种；
+
+
+
+2.带着问题去查看文章
+
+在查资料之前，我的几个问题是：
+
+- 怎么去建立websocket的连接？
+- 怎么去保持连接，
+- 怎么监听消息，消息怎么给我的Activity或者Fragment使用？
+- 怎么断开重连，并且重新订阅；
+
+
+
+3.阅读前人代码框架
+
+说实话代码写的真的是乱，需要整理一下流程；
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-11-20-085339.png" alt="image-20191120165338088" style="zoom:50%;" />
+
+创健okHttpClient
+
+```java
+ OkHttpClient.Builder clientBuild = new OkHttpClient.Builder();
+    //设置一下整体的超时
+    clientBuild.connectTimeout(DEFAULT_CONNECT_TIME_OUT, TimeUnit.SECONDS)
+      .retryOnConnectionFailure(true)
+      //.connectTimeout(2, TimeUnit.SECONDS)
+      .readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
+      .writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
+      .cookieJar(cookieJar)
+      .cache(cache)
+      .addInterceptor(interceptorWrapper);
+
+    clientBuild.eventListenerFactory(HttpEventListener.FACTORY);
+    clientBuild.sslSocketFactory(createSSLSocketFactory());
+    clientBuild.hostnameVerifier(new HostnameVerifier() {
+      @Override
+      public boolean verify(String hostname, SSLSession session) {
+        return true;
+      }
+    });
+    DEFAULT_CLIENT = clientBuild.build();
+```
+
+因为okhttpClient在多个地方要用到，所以封装到了HttpUtils里，这里截取了部分逻辑代码；
+
+
+
+建立websocket连接
+
+```java
+OkHttpClient okHttpClient = HttpUtils.getInstance().getHttpClient();
+
+		if (okHttpClient != null) {
+			Request.Builder builder = new Request.Builder().url(url);
+      // 参数...
+			builder.addHeader(Fields.PARAM_NETT, DevicesUtil.GetNetworkType(CApplication.getInstance()));
+			builder.addHeader(Fields.PARAM_UID, userId);
+			String lan = RateAndLocalManager.GetInstance(CApplication.getInstance()).getCurLocalLanguage();
+			if (TextUtils.isEmpty(lan)) {
+				builder.addHeader(Fields.PARAM_LANGUAGE, lan);
+			}
+			Request request = builder.build();
+      webSocketClient = okHttpClient.newWebSocket(request, new MyWebSocketListener());
+```
+
+
+
+
+
 ## Flux框架
 
 
 
 
 
+# 组件传递
 
-
-## 事件总线
+## 事件传递
 
 - ### Bus
 
@@ -2329,6 +2450,12 @@ onResume -->
   ```
   
   ## 
+
+## Intent传值
+
+
+
+
 
 
 
