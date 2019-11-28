@@ -180,7 +180,9 @@ productFlavors {
 
 
 
-# 三、Activity生命周期
+# 三、生命周期
+
+## 3-1 Activity生命周期
 
 <img src="https://upload-images.jianshu.io/upload_images/215430-4bd5c7b4d06e0dac.png">
 
@@ -322,9 +324,9 @@ onStart --> onRestoreSavedInstance
 
 ### 几种在页面里初始化组件的方式以及区别
 
-方式1：LayoutInflater;
+#### 方式1：LayoutInflater;
 
-## LayoutInflater
+
 
 layoutInflater是一个将xml布局文件转换为View对象的工具
 
@@ -342,9 +344,19 @@ layoutInflater是一个将xml布局文件转换为View对象的工具
 
 
 
-方式2: findViewById
+#### 方式2: findViewById
 
 方式3：
+
+
+
+## 3-2 Fragment生命周期
+
+
+
+
+
+
 
 
 
@@ -861,6 +873,18 @@ getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 ## Shadow阴影的处理
 
+> https://segmentfault.com/a/1190000011809297
+
+方式1：使用elevation属性
+
+
+
+方式2：使用translationZ属性
+
+
+
+方式3：ViewCompat兼容
+
 ```java
 public static void setShadowDrawable(View view, int shapeRadius, int shadowColor, int shadowRadius, int offsetX, int offsetY) {
   ShadowDrawable drawable = new ShadowDrawable.Builder()
@@ -874,6 +898,24 @@ public static void setShadowDrawable(View view, int shapeRadius, int shadowColor
   ViewCompat.setBackground(view, drawable);
 }
 ```
+
+
+
+方式4：使用`.9` png
+
+`.9`图的使用很简单，只需要在drawable里加入一张`.9`的png，再使用以下方式即可。
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-11-28-141638.png" alt="image-20191128221638276" style="zoom:33%;" />
+
+使用 `.9` 图设置的阴影，效果一般都是有保障的。不过它会作为 View 的背景被设置，所以阴影上占据 View 的大小的，所以使用图片模拟出来的阴影，View 本身的视觉效果会小。
+
+将一个使用 ViewCompat 实现的效果，放在一起，你就可以看到对比的效果。
+
+![/9patch-duibi.png](https://segmentfault.com/img/remote/1460000011809317?w=214&h=304)
+
+这里，两个 ImageView ，实际设置的大小，都是 100dp，但是视觉上，使用 .9 实现的效果，视觉效果就会小。
+
+另外：`.9` 的图，一般都是设计师会提供给我们。这里也推荐一个可以制作阴影效果的[在线工具](http://inloop.github.io/shadow4android/)。
 
 
 
@@ -894,6 +936,25 @@ public static void setShadowDrawable(View view, int shapeRadius, int shadowColor
 
 
 
+## Gravity
+
+gravity的中文意思就是”重心“，就是表示view横向和纵向的停靠位置
+
+　　（1）.**android:gravity：**是对view控件本身来说的，是用来设置view本身的内容应该显示在view的什么位置，默认值是左侧。也可以用来设置布局中的控件位置
+
+　　（2）.**android:layout_gravity：**是相对于包含改元素的父元素来说的，设置该元素在父元素的什么位置；
+
+　　比如TextView: android:layout_gravity表示TextView在界面上的位置，android:gravity表示TextView文本在TextView的什么位置，默认值是左侧.
+
+
+
+### Layout_gravity失效
+
+当父控件 android:orientation设置成vertical时，layout_gravity只有水平方向设置才起作用，如水平方向的left ,center ,right
+
+当父控件 android:orientation设置成horizontal时，layout_gravity只有垂直方向设置才起作用，如垂直方向的top,center,bottom
+
+
 
 
 
@@ -904,33 +965,79 @@ public static void setShadowDrawable(View view, int shapeRadius, int shadowColor
 
 #五、弹框篇
 
-## ViewPager的使用
-
-ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStatePagerAdapter
-
-### PageAdapter
-
-### FragmentPagerAdapter
 
 
-
-
-
-## Dialog的使用
+## Dialog
 
 ```java
+public class MainActivity extends Activity {
+	private Button clk;
+	private Dialog dialog;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		
+		clk = (Button) findViewById(R.id.clk);
+    //1. 创建了dialog
+		dialog = new Dialog(this);
+    //2. 显示视图
+		dialog.setContentView(R.layout.dialog);
+    //3. 按钮点击时显示dialog
+		clk.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.show();
+			}
+		});
 
+		//用户恢复对话框的状态
+		if(savedInstanceState != null && savedInstanceState.getBoolean("dialog_show"))
+			clk.performClick();
+	}
+
+	/**
+	 * 用于保存对话框的状态以便恢复
+	 */
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		if(dialog != null && dialog.isShowing())
+			outState.putBoolean("dialog_show", true);
+		else
+			outState.putBoolean("dialog_show", false);
+	}
+
+	/**
+	 * 在Activity销毁之前，确保对话框以关闭
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(dialog != null && dialog.isShowing())
+			dialog.dismiss();
+	}
+}
 ```
 
 
 
 ## DialogFragment
 
-> Android比较推荐采用DialogFragment实现Dialog。因为它完全能够实现Dialog的所有功能，并且还能因为他继承Fragment, 所以能复用Fragment的生命周期管理，被后台杀死后还能自动恢复。
+> Android比较推荐采用DialogFragment实现Dialog。
+
+原因：DialogFragment能够完全实现Dialog的所有功能。并且他继承自Fragment, 所以能复用Fragment的生命周期管理。
+
+在手机配置变化时，比如旋转屏幕后，导致Activity重新创建。基于DialogFragment的对话框可以通过FragmentManager管理器来自动重建，实现自动恢复的功能，但是Dialog不行。
+
+
 
 ### 使用DialogFragment的两种方式
 
-**方式1：继承DialogFragment，重写onCreateDialog(Bundle savedInstanceState)方法**
+#### **方式1**
+
+> **继承DialogFragment，重写onCreateDialog(Bundle savedInstanceState)方法**
 
 ```java
   @Override
@@ -949,7 +1056,9 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 
 
-**方式2：继承DialogFragment，实现onCreateView(LayoutInflater inflater, ViewGroup container) 方法**
+#### **方式2**
+
+> **继承DialogFragment，实现onCreateView(LayoutInflater inflater, ViewGroup container) 方法**
 
 ```java
  @Override
@@ -963,11 +1072,21 @@ ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStat
 
 
 
-两种方式对应的应用场景不同, 方式1一般适用于代替传统的Dialig对话框，UI简单，功能单一；方式2适合创建复杂的内容弹框，或者全屏展示的。
+#### **使用区别**
+
+**区别1：应用场景不同**
+
+方式1内部其实还是使用了Dialog.Builder,只是代替了传统的Dialig对话框。适用于UI简单的，功能单一的情况；
+
+方式2适合创建复杂的内容弹框，或者全屏展示的。
+
+**区别2：**
 
 
 
-### DialogFragment生命周期：
+### DialogFragment生命周期
+
+正常的生命周期顺序如下：
 
 ```
 onCreateDialog -> onCreateView
@@ -1005,7 +1124,19 @@ ActionSheet
 
 # 六、布局篇
 
-## tabLayout
+## ViewPager的使用
+
+ViewPager的Adapter有三种：PageAdapter、FragmentPagerAdapter、FragmentStatePagerAdapter
+
+### PageAdapter
+
+### FragmentPagerAdapter
+
+
+
+
+
+## 6-1 tabLayout
 
 tablayout是单独的design support中, 想要用tablayout, 需要在gradle里单独引用他
 
@@ -1013,7 +1144,7 @@ tablayout是单独的design support中, 想要用tablayout, 需要在gradle里�
 implementation 'com.android.support:design:28.0.0-rc02'
 ```
 
-- ### 简单使用
+### 简单使用
 
 1）在布局文件中声明Tablayout
 
@@ -1064,9 +1195,15 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 
 
 
-- ### 与ViewPager结合使用
+### 结合ViewPager使用
 
-  1) 先在布局文件中放好TabLayout和ViewPager：
+使用思路：在布局文件里声明tabLayou和viewPager；当tab切换时，通过事件触发viewPager改变，
+
+当viewPager进行改变时，也通过事件来切换tab；
+
+viewPager的使用介绍结合上一章来看；
+
+1) 先在布局文件中放好TabLayout和ViewPager；
 
 ```xml
 ...
@@ -1127,11 +1264,40 @@ public class TabViewActivity extends BaseCoreActivity {
 }
 ```
 
+3) 设置viewPager和tabLayout的结合
+
+```java
+viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+ @Override
+ public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+ }
+
+ @Override
+ public void onPageSelected(int position) {
+  // 重新获取视图, 只用一个recyclerView来切换数据源
+  type = position;
+  switch (position) {
+   case 0:
+    recyclerView.setAdapter(blockRewardAdapter);
+    break;
+   case 1:
+    recyclerView.setAdapter(inviteRewardAdapter);
+    break;
+   default:
+    break;
+  }
+ }
+
+ @Override
+ public void onPageScrollStateChanged(int state) {
+ }
+});
+viewPager.setCurrentItem(0);
+```
 
 
 
-
-## FrameLayout
+## 6-2 FrameLayout
 
 FrameLayout是最简单的ViewGroup组件，它不以特定的方式来安排子视图的位置；FrameLayout子视图的位置排列取决于他们各自的android:layout_gravity属性
 
@@ -2521,17 +2687,62 @@ Rxjava2解读
 
 # 五、三方组件
 
-## SmartRefreshLayout 
+## 5-1 SmartRefreshLayout 
 
-地址：https://github.com/scwang90/SmartRefreshLayout
+文档地址：https://github.com/scwang90/SmartRefreshLayout
 
-组成
+框架组成
 
 - SmartRefreshLayout 刷新布局核心实现，自带ClassicsHeader（经典）、BezierRadarHeader（贝塞尔雷达）两个 Header.
 
-- SmartRefreshHeader 各种Header的集成，除了Layout自带的Header，其它都在这个包中.
+- SmartRefreshHeader 各种Header的集成，除了Layout自带的Header，其它都在这个包中。Header是指在下拉刷新时，显示“正在刷新”中的header。
 
-- SmartRefreshFooter 各种Footer的集成，除了Layout自带的Footer，其它都在这个包中.
+- SmartRefreshFooter 各种Footer的集成，除了Layout自带的Footer，其它都在这个包中。Footer是指在上拉加载更多时，显示“正在加载”的footer。
+
+  <img src="https://raw.githubusercontent.com/scwang90/SmartRefreshLayout/master/art/jpg_preview_xml_define.jpg" alt="img" style="zoom:75%;" />
+
+
+
+### 1.简单使用
+
+在XML布局文件中添加 SmartRefreshLayout
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/refreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:background="#fff" />
+</com.scwang.smartrefresh.layout.SmartRefreshLayout>
+```
+
+在 Activity 或者 Fragment 中添加代码
+
+```java
+RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
+refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+    @Override
+    public void onRefresh(RefreshLayout refreshlayout) {
+        refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
+    }
+});
+refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+    @Override
+    public void onLoadMore(RefreshLayout refreshlayout) {
+        refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
+    }
+});
+```
+
+2.指定Header和Footer
+
+
 
 
 
