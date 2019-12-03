@@ -676,6 +676,26 @@ stroke_shape.xml
 
 drawables可以应用于任何View及ViewGroup，通常是通过background属性来设置Drawable资源的。
 
+
+
+eg: 一个灰色圆角的背景色
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!--边框颜色-->
+    <stroke android:width="2dp" android:color="#FFF"/>
+    <!--填充色-->
+    <solid android:color="#80FFFFFF"/>
+    <corners android:radius="@dimen/dip_20"/>
+</shape>
+```
+
+
+
+
+
 ------
 
 
@@ -758,7 +778,27 @@ Button
 
 　　==2、selector作为color时，item**必须**使用**android:color**属性指定；==
 
-------
+
+
+如何将图片应用到selector上? 可以直接使用图片资源
+
+```xml
+<item android:drawable="@drawable/image" />
+```
+
+```xml
+<item>
+  <!-- 可以避免图片被缩放了 -->
+  <bitmap android:src="@drawable/image"
+          android:gravity="center" />
+</item>
+```
+
+
+
+
+
+
 
 
 
@@ -807,6 +847,8 @@ ContextCompat.getColor(mContext, R.color.white)
 
 #### BitmapDrawable
 
+可以通过java代码——[BitmapDrawable](https://developer.android.com/reference/android/graphics/drawable/BitmapDrawable.html)
+
 ```java
 Resources res = getResources();
 Bitmap bmp = BitmapFactory.decodeResource(res, R.drawable.adt_48);
@@ -815,7 +857,22 @@ bitmapDrawable.setTileModeX(TileMode.MIRROR);
 bitmapDrawable.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
 ```
 
-​	
+也可以通过xml来定义bitmap文件
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@[package:]drawable/drawable_resource"
+    android:antialias=["true" | "false"]
+    android:dither=["true" | "false"]
+    android:filter=["true" | "false"]
+    android:gravity=["top" | "bottom" | "left" | "right" | "center_vertical" |
+                      "fill_vertical" | "center_horizontal" | "fill_horizontal" |
+                      "center" | "fill" | "clip_vertical" | "clip_horizontal"]
+    android:mipMap=["true" | "false"]
+    android:tileMode=["disabled" | "clamp" | "repeat" | "mirror"] />
+```
 
 
 
@@ -829,11 +886,79 @@ bitmapDrawable.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
 - drawable-xhdpi (dpi=320, density=2)
 - drawable-xxhdpi (dpi=480, density=3)
 
+
+
+资源寻找的流程：
+
 <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-10-131151.png" alt="utf-8' '4118241-b9efe56e539626c0" style="zoom:50%;" />
 
+比如在一个中等分辨率的手机上，Android就会选择drawable-mdpi文件夹下的图片，文件夹下有这张图就会优先被使用，在这种情况下，图片是不会被缩放的；
+
+但是如果没有在drawable-mdpi的文件夹下找到相应图片的话，Android系统会首先从更高一级的drawable-hdpi文件夹中查找，如果找到图片资源就进行缩放处理，显示在屏幕上；
+
+如果drawable-hdpi文件夹下也没有的话，就依次往drawable-xhdpi文件夹、drawable-xxhdpi文件夹、drawable-xxxhdpi文件夹、drawable-nodpi；
+
+如果更高密度的文件夹里都没有找到，就往更低密度的文件夹里寻找，drawable-ldpi文件夹下查找；
+
+如果都没找到，最终会在默认的drawable文件夹中寻找，如果默认的drawable文件夹中也没有那就会报错啦。
+
+**举个例子：**
+
+假如当前设备的dpi是320，系统会优先去drawable-xhdpi目录查找，如果找不到，会依次查找xxhdpi → xxxhdpi → hdpi → mdpi → ldpi。对于不存在的drawable-[density]目录直接跳过，中间任一目录查找到资源，则停止本次查找。
 
 
-#### 
+
+#### dpi范围密度对应范围 
+
+| 设备密度        | 适配资源文件密度 |
+| --------------- | ---------------- |
+| 0dpi ~ 120dpi   | ldpi             |
+| 120dpi ~ 160dpi | mdpi             |
+| 160dpi ~ 240dpi | hdpi             |
+| 240dpi ~ 320dpi | xhdpi            |
+| 320dpi ~ 480dpi | xxhdpi           |
+| 480dpi ~ 640dpi | xxxhdpi          |
+
+ 
+
+对于每种密度下的icon应该设计成什么尺寸其实Android也是给出了最佳建议，建议尺寸如下表所示：
+
+| 资源文件密度   | 建议尺寸                          |
+| -------------- | --------------------------------- |
+| mipmap-mdpi    | 48 * 48（实测图标16就够了）       |
+| mipmap-hdpi    | 72 * 72（博主实测图标32就够了）   |
+| mipmap-xhdpi   | 96 * 96（实测图标48就够了）       |
+| mipmap-xxhdpi  | 144 * 144（实测图标64就够了）     |
+| mipmap-xxxhdpi | 192 * 192（博主实测图标72就够了） |
+
+ 
+
+**总体匹配规则：**
+
+如果图片所在目录dpi低于匹配目录，那么该图片被认为是为低密度设备需要的，现在要显示在高密度设备上，图片会被放大。
+
+如果图片所在目录dpi高于匹配目录，那么该图片被认为是为高密度设备需要的，现在要显示在低密度设备上，图片会被缩小。
+
+如果图片所在目录为drawable-nodpi，则无论设备dpi为多少，保留原图片大小，不进行缩放。
+
+那么六种通用密度下的缩放倍数是多少呢？以mdpi为基线，各密度目录下的放大倍数（即缩放因子density）如下
+
+| 密度    | 放大倍数 |
+| ------- | -------- |
+| ldpi    | 0.75     |
+| mdpi    | 1.0      |
+| hdpi    | 1.5      |
+| xhdpi   | 2.0      |
+| xxhdpi  | 3.0      |
+| xxxhdpi | 4.0      |
+
+例如，当前设备的dpi是480（即xxhdpi），那么对于存放于mdpi目录中的图片会被放大三倍。
+
+缩放倍数（缩放因子）计算方法：对于任意设备，各drawable-[density]目录下的图片放大倍数的计算公式
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-12-03-072926.png" alt="缩放因子计算公式" style="zoom: 33%;" />
+
+
 
 
 
