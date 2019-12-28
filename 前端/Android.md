@@ -1,8 +1,8 @@
 # 一、模拟器启动问题
 
-## 使用Genymotion模拟器启动项目
+## 问题1：找不到sdk
 
-**问题**
+**问题描述**
 
 ```shell
 adb server version (32) doesn't match this client (35); killing...
@@ -20,7 +20,23 @@ error: cannot connect to daemon
 
 
 
-## adb 环境配置
+## 问题2：无法联网
+
+**问题描述**：模拟器app无法连接网络
+
+**解决方法**
+
+在virtual box里面配置网络，截图如下：
+
+![201831585235836](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-12-19-074502.png)
+
+![201831585253185](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-12-19-074543.png)
+
+
+
+
+
+# adb 环境配置
 
 ### adb mac环境变量
 
@@ -35,6 +51,32 @@ export PATH=${PATH}:${ANDROID_HOME}/platform-tools
 ### adb install
 
 adb -s {seria number} install xxx.apk 在指定设备上安装apk
+
+
+
+### adb pull&push
+
+作用： 修改模拟器host文件
+
+操作步骤：
+
+1. 获取root权限 
+
+  ./adb root
+
+【Q】如果出现错误：“adbd cannot run as root in production builds”， 那是由于root不完全；
+
+【A】安装“超级adb“；
+
+2. 修改system权限：./adb remount
+
+3. 获取host文件到本地： ./adb pull /system/etc/hosts 修改host文件
+
+4. 回写文件到虚拟机：./adb push hosts /system/etc/ 
+
+   若出现文件只读不可回写，执行./adb reboot重启，并再次获取权限，再回写文件。
+
+
 
 
 
