@@ -4,7 +4,9 @@
 
 
 
-## react框架
+## Dva是什么？
+
+### react框架
 
 #### 提供的东西
 
@@ -66,3 +68,26 @@ yield take('user/getusergroupinfo/@@end')
 
 
 
+yield 获取state
+
+```js
+let address_list = yield select(state => state.finance.address_list);
+```
+
+
+
+解释一下take
+
+```
+*editpassword({ payload, history }, { call, put, take}) {
+```
+
+
+
+// 这个是干嘛的？
+
+
+
+```
+this.props.loading.effects
+```
