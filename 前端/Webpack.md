@@ -20,10 +20,10 @@ webpack无法处理.js后缀之外的文件，所以需要loader来进行处理�
 
 
 
-#### 样式 
+#### 样式处理loader
 
-- [`style-loader`](https://webpack.docschina.org/loaders/style-loader) 将模块的导出，通过<style> 标签的形式添加到 DOM 中。
-- [`css-loader`](https://webpack.docschina.org/loaders/css-loader) 解析 CSS 文件后，使用 import 加载，并且返回 CSS 代码
+- [`style-loader`](https://webpack.docschina.org/loaders/style-loader) 将css模块导出，最终通过<style> 标签的形式添加到 DOM 中。
+- [`css-loader`](https://webpack.docschina.org/loaders/css-loader)  会去解析 @import和url() 引入的CSS 文件，将他们当做import 和 require一样去加载进来进行处理。
 - [`less-loader`](https://webpack.docschina.org/loaders/less-loader) 加载和转译 LESS 文件
 - [`sass-loader`](https://webpack.docschina.org/loaders/sass-loader) 加载和转译 SASS/SCSS 文件
 - [`postcss-loader`](https://webpack.docschina.org/loaders/postcss-loader) 使用 [PostCSS](http://postcss.org/) 加载和转译 CSS/SSS 文件
@@ -73,7 +73,7 @@ module.exports = {
 };
 ```
 
-这种配置方案，css文件就不会被处理，而是直接生成了style标签，动态插入到了dom里；
+这种配置方案，css文件被当做file来进行处理，他不会被解析，而是直接通过style-loader生成了style标签，动态插入到了dom里；
 
 
 
@@ -105,7 +105,9 @@ module.exports = {
 };
 ```
 
-importLoaders这个属性其实挺关键，这里备注一下。 主要是针对样式文件里@import的样式的处理；
+importLoaders这个属性其实挺关键，这里备注一下：他的作用主要是针对样式文件里@import的样式的处理；
+
+当我们在css里面@import了其他样式后，默认是不会被其他loader处理的。指定了这个配置后，就会去走其他loader。
 
 
 
@@ -143,15 +145,122 @@ img1.classList.add(style.avatar);
 
 
 
-> ##### 预处理配置
+> ##### 预处理框架
 
-`postcss-loader`
+**什么是CSS预处理技术？**
+
+CSS预处理技术，是指用一种新语言用来为CSS 增加可编程的的特性，无需考虑浏览器的兼容性问题。你可以在 CSS 中使用变量、简单的程序逻辑、函数等等在编程语言中的一些基本技巧，可以让你的 CSS 更见简洁，适应性更强。
+
+**Stylus & Less & Sass**
+
+[Sass、LESS 和 Stylus区别总结](https://juejin.im/post/5c9b17cbf265da60c95b7c3a#heading-4)
+
+Stylus：提供一个高效、动态、和使用表达方式来生成CSS，以供浏览器使用。默认使用 .styl 的作为文件扩展名，支持多样性的CSS语法。
+
+Less：一种动态样式语言，默认使用.less，
+
+Sass：一种动态样式语言，默认使用.sass作为扩展名，也支持.scss类型。
+
+sass基于严格的语法，是严格要求缩进，而且是不能有`{}`、`;`等符号的。
+
+scss就和css的写法类似，没有那么严格的要求。
+
+
+
+**CSS 后处理 PostCss** 
+
+PostCSS 是目前流行的一个对 CSS 进行处理的工具（平台）。
+
+它负责把 CSS 代码解析成抽象语法树结构（Abstract Syntax Tree，AST），再交由插件来进行处理。插件基于 CSS 代码的 AST 所能进行的操作是多种多样的，比如可以支持变量和混入（mixin），增加浏览器相关的声明前缀，或是把使用将来的 CSS 规范的样式规则转译（transpile）成当前的 CSS 规范支持的格式。
+
+从这个角度来说，PostCSS 的强大之处在于其不断发展的插件体系。目前 PostCSS 已经有 200 多个功能各异的插件。开发人员也可以根据项目的需要，开发出自己的 PostCSS 插件。
+
+
+
+> postcss-loader
+
+postcss-loader专门用来进行postcss配置的处理；
+
+它可以通过postcss.config.js或者postcss-loader的options来配置PostCss。附上[文档地址](https://github.com/postcss/postcss-loader)
+
+
+
+> ##### create-react-app里用到的样式
+
+```js
+{
+      test: /\.scss$/,
+      use: [
+        {// 开发环境使用'style-loader',
+          // 生产环境使用MiniCssExtractPlugin.loader
+          loader: MiniCssExtractPlugin.loader,
+          options: {},
+        },
+        {
+          loader: 'css-loader',
+          options: {
+            importLoaders: 3,
+            modules: true
+          }
+        },
+        {
+          // Options for PostCSS as we reference these options twice
+          // Adds vendor prefixing based on your specified browser support in
+          // package.json
+          loader: require.resolve('postcss-loader'),
+          options: {
+            // Necessary for external CSS imports to work
+            // https://github.com/facebook/create-react-app/issues/2677
+            ident: 'postcss',
+            plugins: () => [
+              require('postcss-flexbugs-fixes'),
+              require('postcss-preset-env')({
+                autoprefixer: {
+                  flexbox: 'no-2009',
+                },
+                stage: 3,
+              }),
+              // Adds PostCSS Normalize as the reset css with default options,
+              // so that it honors browserslist config in package.json
+              // which in turn let's users customize the target behavior as per their needs.
+              postcssNormalize(),
+            ],
+            sourceMap: false
+          },
+        },
+        {
+          loader: require.resolve('resolve-url-loader'),
+          options: {
+            sourceMap: true,
+          },
+        },
+        {
+          loader: require.resolve('sass-loader'),
+          options: {
+            sourceMap: true,
+          },
+        },
+      ],
+      sideEffects: true,
+    }]
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: 'static/css/[name].[contenthash:8].css',
+      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+    }),
+  ],
+}
+```
 
 
 
 
 
-#### 文件
+#### 文件处理loader
 
 > #### file-loader vs url-loader
 
@@ -190,25 +299,283 @@ url-loader有一个==limit==的options可以配置。当图片超过了limit的�
 
 
 
-#### 
+####如何编写一个loader？
+
+编写loader其实很简单，只需要要返回一个function，接收source参数即可。
+
+webpack会去在执行这个function时，会将代码通过source参数传递进来，同事将this变量内置很多参数和方法，开发者只需要通过this对象来对source进行处理。
+
+```js
+module.exports = function(source) {
+	// todo 处理source
+}
+```
+
+编写好loader后怎么使用？
+
+在webpack里面指明需要使用的loader路径。
+
+```diff
+module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: 'babel-loader',
+-     }
++     },
++     {
++        test: /\.js$/,
++        exclude: /node_modules/,
++        use: path.resolve(__dirname, 'src/loader/my-loader.js'),
++     }
+    ],
+  },
+```
+
+
 
 ### plugins
 
+#### plugins的作用
+
 plugins可以帮助webpack，在打包的不同生命周期中，做不同的处理；
 
+比如在打包之前，做清空处理，使用`CleanWebpackPlugin`。
 
+#### 常用插件
 
 >CommonsChunkPlugin
 
-有些类库如utils, bootstrap之类的可能被多个页面共享，最好是可以合并成一个js，而非每个js单独去引用。这样能够节省一些空间。这时我们可以用到CommonsChunkPlugin，我们指定好生成文件的名字，以及想抽取哪些入口js文件的公共代码，webpack就会自动帮我们合并好。
+有些类库如utils, bootstrap之类的可能被==多个页面==共享，最好是可以合并成一个js，而非每个js单独去引用。这样能够节省一些空间。
+
+这种场景就需要用到CommonsChunkPlugin，我们指定好生成文件的名字，以及想抽取哪些入口js文件的公共代码，webpack就会自动帮我们合并好。
 
 ```js
 new webpack.optimize.CommonsChunkPlugin({
     name: "common",
   	filename: "js/common.js",
-  	chunks: ['index', 'detail] 
+  	chunks: ['index', 'detail]  // 可以指定需要哪些库
  })
 ```
+
+
+
+> CopyWebpackPlugin
+
+它可以将代码里面的资源原封不动copy到dist指定的目录里。 
+
+一般用来copy一些static的静态资源，比如我们项目里面的`tradingview`插件。
+
+
+
+> HtmlWebpackPlugin + AddAssetHtmlPlugin + [InterpolateHtmlPlugin](https://github.com/zanettin/react-dev-utils)
+
+这几个插件配合使用：
+
+HtmlWebpackPlugin自动生成html文件
+
+AddAssetHtmlPlugin可以向html里面增加js引用
+
+interpolateHtmlPlugin可以在index.html里面使用变量。 
+
+```
+
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+```
+
+实际例子
+
+```json
+{
+    "webpack": "^3.6.0",
+    "add-asset-html-webpack-plugin": "2.1.3",
+    "html-webpack-plugin": "^2.30.1",
+    "interpolate-html-plugin": "2.0.0"
+}
+```
+
+在webpack是3版本的时候，依赖如上。
+
+在配置文件里配置：
+
+```js
+const PUBLIC_URL = process.env.PUBLIC_URL  
+module.exports = {
+  plugins: [
+  	new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'index.html',
+      inject: true,
+    }),
+    new AddAssetHtmlPlugin({
+      filepath: path.resolve(__dirname, '../static/image-config.js'),
+      includeSourcemap: false,
+      publicPath: config.dev.assetsPublicPath
+    }),
+    new InterpolateHtmlPlugin({
+      publicUrl: PUBLIC_URL,
+    })
+  }]
+}
+```
+
+在页面里使用：htmlplugin自带支持lodash的plugin
+
+```html
+window.__login= {
+	user: JSON.parse(sessionStorage.getItem('user'))
+}
+window.__config = {
+  publicUrl: '%publicUrl%', // 变量
+  thirdType: 'firstbi',
+  title: 'firstbi',
+  loginMode: '3', // 1: "Company", 2: "Cust", 3: "External
+}
+```
+
+
+
+> DefinePlugin
+
+DefinePlugin可以配置一个全局的变量。在webpack打包的时候，帮助开发者进行一个字符串的替换。这样在业务代码里面，就可以忽略开发环境和生产环境的打包规则限制，避免出错。比如：在开发构建中，而不在发布构建中执行日志记录。
+
+**基本用法**
+
+```javascript
+new webpack.DefinePlugin({
+  PRODUCTION: JSON.stringify(true),
+  VERSION: JSON.stringify('5fa3b9'),
+  BROWSER_SUPPORTS_HTML5: true,
+  TWO: '1+1',
+  'typeof window': JSON.stringify('object'),
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+});
+```
+
+```js
+if (!PRODUCTION) {
+  console.log('Debug info');
+}
+
+if (PRODUCTION) {
+  console.log('Production log');
+}
+```
+
+
+
+#### 怎么写plugins？
+
+> https://www.webpackjs.com/contribute/writing-a-plugin/
+
+
+
+> plugin基本架构
+
+1. 编写一个函数，在函数原型上提供`apply方法`。
+2. `apply方法`接收一个`compiler`对象，通过compiler的钩子函数来实现各种功能。
+3. 通过`compiler`的钩子函数来实现各种功能。
+
+```js
+function MyWebpackPlugin() {
+}
+MyWebpackPlugin.prototype.apply = function(compiler) {
+  compiler.hooks.done.tap('done', function(stats) {
+    console.log('Hello World!');
+    console.log('stats');
+  });
+}
+module.exports = MyWebpackPlugin;
+```
+
+3. 在webpack.config.js中使用该插件：
+
+```js
+const MyWebpackPlugin = require('./MyWebpackPlugin.js');
+
+module.export = {
+  ...
+	plugins:[
+		new MyWebpackPlugin(options),
+		...
+	]
+}
+```
+
+
+
+##### compiler 和 cmpiler 钩子
+
+- `compiler` 对象代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当webpack调用插件时，会把这个compiler 对象传给plugin的apply方法。
+
+compiler里面有很多钩子函数，表示有很多时刻。比如`emit`会在生成资源到 output 目录之前触发，而且是一个异步的钩子；
+
+> 钩子的调用方式：
+
+```js
+compiler.hooks.someHook.tap(...)
+```
+
+不同的钩子类型调用的方式也不一样，也可以在某些钩子上访问 `tapAsync` 和 `tapPromise`。
+
+> 3种tap的理解
+
+```js
+
+  compiler.hooks.emit.tap('emit', compilation => {
+    console.log("资源要被打包了.");
+  })
+
+  compiler.hooks.run.tapAsync('run', (compilation, callback) => {
+    console.log('以异步方式触及 run 钩子。');
+    callback(); // 需要callback
+  });
+
+  compiler.hooks.run.tapPromise('MyWebpackPlugin', (compilation) => {
+    return new Promise(resolve => setTimeout(resolve, 1000)).then(() => {
+      console.log('以具有延迟的异步方式触及 run 钩子。');
+    });
+  });
+
+  compiler.hooks.run.tapPromise('MyWebpackPlugin', async (compilation) => {
+    await new Promise(resolve => setTimeout(resolve,1000));
+    console.log('以具有延迟的异步方式触及 run 钩子。');
+  });
+```
+
+
+
+##### compilation 和 compilation hooks
+
+- `compilation` 对象代表了一次资源版本构建。
+- webpack基于模块的，模块经历loaded，sealed，optimized， chunked，hashed，restored。每次文件变化时，webpack重新创建一个compilation对象。
+- 一个 compilation 对象表现了当前的模块资源、编译生成资源、变化的文件、以及被跟踪依赖的状态信息。
+
+
+
+
+
+##### plugins调试
+
+> chrome来调试
+
+从 Node v6.3.0+ 开始，开发人员可以使用内置的 `--inspect` 标记，来通过 DevTools 调试 Node.js 应用程序。
+
+先打开chrome的expirement模式  chrome://flags/#enable-devtools-experiments.
+
+2.开启模式后，在setting里开启nodejs的调试，似乎高级版本的chrome不需要上面这2步。
+
+3.最后在package.json里面配置命令如下：
+
+```json
+"debug": "node --inspect --inspect-brk ./node_modules/webpack/bin/webpack.js"
+```
+
+
+
+
 
 
 
@@ -378,106 +745,32 @@ eval：打包后模块会通过eval的方式来执行，速度最快；
 
 #### //todo SourceMap原理
 
+### devServer配置
+> #### contentBase
 
+告诉服务器，从哪里去读取静态文件。它和`publicPath`的区别是,`publicPath`用于确定从哪里提供bundler。默认情况下，使用当前工作目录作为提供内容的目录。
 
-### devServer
-
-> #### HMR
-
-> 1.可以解决什么问题？
-
-可以动态更新代码，浏览器不会进行刷新页面，也就不会丢失应用运行时的状态；
-
-> 2.原理
-
-**更新流程**：
-
-应用程序要求HMR runtime检查更新
-
-HMR runtime异步下载更新
-
-HMR runtime应用更新
-
-HMR 同步应用更新
-
-
-
-**内部原理**:
-
-HMR runtime应用更新时，各个模块通过实现HMR的api接口，来进行相应模块的更新；
-
-<img src="/Users/keyang/Desktop/v2-f7139f8763b996ebfa28486e160f6378_r.jpg" alt="v2-f7139f8763b996ebfa28486e160f6378_r" style="zoom:50%;" />
-
-需要注意的是，并不是配置了hmr前端就能看到效果了，还需要实现对应的api接口。不过好在现在loader都帮助我们解决了这些问题；
-
-
-
-> HMR的配置
-
-通过webpack.config.js配置
-
-```
-devServer: {
-	contentBase: './dist',
-	hot: true,
-},
-plugins: [
-	new CleanWebpackPlugin(),
-	new HtmlWebpackPlugin({
-		template: './src/index.html'
-	}),
-	// 这个是关键
-	new webpack.HotModuleReplacementPlugin(),
-]
-```
-
-
-
-通过nodejs来设置
-
+可以修改为其他目录：
 ```js
-// 首先要在output里定义好webpack-hot-middleware/client
-entry: [
-  'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
-  // 这是主入口
-  './src/index.js',
-],
-// 保留HotModuleReplacementPlugin
-plugins: [
-	new webpack.HotModuleReplacementPlugin(),
-]
+// 推荐使用绝对路径
+contentBase: path.join(__dirname, "public")
+```
 
-// 定义server.js
-// 通过nodejs的方式，实现一个devServer
+也可以从多个目录提供内容：
+```js
+contentBase: [path.join(__dirname, "public"), path.join(__dirname, "assets")]
+```
 
-const express = require('express');
-const webpack = require('webpack');
-const webpackHotMiddleware = require('webpack-hot-middleware');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const config = require('./webpack.config');
-const app = express();
-
-const compiler = webpack(config);
-
-app.use(webpackDevMiddleware(compiler, {
-	publicPath: config.output.publicPath,
-}));
-const options = {
-	log: console.log,
-	path: '/__webpack_hmr',
-	heartbeat: 10 * 1000,
-};
-// 通过hotMiddleware
-app.use(webpackHotMiddleware(compiler, options));
-
-app.listen(3000, () => {
-	console.log('Example app listening on port 3000!\n');
-})
+禁用 contentBase：
+```js
+contentBase: false
 ```
 
 
 
-> #### proxy代理配置
+#### devServer一些常用配置项
+
+#### devServer.proxy代理配置
 
 ```
 devServer: {
@@ -526,9 +819,163 @@ proxy配置的优先级默认是从上往下的，只要上面的proxy匹配上�
 
 
 
-### 结合babel来使用
+#### 热重载live reload和热更新HMR
+
+> 1.概念介绍
+
+**热重载**是当代码更新时，webpack自动编译并且刷新页面，这样不用开发者自己手动刷新页面。但是也带来一个问题：页面的状态会丢失。
+
+**热更新**可以动态更新代码，浏览器不会进行刷新页面，而是运行时对模块进行热替换，保证了应用状态不会丢失。
+
+> 2.原理
+>
+> https://juejin.im/post/5e3a28e6e51d4526f76ea753?utm_source=gold_browser_extension
+>
+> https://zhuanlan.zhihu.com/p/30669007
+>
+> 最简版本的hmr
+>
+> https://github.com/Jocs/webpack-HMR-demo/blob/master/webpack.config.js
+
+**更新流程**：
+
+1. 应用程序要求HMR runtime检查更新
+
+2. HMR runtime异步下载更新
+
+3. HMR runtime应用更新
+
+4. HMR 同步应用更新
 
 
+**内部原理**:
+
+webpack监听着文件的变化。当我们修改文件时，webpack-dev-server通过webpack-dev-middleware拿到了webpack各个生命周期的打包文件，并且生成socketjs的长连接来推送到webpack-dev-server/client(浏览器客户端)。客户端拿到这些更新文件，通过webpack/hot/dev-server来判断是进行何种模式的更新。
+
+HMR runtime是整个HMR的中区，它接收到更新的消息后，它接收到上一步传递给他的新模块的 hash 值，它通过 JsonpMainTemplate.runtime 向 server 端发送 Ajax 请求，服务端返回一个 json，该 json 包含了所有要更新的chunk模块的 hash 值，获取到更新列表后，该模块再次通过 jsonp 请求，获取到最新的模块代码，并且将这些模块进行更新。这就是图中 7、8、9 步骤。
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-02-07-104221.jpg" alt="preview" style="zoom:50%;" />
+
+
+
+
+
+> 开启HMR的配置
+
+1. 通过webpack配置文件开启hmr设置
+
+在devServer里配置hot:true，来让Webpack-dev-server支持hot模式。
+
+```diff
+devServer: {
+	contentBase: './dist',
++	hot: true,
+},
+plugins: [
+	new CleanWebpackPlugin(),
+	new HtmlWebpackPlugin({
+		template: './src/index.html'
+	}),
+	// 这个是关键
++	new webpack.HotModuleReplacementPlugin(),
+]
+```
+
+需要注意的是，并不是配置了hmr前端就能看到效果了，还需要实现对应的[api接口](https://webpack.docschina.org/api/hot-module-replacement)。
+
+好在有很多plugin和loader都帮助我们解决了这些问题；
+
+
+
+2. 还有一种开启方式，这种方式不需要依赖webpack-dev-server, 而是通过自己写server设置。
+
+```js
+// 1.首先要在output里定义好webpack-hot-middleware/client
+entry: [
+  'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
+  // 这是主入口
+  './src/index.js',
+],
+// 2.并且保留HotModuleReplacementPlugin
+plugins: [
+	new webpack.HotModuleReplacementPlugin(),
+]
+
+// 3.新建一个server.js
+// 通过nodejs的方式，实现一个devServer
+const express = require('express');
+const webpack = require('webpack');
+const webpackHotMiddleware = require('webpack-hot-middleware');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const config = require('./webpack.config');
+const app = express();
+
+const compiler = webpack(config);
+
+app.use(webpackDevMiddleware(compiler, {
+	publicPath: config.output.publicPath,
+}));
+const options = {
+	log: console.log,
+	path: '/__webpack_hmr',
+	heartbeat: 10 * 1000,
+};
+// 通过hotMiddleware
+app.use(webpackHotMiddleware(compiler, options));
+
+app.listen(3000, () => {
+	console.log('Example app listening on port 3000!\n');
+})
+```
+
+以上两种方式就可以开启一个基础的hmr了。
+
+
+
+> 接受 updated module。
+
+index.js
+
+```diff
+  import _ from 'lodash';
+  import printMe from './print.js';
+
+  function component() {
+    var element = document.createElement('div');
+    var btn = document.createElement('button');
+
+    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+
+    btn.innerHTML = 'Click me and check the console!';
+    btn.onclick = printMe;
+
+    element.appendChild(btn);
+
+    return element;
+  }
+
+  document.body.appendChild(component());
++
++ if (module.hot) {
++   module.hot.accept('./print.js', function() {
++     console.log('Accepting the updated printMe module!');
++     printMe();
++   })
++ }
+```
+
+
+
+#### HMR 加载样式 
+
+借助于 `style-loader`，使用模块热替换来加载 CSS 实际上极其简单。此 loader 在幕后使用了 `module.hot.accept`，在 CSS 依赖模块更新之后，会将其 patch(修补) 到 `<style>` 标签中。
+
+
+
+
+
+
+### babel配置
 
 `@babel/preset-env`是用来将代码转化为es5的语法
 
@@ -780,6 +1227,7 @@ import('./b');
 有了这个配置，在代码里就不需要引入`lodash`这个模块就能使用`lodash`的方法了。
 
 ```js
+// 页面代码，不需要import _ from 'lodash';
 function component() {
 	var element = document.createElement('div');
 	element.innerHTML = _.join(['Hello', 'webpack'], ' ');
@@ -891,8 +1339,6 @@ https://webpack.docschina.org/guides/author-libraries
 #### library属性
 
 `library` 的值的作用，取决于 [libraryTarget](#libraryTarget属性) 选项的值；
-
-
 
 > Example：配置多个entry入口
 
@@ -1243,13 +1689,16 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 如果我们以分离代码作为开始，那么就应该以检查模块的输出结果作为结束，对其进行分析是很有用处的。[官方提供分析工具](https://github.com/webpack/analyse) 是一个好的初始选择。下面是一些可选择的社区支持(community-supported)工具：
 
 - [webpack-chart](https://alexkuz.github.io/webpack-chart/)：webpack stats 可交互饼图。
+
 - [webpack-visualizer](https://chrisbateman.github.io/webpack-visualizer/)：可视化并分析你的 bundle，检查哪些模块占用空间，哪些可能是重复使用的。
+
 - [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer)：一个 plugin 和 CLI 工具，它将 bundle 内容展示为便捷的、交互式、可缩放的树状图形式。(推荐)
+
 - [webpack bundle optimize helper](https://webpack.jakoblind.no/optimize)：此工具会分析你的 bundle，并为你提供可操作的改进措施建议，以减少 bundle 体积大小。
 
-<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-01-30-010247.png" alt="image-20200130090209469" style="zoom: 25%;" />
+  
 
-
+ ![image-20200207121247825](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-02-07-041248.png)
 
 
 
@@ -1274,6 +1723,12 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 - 开启多进程打包： thread-loader, parallel-webpack, happypack
 - 合理使用[sourcemap](#devtool)
 - 结合[打包分析](#打包分析 )工具
+
+
+
+打包GsComps
+
+
 
 
 
@@ -1379,4 +1834,228 @@ Preload用于更早地发现资源，并避免发起类似瀑布一样的请求�
 
 
 
+
+### create-react-app
+
+首先用`create-react-app`脚手架创建好工程，然后执行脚本`npm run eject`将webpack等相关的配置显示出来。
+
+当前版本对应如下
+
+```json
+"dependencies": {
+  "@babel/core": "7.8.4",
+  "@svgr/webpack": "4.3.3",
+  "@testing-library/jest-dom": "^4.2.4",
+  "@testing-library/react": "^9.3.2",
+  "@testing-library/user-event": "^7.1.2",
+  "@typescript-eslint/eslint-plugin": "^2.10.0",
+  "@typescript-eslint/parser": "^2.10.0",
+  "babel-eslint": "10.0.3",
+  "babel-jest": "^24.9.0",
+  "babel-loader": "8.0.6",
+  "babel-plugin-named-asset-import": "^0.3.6",
+  "babel-preset-react-app": "^9.1.1",
+  "camelcase": "^5.3.1",
+  "case-sensitive-paths-webpack-plugin": "2.3.0",
+  "css-loader": "3.4.2",
+  "dotenv": "8.2.0",
+  "dotenv-expand": "5.1.0",
+  "eslint": "^6.6.0",
+  "eslint-config-react-app": "^5.2.0",
+  "eslint-loader": "3.0.3",
+  "eslint-plugin-flowtype": "4.6.0",
+  "eslint-plugin-import": "2.20.0",
+  "eslint-plugin-jsx-a11y": "6.2.3",
+  "eslint-plugin-react": "7.18.0",
+  "eslint-plugin-react-hooks": "^1.6.1",
+  "file-loader": "4.3.0",
+  "fs-extra": "^8.1.0",
+  "html-webpack-plugin": "4.0.0-beta.11",
+  "identity-obj-proxy": "3.0.0",
+  "jest": "24.9.0",
+  "jest-environment-jsdom-fourteen": "1.0.1",
+  "jest-resolve": "24.9.0",
+  "jest-watch-typeahead": "0.4.2",
+  "mini-css-extract-plugin": "0.9.0",
+  "optimize-css-assets-webpack-plugin": "5.0.3",
+  "pnp-webpack-plugin": "1.6.0",
+  "postcss-flexbugs-fixes": "4.1.0",
+  "postcss-loader": "3.0.0",
+  "postcss-normalize": "8.0.1",
+  "postcss-preset-env": "6.7.0",
+  "postcss-safe-parser": "4.0.1",
+  "react": "^16.12.0",
+  "react-app-polyfill": "^1.0.6",
+  "react-dev-utils": "^10.2.0",
+  "react-dom": "^16.12.0",
+  "resolve": "1.15.0",
+  "resolve-url-loader": "3.1.1",
+  "sass-loader": "8.0.2",
+  "semver": "6.3.0",
+  "style-loader": "0.23.1",
+  "terser-webpack-plugin": "2.3.4",
+  "ts-pnp": "1.1.5",
+  "url-loader": "2.3.0",
+  "webpack": "4.41.5",
+  "webpack-dev-server": "3.10.2",
+  "webpack-manifest-plugin": "2.2.0",
+  "workbox-webpack-plugin": "4.3.1"
+}
+```
+
+先看一下 scripts/build.js 用来进行生产环境打包脚本
+
+核心的webpack配置存在webpack.config.js
+
+### vue-cli
+vue-cli是官方提供的脚手架工具。~2.0版本会自动创建webpack的很多配置项。 ~3.0版本做了很大改动，封装了所有的webpack配置项，开发如果需要更改配置，需在项目里创建一个vue.config.js文件，根据文档进行配置。
+
+#### vue-cli@2.0 loader部分
+> css-loader
+
+vue-cli2创建的webpack配置里，自动创建了很多处理样式的loader，这里截取下来学习下。
+
+```js
+// vue-loader.config.js的css-loader
+{
+  css: [
+    "vue-style-loader", 
+    {
+      loader: "css-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "postcss-loader", 
+      options: {
+        sourceMap: true
+      }
+    }
+  ], 
+  less: [
+    "vue-style-loader", 
+    {
+      loader: "css-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "postcss-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "less-loader", 
+      options: {
+        sourceMap: true
+      }
+    }
+  ], 
+  sass: [
+    "vue-style-loader", 
+    {
+      loader: "css-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "postcss-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "sass-loader", 
+      options: {
+        indentedSyntax: true, 
+        sourceMap: true
+      }
+    }
+  ], 
+  scss: [
+    "vue-style-loader", 
+    {
+      loader: "css-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "postcss-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "sass-loader", 
+      options: {
+        sourceMap: true
+      }
+    }
+  ], 
+  styl: [
+    "vue-style-loader", 
+    {
+      loader: "css-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "postcss-loader", 
+      options: {
+        sourceMap: true
+      }
+    }, 
+    {
+      loader: "stylus-loader", 
+      options: {
+        sourceMap: true
+      }
+    }
+  ]
+}
+```
+可以看出来，基本上loader的配置顺序为 `vue-style-loader` -> `css-loader` -> `postcss-loader` -> `各自预处理框架的loader`；
+
+除了.vue里写样式之外，一些单独存放的样式文件的处理loader也配置如下。因为基本重复，这里就不贴所有的配置项了。
+```js
+//生成结果
+[
+  ...
+  {
+    test: /\.sass$/
+    use: [
+      "vue-style-loader", 
+      {
+        loader: "css-loader", 
+        options: {
+          sourceMap: true
+        }
+      }, 
+      {
+        loader: "postcss-loader", 
+        options: {
+          sourceMap: true
+        }
+      }, 
+      {
+        loader: "sass-loader", 
+        options: {
+          indentedSyntax: true, 
+          sourceMap: true
+        }
+      }
+    ]
+  }
+]
+```
+
+#### vue-cli@3.0 配置
+> 官方文档
+> https://cli.vuejs.org/zh/config/#baseurl
 

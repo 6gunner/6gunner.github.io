@@ -2,34 +2,26 @@
 
 > 官方文档 https://dvajs.com/guide/
 
+## Dva 是什么？
 
-
-## Dva是什么？
-
-### react框架
+### react 框架
 
 #### 提供的东西
 
-提供组件的编写，将组件编译成虚拟dom
+提供组件的编写，将组件编译成虚拟 dom
 
 #### 不能解决的问题
 
-- 组件间的通信：react只能支持父子组件的传参
-- 数据流：数据如何和view的串联？路由如何和数据绑定？如何编写异步请求
+- 组件间的通信：react 只能支持父子组件的传参
+- 数据流：数据如何和 view 的串联？路由如何和数据绑定？如何编写异步请求
 
+### react 架构对比
 
-
-### react架构对比
-
-|         | 原始                                                         | dva                                            |
-| ------- | ------------------------------------------------------------ | ---------------------------------------------- |
-| APP路由 | 引用react-router组件，通过中间件将应用路由和react-redux结合在一起； | 通过dva/router来引入，底层用的还是react-router |
-|         |                                                              |                                                |
-|         |                                                              |                                                |
-
-
-
-
+|          | 原始                                                                    | dva                                               |
+| -------- | ----------------------------------------------------------------------- | ------------------------------------------------- |
+| APP 路由 | 引用 react-router 组件，通过中间件将应用路由和 react-redux 结合在一起； | 通过 dva/router 来引入，底层用的还是 react-router |
+|          |                                                                         |                                                   |
+|          |                                                                         |                                                   |
 
 ## API
 
@@ -39,23 +31,17 @@
 
 ```js
 const PageComponet = dynamic({
-	app,
-	models: () => [
-		import('./models/users'),
-	], // 
-	components: () => import('./routes/Page'),
-})
+  app,
+  models: () => [import("./models/users")], //
+  components: () => import("./routes/Page")
+});
 ```
-
-
 
 ## Redux-Saga
 
-重新定义side-effects为`Effects`
+重新定义 side-effects 为`Effects`
 
-
-
-yield 调用另一个effects
+yield 调用另一个 effects
 
 ```javascript
 yield put({
@@ -66,28 +52,36 @@ yield put({
 yield take('user/getusergroupinfo/@@end')
 ```
 
-
-
-yield 获取state
+yield 获取 state
 
 ```js
 let address_list = yield select(state => state.finance.address_list);
 ```
 
-
-
-解释一下take
+解释一下 take
 
 ```
 *editpassword({ payload, history }, { call, put, take}) {
 ```
 
-
-
 // 这个是干嘛的？
-
-
 
 ```
 this.props.loading.effects
+```
+
+监听浏览器的路径变化
+
+```
+ subscriptions: {
+    setup ({ dispatch, history }) {
+		// 在这里可以对浏览器的url进行监听
+		history.listen(location => {
+			const pathname = location.pathname
+			const search = location.search
+			const preview = /preview/.test(search)
+		});
+	}),
+
+ }
 ```
