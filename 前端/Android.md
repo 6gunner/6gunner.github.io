@@ -1,3 +1,5 @@
+> https://github.com/JsonChao/Awesome-Android-Notebook
+
 # 一、搭建开发环境
 
 ## 问题 1：找不到 sdk
@@ -32,6 +34,8 @@ error: cannot connect to daemon
 
 ## adb 环境配置
 
+## adb shell 连接上手机
+
 ### adb mac 环境变量
 
 ```shell
@@ -56,7 +60,7 @@ adb -s {seria number} install xxx.apk 在指定设备上安装 apk
 
 ./adb root
 
-【Q】如果出现错误：“adbd cannot run as root in production builds”， 那是由于 root 不完全；
+【Q】如果出现错误：“adb cannot run as root in production builds”， 那是由于 root 不完全；
 
 【A】安装“超级 adb“；
 
@@ -1105,11 +1109,11 @@ onRestoreInstanceState --> onResume
 
 原理：
 
-​ `设置配置`是用来描述设备当前状态的一系列特征。特征包括：屏幕方向、屏幕密度、屏幕尺寸、键盘类型、底座模式、语言等。
+`设置配置`是用来描述设备当前状态的一系列特征。特征包括：屏幕方向、屏幕密度、屏幕尺寸、键盘类型、底座模式、语言等。
 
-​ ==在应用运行时，只要`设备配置`发生了改变，Android 就会销毁当前 Activity，重新创建新的 activity。==
+==在应用运行时，只要`设备配置`发生了改变，Android 就会销毁当前 Activity，重新创建新的 activity。==
 
-​ 因次，当屏幕发生旋转时，方向改变了，所以设备配置发生了变化，因此 activity 会重新创建。
+因次，当屏幕发生旋转时，方向改变了，所以设备配置发生了变化，因此 activity 会重新创建。
 
 整个 activity 的生命周期过程如下：
 
@@ -1365,78 +1369,78 @@ viewPager.setCurrentItem(0);
 
   动态添加 fragment 的方式是唯一可以在运行时控制 fragment 的方式。我们可以通过代码编程，将 fragment 动态添加、替换、删除。动态添加分为以下几个步骤：
 
-  1. 定义容器视图
+  1 定义容器视图
 
-     ```xml
-     <?xml version="1.0" encoding="utf-8"?>
-     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">
-     <!-- 虽然是动态添加fragment，但是也需要在Activity的视图中为fragment安排位置 -->
-     <FrameLayout
-             android:id="@+id/fragment_container"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent" />
-     </LinearLayout>
-     ```
+  ```xml
+  <?xml version="1.0" encoding="utf-8"?>
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+  <!-- 虽然是动态添加fragment，但是也需要在Activity的视图中为fragment安排位置 -->
+  <FrameLayout
+          android:id="@+id/fragment_container"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent" />
+  </LinearLayout>
+  ```
 
-     使用 FrameLayout 来作为 fragment 的容器视图，一个托管的 Activity 可以有多个容器视图。
+  使用 FrameLayout 来作为 fragment 的容器视图，一个托管的 Activity 可以有多个容器视图。
 
-     FrameLayout 是最简单的 ViewGroup 组件，它不以特定的方式来安排子视图的位置；
+  FrameLayout 是最简单的 ViewGroup 组件，它不以特定的方式来安排子视图的位置；
 
-     FrameLayout 子视图的位置排列取决于他们各自的 android:layout_gravity 属性
+  FrameLayout 子视图的位置排列取决于他们各自的 android:layout_gravity 属性
 
-  2) 创建 fragment 类
+2. 创建 fragment 类
 
-     ```java
-     public class CrimeListFragment extends Fragment {
+   ```java
+   public class CrimeListFragment extends Fragment {
 
-       private RecyclerView mRecyclerView;
+     private RecyclerView mRecyclerView;
 
-       private List<CrimeBean> list;
+     private List<CrimeBean> list;
 
-       private CrimeAdapter mCrimeAdapter;
+     private CrimeAdapter mCrimeAdapter;
 
-       public static CrimeListFragment createInstance() {
-         CrimeListFragment fragment = new CrimeListFragment();
-         return fragment;
-       }
+     public static CrimeListFragment createInstance() {
+       CrimeListFragment fragment = new CrimeListFragment();
+       return fragment;
+     }
 
-       /**
-        * onCreate方法是public的，需要被托管的Activity调用
-        * onCreate方法并没有创建fragment视图，视图是在onCreateView里创建的
-        * @param savedInstanceState
-        */
-       @Override
-       public void onCreate(@Nullable Bundle savedInstanceState) {
-         super.onCreate(savedInstanceState);
-         list = DataServer.getCrimes(100);
-       }
+     /**
+      * onCreate方法是public的，需要被托管的Activity调用
+      * onCreate方法并没有创建fragment视图，视图是在onCreateView里创建的
+      * @param savedInstanceState
+      */
+     @Override
+     public void onCreate(@Nullable Bundle savedInstanceState) {
+       super.onCreate(savedInstanceState);
+       list = DataServer.getCrimes(100);
+     }
 
-       /**
-        * inflater和container是用来生成fragment视图的必须参数
-        * savedInstanceState可以用来恢复视图数据
-        * @param inflater
-        * @param container
-        * @param savedInstanceState
-        * @return
-        */
-       @Nullable
-       @Override
-       public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-         View view = inflater.inflate(R.layout.fragment_crime_list, container,false);
-         mRecyclerView = view.findViewById(R.id.rv_crime_list);
-         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-         updateUI();
-         return view;
-       }
+     /**
+      * inflater和container是用来生成fragment视图的必须参数
+      * savedInstanceState可以用来恢复视图数据
+      * @param inflater
+      * @param container
+      * @param savedInstanceState
+      * @return
+      */
+     @Nullable
+     @Override
+     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+       View view = inflater.inflate(R.layout.fragment_crime_list, container,false);
+       mRecyclerView = view.findViewById(R.id.rv_crime_list);
+       mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+       updateUI();
+       return view;
+     }
 
-       private void updateUI() {
-         mCrimeAdapter = new CrimeAdapter(list);
-         mRecyclerView.setAdapter(mCrimeAdapter);
-         mCrimeAdapter.setOnItemClickListener(this);
-       }
-     ```
+     private void updateUI() {
+       mCrimeAdapter = new CrimeAdapter(list);
+       mRecyclerView.setAdapter(mCrimeAdapter);
+       mCrimeAdapter.setOnItemClickListener(this);
+     }
+   ```
 
 
        @Override
@@ -1481,19 +1485,187 @@ fragment 的生命周期类似于 activity，但是它的生命周期不是由�
 
 <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-02-16-093751.png" alt="img" style="zoom:90%;" />
 
-​ 当向运行中的 Activity 添加 fragment 时，FragmentManger 会立即执行 fragment 的必要方法，保持 fragment 和 Activity 两者状态一致。以下方法会依次被调用：
+当向运行中的 Activity 添加 fragment 时，FragmentManger 会立即执行 fragment 的必要方法，保持 fragment 和 Activity 两者状态一致。以下方法会依次被调用：
 
 - onAttach(Activity)
-
 - onCreate(Bundle):
-
 - onCreateView(...): 系统会在 Fragment 首次绘制时调用此方法。如果需要绘制 UI，需要在这个方法里返回 UI 的根视图
-
 - onActivityCreated(Bundle)
-
 - onStart
-
 - onResume
+
+```java
+package com.hb.cfdbase.baselib.mvp;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.hb.cfdbase.baselib.utils.DebugLog;
+
+import java.util.List;
+
+
+/**
+ * 抽象fragment
+ */
+public abstract class BaseFragment extends Fragment {
+
+	private View rootView;
+
+	public BaseFragment() {
+		super();
+		// 放一个bundler对象，避免arguments是null；
+		setArguments(new Bundle());
+	}
+
+
+	@Nullable
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+		if (rootView == null) {
+			setRootView(createView(inflater, container, savedInstanceState));
+			executeOnceAfterCreateView();
+		}
+
+		if (rootView.getParent() != null) {
+			((ViewGroup) rootView.getParent()).removeView(rootView);
+		}
+
+		return rootView;
+	}
+
+	/**
+	 * 这个不会由Fragment自身的生命周期发起 而是由 {@link android.support.v4.app.FragmentPagerAdapter}
+	 * 和 {@link android.support.v4.app.FragmentStatePagerAdapter} 来调用，所以一般情况下，只有在ViewPager
+	 * 中才会有
+	 *
+	 * @param isVisibleToUser
+	 */
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+		DebugLog.i(getClass().getSimpleName() + "------enter------  userVisible:" + isVisibleToUser);
+	}
+
+	/**
+	 * 在Fragment show hide 的时候被调用，但是第一次不会调用.
+	 * 可以查看{@link android.support.v4.app.FragmentManager} 源码，了解调用时机
+	 *
+	 * @param hidden
+	 */
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		List<Fragment> childFragments = getChildFragmentManager().getFragments();
+		if (childFragments != null) {
+			for (Fragment item : childFragments) {
+				if (item != null && item.isAdded()) {
+					// 设置子fragment的可见性
+					item.onHiddenChanged(hidden || item.isHidden());
+				}
+			}
+		}
+		DebugLog.i(getClass().getSimpleName() + "------enter------ hidden:" + hidden);
+	}
+
+	/**
+	 * fragment初始化视图。
+	 * 基本实现： inflater.inflate(R.layout.example_fragment, container, false);
+	 *
+	 * @param inflater
+	 * @param container
+	 * @param savedInstanceState
+	 * @return
+	 */
+	protected abstract View createView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
+
+	/**
+	 * 自定义回调
+	 */
+	protected abstract void executeOnceAfterCreateView();
+
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		DebugLog.i(getClass().getSimpleName() + "------enter------");
+	}
+
+	protected void setRootView(View rootView) {
+		this.rootView = rootView;
+	}
+
+	public View getRootView() {
+		return rootView;
+	}
+}
+
+
+```
+
+![image-20200227113253527](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-02-27-033253.png)
 
 ### getSupportFragmentManager、getChildFragmentManager 的区别
 
@@ -1505,7 +1677,7 @@ getSupportFragmentManager： 返回 Activity 的 FragmentManager，他能管理�
 
 ### Fragment 和 Activity 间传递消息
 
-通过 bundle 来传值
+==官方推荐通过 Fragment.setArguments(Bundle bundle) 来传值==，
 
 Fragment 跳转不是通过 Intent 的，有自己的一套体系；
 
@@ -1524,12 +1696,216 @@ FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 fragmentTransaction.add(R.id.kline_view, klineFragment);
 fragmentTransaction.commit();
 
-// 4. 在fragment里获取参数
+// 4. 在fragment里通过argments获取参数
 Bundle arguments = getArguments();
 CoinPairBean coinPairBean = (CoinPairBean) arguments.getSerializable(AppData.INTENT.COINPAIR);
 ```
 
-最后：不要滥用 fragment。一个页面中，最好的设计是存在 2~3 个 fragment。
+### Fragment 懒加载
+
+> https://www.jianshu.com/p/0e2d746e3a3d
+
+懒加载的由来：
+
+Fragment 最常见的两种使用方式就是 ViewPager 嵌套 Fragment ，以及直接通过 FragmentManager 来管理 Fragment。
+
+Fragment 在创建的整个过程会走完从`onAttach()`到`onResume()`的生命周期方法，一般情况我们无非在这里几个生命周期方法（例如 `onActivityCreated()`）里发起默认的网络请求。
+
+但是如果每个 Fragment 都有默认的网络请求操作（也可能是其它耗时操作，这里以网络请求为例），那么多个在 Fragment 创建过程中都会执行默认网络请求，无论 Fragment 是否对用户可见，这样有浪费流量、影响性 App 性能、用户体验不佳等缺点。
+
+我们要做的事情就是让 Fragment 按需加载数据，即对用户可见时再请求数据，让数据的请求时机可控，而不是在初始化创建过程中直接请求数据，同时不受嵌套层级的影响！
+
+所以问题的原因显而易见，既然不能在 Fragment 生命周期方法直接请求数据，所以就要另谋它法。
+
+版本 1：
+
+核心逻辑就是在 onActivityCreated 生命周期里判断是否可见
+
+```java
+@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		isViewCreated = true;
+		// 页面可见
+		if (getUserVisibleHint() && !isLoadDataCompleted) {
+			lazyLoadData();
+		}
+	}
+
+```
+
+
+
+版本2：
+
+但是版本1的问题在于，如果有多层Fragment嵌套关系。比如下面所示
+
+```
+
+├── fragment1-1
+├── fragment1-2
+│   ├── fragment2-1
+│   ├── fragment2-2
+│   └── fragment2-3
+└── fragment1-3
+    ├── fragment3-1
+    ├── fragment3-2
+    └── fragment3-3
+```
+
+实际上`fragment1-1`、`fragment2-1`、`fragment3-1`都会去加载数据。因为默认这些fragment都会被setUserVisibleHint(true)。
+
+所以，需要增加以下对parentFragment的判断。
+
+```java
+	/**
+	 * 要同时对它的parent是否可见进行判断
+	 *
+	 * @return
+	 */
+	public boolean realHidden() {
+		if (getParentFragment() == null) {
+			return isHidden();
+		} else if (getParentFragment() instanceof LazyLoadFragment) {
+			return ((LazyLoadFragment) getParentFragment()).realHidden() || isHidden();
+		} else {
+			return isHidden() && getParentFragment().isHidden();
+		}
+	}
+```
+
+### 
+
+版本3：
+
+FragmentManager 管理 Fragment 时，和 ViewPager 嵌套 Fragment 中的问题类似，但此时`setUserVisibleHint()`方法并不会被调用，所以要寻找新的途径了。
+
+当用 FragmentManager 来 `add()`、`hide()`、`show()` Fragment 时 Fragment 的`onHiddenChanged(boolean hidden)`方法会被调用，其中`hidden`参数为`false`时代表对应 Fragment 可见，否则不可见，
+
+
+
+全部代码
+
+```java
+/**
+ * 用于Fragment在viewpager中嵌套时懒加载 以及对于Fragment显示隐藏的回调监控
+ * <p>
+ * ================================================
+ */
+
+public abstract class LazyLoadFragment extends BaseFragment {
+
+	// 界面是否已创建完成
+	private boolean isViewCreated;
+
+	// 数据是否已请求
+	private boolean isLoadDataCompleted;
+
+	// 是否对用户可见
+	private boolean isVisibleToUser = false;
+
+	/**
+	 * viewpager会调用这个方法
+	 * @param isVisibleToUser
+	 */
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+		if (isVisibleToUser && isViewCreated && !isLoadDataCompleted) {
+			lazyLoadData();
+		}
+		if (isViewCreated && isAdded()) {
+			setVisibleChanged(isVisibleToUser && !realHidden());
+		}
+	}
+
+	/**
+	 * fragmetnManager会调用这个方法
+	 * @param hidden
+	 */
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		setVisibleChanged(!hidden);
+	}
+
+	/**
+	 * {@link #isVisible()}
+	 */
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (isAdded()) {
+			setVisibleChanged(!realHidden() && getUserVisibleHint());
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (isAdded()) {
+			setVisibleChanged(false);
+		}
+	}
+
+	/**
+	 * 要同时对他的parent进行计算
+	 *
+	 * @return
+	 */
+	public boolean realHidden() {
+		if (getParentFragment() == null) {
+			return isHidden();
+		}
+		else if (getParentFragment() instanceof LazyLoadFragment) {
+			return ((LazyLoadFragment) getParentFragment()).realHidden() || isHidden();
+		} else {
+			return isHidden() && getParentFragment().isHidden();
+		}
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		isViewCreated = true;
+		if (getUserVisibleHint() && !isLoadDataCompleted) {
+			lazyLoadData();
+		}
+	}
+
+	protected void lazyLoadData() {
+		isLoadDataCompleted = true;
+	}
+
+	/**
+	 * 没有使用 {@link #setUserVisibleHint(boolean)} 是因为它会公布到Fragment外部调用，混在一起太混乱了
+	 *
+	 * @param visible
+	 */
+	private void setVisibleChanged(boolean visible) {
+		// 解决重复调用问题
+		if (isVisibleToUser == visible) {
+			return;
+		}
+		isVisibleToUser = visible;
+		onVisibleChanged(visible);
+	}
+
+	/**
+	 * 向子类通知Fragment的可见性变化 回调
+	 *
+	 * @param visible
+	 */
+	protected void onVisibleChanged(boolean visible) {
+		DebugLog.i(getClass().getSimpleName() + "------enter------  visible:" + visible);
+	}
+}
+
+```
+
+
+
+
 
 ## ConstraintLayout
 
@@ -1649,13 +2025,13 @@ mHandler.sendEmptyMessageDelayed(0, n * 1000) // 倒计时n秒
 
 #### 适配器：
 
-​ **Adapter**: 创建一个`MyListAdapter`继承`BaseAdapter`，也可以用 Android 自带的`ArrayAdapter`;
+**Adapter**: 创建一个`MyListAdapter`继承`BaseAdapter`，也可以用 Android 自带的`ArrayAdapter`;
 
-​ 将 listView 的适配器设置为此处创建的 Adapter 实例；
+将 listView 的适配器设置为此处创建的 Adapter 实例；
 
 #### 监听器:
 
-​ clickListener：如果需要对 list-item 的点击事情做监听，可以在 listView 的实例上添加 onItemClickListener;
+clickListener：如果需要对 list-item 的点击事情做监听，可以在 listView 的实例上添加 onItemClickListener;
 
 代码：
 
@@ -1751,16 +2127,16 @@ RecyclerView 需要 Adapter 和 ViewHolder 结合来使用
 
 - #### Adapter 的作用
 
-​ 每一个 listview 都需要 adapter。在 RecyclerView 里，adapter 负责两件事情：
+每一个 listview 都需要 adapter。在 RecyclerView 里，adapter 负责两件事情：
 
 1. 创建必要的 ViewHolder 以及对应的视图，提供给 RecyclerView
 2. 负责根据传入的位置，找到对应的 model，绑定到 ViewHolder 上；
 
 Adapter 的实现步骤：
 
-​ a.创建一个 Adapter 继承 RecyclerView.Adapter，在 Adapter 里实现对应的方法。
+a.创建一个 Adapter 继承 RecyclerView.Adapter，在 Adapter 里实现对应的方法。
 
-​ b.创建 ViewHolder 继承 RecyclerView.ViewHolder
+b.创建 ViewHolder 继承 RecyclerView.ViewHolder
 
 ```java
 // RecyclerView.Adapter实现代码
@@ -2066,11 +2442,11 @@ AsyncTask 类中参数为 3 种泛型类型，控制 AsyncTask 子类执行线�
 
 a. Params：开始异步任务执行时传入的参数类型
 
-​ ![image-20191012175944886](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-12-100005.png)
+![image-20191012175944886](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-12-100005.png)
 
 b.Progress：异步任务执行过程中，返回进度值的类型。类型和 onProgressUpdate()方法的入参数一致
 
-​ ![image-20191012180527997](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-12-100528.png)
+![image-20191012180527997](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-10-12-100528.png)
 
 c. Result：异步任务执行完成后，返回的结果类型，与 doInBackground()的返回值类型保持一致
 
@@ -2351,21 +2727,19 @@ Locale.getDefault().toLanguageTag()     ---> en-US
 
   事件处理模式
 
-  ​ 1. ThreadMode.POSTING:
+  1.  ThreadMode.POSTING:
 
-  ​ 订阅者被调用的线程和提交事件的线程是同一个线程，
+  订阅者被调用的线程和提交事件的线程是同一个线程，
 
-  ​ 这个模式下，开销最小，因为它完全不需要切换线程；
+  这个模式下，开销最小，因为它完全不需要切换线程；
 
-​ 2. ThreadMode.MAIN：在主线程中处理。一般会涉及到 UI 的处理。
+2.  ThreadMode.MAIN：在主线程中处理。一般会涉及到 UI 的处理。
 
-​ 3. ThreadMode.MAIN_ORDERED： 在主线程中处理，并且严格按照提交的顺序，并保持一致。
+3.  ThreadMode.MAIN_ORDERED： 在主线程中处理，并且严格按照提交的顺序，并保持一致。
 
-​ 4. ThreadMode.BACKGROUND：
+4.  ThreadMode.BACKGROUND：
 
-​ 5. ThreadMode.ASYNC：
-
-​
+5.  ThreadMode.ASYNC：
 
 ```java
 // Called in the same thread (default)
@@ -2444,7 +2818,7 @@ externalCacheDir: /storage/emulated/0/Android/data/com.example.koda.imagewrapper
 
 ```
 
-​ 除了一些私有目录之外，还有一些目录是公用的。比如说用户通过 APP 来保存的图片、下载的文件。这些内容一般不希望随着 APP 卸载而被清除，所以 Android 单独开辟了一个目录来存放。 开发者可以通过 Environment 类提供的方法`getExternalStoragePublicDirectory`直接获取相应目录的绝对路径。
+除了一些私有目录之外，还有一些目录是公用的。比如说用户通过 APP 来保存的图片、下载的文件。这些内容一般不希望随着 APP 卸载而被清除，所以 Android 单独开辟了一个目录来存放。 开发者可以通过 Environment 类提供的方法`getExternalStoragePublicDirectory`直接获取相应目录的绝对路径。
 
 Android 默认创建了几个不同的类型目录，通过传递不同的 type 参数类型可以获取到目录：
 
@@ -2454,383 +2828,3 @@ Android 默认创建了几个不同的类型目录，通过传递不同的 type 
 ```
 
 # [编码规范](./Android编码规范)
-
-# 框架篇
-
-## MVP
-
-为了解决 mvc 中，逻辑处理与视图展示无法分离的问题；
-
-**m**：model/bean 数据层，主要负责处理业务逻辑
-
-**v**: activity/fragment 视图层，只用来展示界面，逻辑处理交给 presenter 来处理；
-
-**p**: presenter 展示层，和 view 一一对应；
-
-```java
-// 基础类
-BaseFragment<P extends BaseFragmentPresenter<V>, V extends AppUI>
-
-
-```
-
-presenter 里面有 UI
-
-fragment 里面传入了 presenter
-
-```mermaid
-onResume -->
-```
-
-## 网络组件
-
-OkHttp
-
-使用 OkHttpClient 的时候需要**注意**以下几点：
-
-1. 最好只使用一个共享的 OkHttpClient 实例，将所有的网络请求都通过这个实例处理。因为每个 OkHttpClient 实例都有自己的连接池和线程池，重用这个实例能降低延时，减少内存消耗，而重复创建新实例则会浪费资源。
-2. OkHttpClient 的线程池和连接池在空闲的时候会自动释放，所以一般情况下不需要手动关闭，但是如果出现极端内存不足的情况，可以使用以下代码释放内存：
-
-```java
-client.dispatcher().executorService().shutdown();   //清除并关闭线程池
-client.connectionPool().evictAll();                 //清除并关闭连接池
-client.cache().close();                             //清除cache
-```
-
-## WebSocket 框架
-
-1.开源框架选择
-
-市面上比较多的博客里写到用： [java-websocket](https://github.com/TooTallNate/Java-WebSocket)。
-
-再基于网上某一个大神的封装，思路清晰，设计的很合理，做起业务起来一定很舒适。
-
-> 参考连接：https://github.com/0xZhangKe/WebSocketDemo/tree/master/doc；
->
-> 另一篇博客，有空阅读https://www.jianshu.com/p/7b919910c892
-
-看到项目里面已经有人用过 okhttp3 提供的 websocket 封装了功能。okhttp3 是项目里面封装网络请求用到的开源框架，一直在更新，再加上前人的逻辑代码已经存在，那么久索性沿用他们的代码；后续如果新的项目尝试用一下第一种；
-
-2.带着问题去查看文章
-
-在查资料之前，我的几个问题是：
-
-- 怎么去建立 websocket 的连接？
-- 怎么去保持连接，
-- 怎么监听消息，消息怎么给我的 Activity 或者 Fragment 使用？
-- 怎么断开重连，并且重新订阅；
-
-  3.阅读前人代码框架
-
-说实话代码写的真的是乱，需要整理一下流程；
-
-<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-11-20-085339.png" alt="image-20191120165338088" style="zoom:50%;" />
-
-创健 okHttpClient
-
-```java
- OkHttpClient.Builder clientBuild = new OkHttpClient.Builder();
-    //设置一下整体的超时
-    clientBuild.connectTimeout(DEFAULT_CONNECT_TIME_OUT, TimeUnit.SECONDS)
-      .retryOnConnectionFailure(true)
-      //.connectTimeout(2, TimeUnit.SECONDS)
-      .readTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
-      .writeTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
-      .cookieJar(cookieJar)
-      .cache(cache)
-      .addInterceptor(interceptorWrapper);
-
-    clientBuild.eventListenerFactory(HttpEventListener.FACTORY);
-    clientBuild.sslSocketFactory(createSSLSocketFactory());
-    clientBuild.hostnameVerifier(new HostnameVerifier() {
-      @Override
-      public boolean verify(String hostname, SSLSession session) {
-        return true;
-      }
-    });
-    DEFAULT_CLIENT = clientBuild.build();
-```
-
-因为 okhttpClient 在多个地方要用到，所以封装到了 HttpUtils 里，这里截取了部分逻辑代码；
-
-建立 websocket 连接
-
-```java
-OkHttpClient okHttpClient = HttpUtils.getInstance().getHttpClient();
-
-		if (okHttpClient != null) {
-			Request.Builder builder = new Request.Builder().url(url);
-      // 参数...
-			builder.addHeader(Fields.PARAM_NETT, DevicesUtil.GetNetworkType(CApplication.getInstance()));
-			builder.addHeader(Fields.PARAM_UID, userId);
-			String lan = RateAndLocalManager.GetInstance(CApplication.getInstance()).getCurLocalLanguage();
-			if (TextUtils.isEmpty(lan)) {
-				builder.addHeader(Fields.PARAM_LANGUAGE, lan);
-			}
-			Request request = builder.build();
-      webSocketClient = okHttpClient.newWebSocket(request, new MyWebSocketListener());
-```
-
-## RxJava
-
-### RxJava 概述
-
-R：reactive 响应式的，x:代表任何的意思。Rxjava 表示以 java 语言实现的响应式的编程。
-
-### Rxjava 核心思想
-
-响应式编程核心思想就是观察者模式。本质上要求`观察者(A)`高度敏感的关注`被观察者(B)`的状态变化。当 B 状态发生变化时，A 需要做出及时的反应。
-
-一般观察者模式有两种：主动模式、被动模式；
-
-主动的观察者模式是：`观察者`主动去监听`被观察者`状态变化
-
-被动的观察者模式是：`观察者`向`被观察者`订阅消息，`被观察者`状态发生变化时，向订阅者发送消息.
-
-==Rxjava 的模式是被动观察者模式==
-
-### Rxjava1 解读
-
-![image-20191102131511286](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-11-02-051512.png)
-
-**Observable**：被观察者、
-
-通过 create 方法来创建一个被观察者对象；
-
-通过 subscribe 方法来注册一个观察者；
-
-**Observer**: 观察者
-
-作为 Observable 的 subscribe 方法的参数；
-
-**Subscription**：订阅
-
-用来描述`Observable`于`Observer`对象间的关系
-
-通过 unsubscribe 方法来取消订阅
-
-**OnSubscribe**: 被订阅时的事件
-
-当订阅时，会触发此接口的 call 方法，
-
-他是`Observable`的内部接口，用来发送数据；
-
-`Observable对象`的`subscribe`调用了 hook.onSubscribeStart 方法，实际上就是调用了的`OnSubscribe`对象的 call 方法；
-
-**Subscriber**：订阅者
-
-实现了`Observer`和`Subscription`接口；
-
-是 call 回调方法的参数；
-
-Rxjava2 解读
-
-# 五、三方组件
-
-## 5-1 SmartRefreshLayout
-
-文档地址：https://github.com/scwang90/SmartRefreshLayout
-
-框架组成
-
-- SmartRefreshLayout 刷新布局核心实现，自带 ClassicsHeader（经典）、BezierRadarHeader（贝塞尔雷达）两个 Header.
-
-- SmartRefreshHeader 各种 Header 的集成，除了 Layout 自带的 Header，其它都在这个包中。Header 是指在下拉刷新时，显示“正在刷新”中的 header。
-
-- SmartRefreshFooter 各种 Footer 的集成，除了 Layout 自带的 Footer，其它都在这个包中。Footer 是指在上拉加载更多时，显示“正在加载”的 footer。
-
-  <img src="https://raw.githubusercontent.com/scwang90/SmartRefreshLayout/master/art/jpg_preview_xml_define.jpg" alt="img" style="zoom:75%;" />
-
-### 1.简单使用
-
-在 XML 布局文件中添加 SmartRefreshLayout
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<com.scwang.smartrefresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/refreshLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:background="#fff" />
-</com.scwang.smartrefresh.layout.SmartRefreshLayout>
-```
-
-在 Activity 或者 Fragment 中添加代码
-
-```java
-RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
-refreshLayout.setOnRefreshListener(new OnRefreshListener() {
-    @Override
-    public void onRefresh(RefreshLayout refreshlayout) {
-        refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
-    }
-});
-refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
-    @Override
-    public void onLoadMore(RefreshLayout refreshlayout) {
-        refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
-    }
-});
-```
-
-2.指定 Header 和 Footer
-
-## BufferKnife
-
-在 activity 里使用
-
-```java
-class ExampleActivity extends Activity {
-  @BindView(R.id.title) TextView title;
-  @BindView(R.id.subtitle) TextView subtitle;
-  @BindView(R.id.footer) TextView footer;
-
-  @Override public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.simple_activity);
-    ButterKnife.bind(this);
-    // TODO Use fields...
-  }
-}
-```
-
-在 fragment 里使用
-
-```java
-public class FancyFragment extends Fragment {
-  @BindView(R.id.button1) Button button1;
-  @BindView(R.id.button2) Button button2;
-
-  @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View view = inflater.inflate(R.layout.fancy_fragment, container, false);
-    ButterKnife.bind(this, view);
-    // TODO Use fields...
-    return view;
-  }
-}
-```
-
-## BRVAH
-
-> 使用文档
-> https://www.jianshu.com/p/b343fcff51b0
-
-### BaseQuickAdapter
-
-Item 的点击事件
-
-```java
-mCFDAssetListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-			@Override
-			public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-				BalanceAssetBean itemModel = (BalanceAssetBean) adapter.getData().get(position);
-				if (itemModel != null) {
-					IntentUtils.goCFDAssetDetail(getContext(), itemModel);
-				}
-			}
-		});
-```
-
-# 六、升级策略
-
-## 强制更新策略
-
-当发布新的版本时，或者有一些改动较大的功能时，往往需要强制用户更新版本。
-
-一般检测的策略是根据版本号来判断。在 app 启动时，检测本地 app 的版本号。如果用户安装的版本号 < 最新的版本号，通过弹出 toast 的方式，强制 app 更新。
-
-检测最新的版本可以通过一个简单的 json 文件来实现。以下是我在实际项目中用到的一种方式：
-
-```java
-// checkVersionUpdate
-// 在MainActivity的onCreate方法里, 检测app的版本
-UtilsApi.RequestCheckVersionUpdate(context, new SimpleResponseListener<UpdateResponse>() {
-      @Override
-      public void onSuccess(UpdateResponse data) {
-        super.onSuccess(data);
-        if (CodeUtils.isSuccess(data, false)) {
-          // 比较当前版本和服务器上的版本
-          if (DevicesUtil.getAppVersion(context) >= data.versionCode) {
-            if (showToast) {
-              ToastUtils.showLong(context, context.getString(R.string.string_version_new));
-            }
-            return;
-          }
-          String url = data.downloadUrl;
-          String descp = data.newFeatures;
-          boolean forceUpdate = data.needForceUpdate;
-          if (data.needUpdate == true && !TextUtils.isEmpty(url)) {
-            // 弹出强制更新dialog
-            showForceUpdateDialog(context, url, descp, forceUpdate);
-          }
-        }
-      }
-
-      @Override
-      public void onError(Throwable error) {
-        super.onError(error);
-      }
-    });
-```
-
-```java
-/**
-   * showForceUpdateDialog
-   */
-  private static void showForceUpdateDialog(final Context context, final String url, String descp, final boolean forceUpdate) {
-    final VersionUpdateDialog builder = new VersionUpdateDialog(context);
-    builder.setTitle(context.getString(R.string.string_version_find_new));
-    builder.setMessage(descp);
-    if (forceUpdate == true) {
-      builder.setCancelable(false);
-      builder.setCanceledOnTouchOutside(false);
-    }
-    builder.setPositiveButton(context.getString(R.string.string_version_update), new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        // 我们系统里面是通过浏览器去下载安装包的方式更新应用
-        // 如果需要，还可以做到通过启动下载线程的方式更新应用包，这种方式体验会更好。
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-        if (builder.isShowing()) {
-          builder.dismiss();
-        }
-      }
-    });
-    builder.setNegativeButton(context.getString(R.string.string_version_cancel), new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        // 取消的操作
-        if (builder.isShowing()) {
-          builder.dismiss();
-        }
-      }
-    });
-    builder.setNegativeButtonEnable(!forceUpdate);
-    builder.show();
-  }
-```
-
-也可以通过第三方平台来实现，比如[腾讯的 buggly](https://bugly.qq.com/v2/product/apps/a14de22571?pid=1)：
-
-`buggly`支持全量更新和热更新两种模式，还可以通过配置的方式来选择是否强制更新。
-
-图 1：全量更新
-
-![image-20190819213051898](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-19-133053.png)
-
-图 2：发布补丁
-
-![image-20190819213012111](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-08-19-133013.png)
-
-Buggy 底层的检测策略应该一样，都是通过 versionCode 来比较，并且会校验 MD5 值。
-
-关于 Buggly 的其他用法，参考后面的[集成平台-Buggly](#Buggly)
-
-# 七、内存分析
-
-## LeakCanary
