@@ -1112,6 +1112,64 @@ externals: {
 
 output用来告知 webpack 如何去输出、以及在哪里输出你的「bundle、asset 和其他你所打包或使用 webpack 载入的任何内容。
 
+#### `output.publicPath`
+
+这个配置的主要作用是，修改webpack打包文件的输出目录。
+
+默认是'';
+
+如果配置了路径，那么所有的资源都会以这个路径为basePath进行访问。
+
+比如，配置了’assets‘, 那么url资源路径就是/assets/url。
+
+==不知道你在干嘛就别配置这个东西，不然资源会404的==
+
+
+
+简单规则如下：[`output.path`](https://webpack.docschina.org/configuration/output/#output-path) 中的 URL 以 HTML 页面为基准。
+
+**webpack.config.js**
+
+```javascript
+module.exports = {
+  //...
+  output: {
+    path: path.resolve(__dirname, 'public/assets'),
+    publicPath: 'https://cdn.example.com/assets/'
+  }
+};
+```
+
+对于这个配置：
+
+**webpack.config.js**
+
+```javascript
+module.exports = {
+  //...
+  output: {
+    publicPath: '/assets/',
+    chunkFilename: '[id].chunk.js'
+  }
+};
+```
+
+对于一个 chunk 请求，看起来像这样 `/assets/4.chunk.js`。
+
+对于一个输出 HTML 的 loader 可能会像这样输出：
+
+```html
+<link href="/assets/spinner.gif" />
+```
+
+或者在加载 CSS 的一个图片时：
+
+```css
+background-image: url(/assets/spinner.gif);
+```
+
+webpack-dev-server 也会默认从 `publicPath` 为基准，使用它来决定在哪个目录下启用服务，来访问 webpack 输出的文件。
+
 
 
 ### Resolve

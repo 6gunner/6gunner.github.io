@@ -77,8 +77,6 @@ worker.addEventListener('error', function (event) {
 
 
 
-
-
 子worker监听消息
 
 ```js
@@ -124,9 +122,20 @@ importScripts('script1.js', 'script2.js');
 
 主线程与子worker之间通信可以是任意格式的数据：字符串、对象、甚至二进制如ArrayBuffer、File、Blob等.
 
-默认情况下，主线程和子线程之间的数据是复制关系，两个线程之间的消息是不互相影响的。
+默认情况下，==主线程和子线程之间的数据是复制关系==，两个线程之间的消息是不互相影响的。
 
 但是针对于大文件，进行数据拷贝会影响性能。所以js允许主线程将数据直接转移给子线程，一旦转移，主线程就无法使用这些二进制文件了，为了防止多线程同时修改数据造成冲突。
+
+如果要直接转移数据的控制权，就要使用下面的写法。
+
+ ```javascript
+ // Transferable Objects 格式
+ worker.postMessage(arrayBuffer, [arrayBuffer]);
+ 
+ // 例子
+ var ab = new ArrayBuffer(1);
+ worker.postMessage(ab, [ab]);
+ ```
 
 
 
@@ -160,32 +169,91 @@ const worker = new Worker(url);
 
 因为worker的代码需要单独存放，所以需要借助于worker-loader来帮助我们管理worker代码，否则在vue里就不太好引入。
 
-```vue
-<template>
-  <div>
-  </div>
-</template>
-<script>
-  import Worker from 'worker-loader!./worker.js';
+***index.vue***
+
+```js
+import Worker from 'worker-loader!./worker.js';
 
   export default {
+    data() {
+      return {
+
+      }
+    },
     mounted() {
       const worker = new Worker();
-      const uInt8Array = new Uint8Array(new ArrayBuffer(10));
-      for (let i = 0; i < uInt8Array.length; i++) {
-        uInt8Array[i] = i;
-      }
-      worker.postMessage(uInt8Array);
+      this.worker = worker;
       worker.onmessage = function (e) {
         console.log(e.data);
       }
+
+      // demo1 发送二进制
+      const uInt8Array = new Uint8Array(new ArrayBuffer(10));
+      for (let i = 0; i < uInt8Array.length; ++i) {
+        uInt8Array[i] = i * 2; // [0, 2, 4, 6, 8,...]
+      }
+      worker.postMessage(uInt8Array);
+
+      // demo2 转移arrayBuffer的拥有权
+      const arrayBuffer = new ArrayBuffer(8);
+      console.log("Index.vue 转移前" + arrayBuffer.byteLength);
+      worker.postMessage(arrayBuffer, [arrayBuffer]);
+      console.log("Index.vue 转移后" + arrayBuffer.byteLength);
+
+      // demo3
+      const message = "普通message";
+      worker.postMessage(message);
+
+    },
+    beforeDestroy() {
+      this.worker.terminate();
     }
   }
-</script>
 
 ```
 
+***Webworker.js***
 
+```js
+// Worker 线程
+let cache;
+/**
+ *
+ * @param o1 new
+ * @param o2 old
+ */
+function compare(o1, o2) {
+  if(JSON.stringify(o1) != JSON.stringify(o2)) {
+    return false;
+  }
+  // todo，更深的比较
+  return true;
+};
+
+setInterval(function () {
+  fetch('/api/quote/v1/rates?tokens=BTC,USDT,BUSDT&legalCoins=BTC,USDT,CNY,USD').then(function (res) {
+    return res.json();
+  }).then(({ data }) => {
+    if (!compare(data, cache)) {
+      cache = data;
+      self.postMessage(data);
+    }
+  })
+}, 5000);
+
+self.addEventListener('message', event => {
+  console.log(event.data);
+  if (event.data.constructor == ArrayBuffer) {
+    const data = event.data;
+    console.log("webworker 转移前" + data.byteLength);
+    self.postMessage(data);
+    console.log("webworker 正常发送后" + data.byteLength);
+    self.postMessage(data, [data]);
+    console.log("webworker 转移所有权后" + data.byteLength);
+  }
+})
+
+```
 
 
 
