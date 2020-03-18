@@ -355,6 +355,12 @@ Q: how to understand "a functional component  may return an Array"?
 
 
 
+### diff环节
+
+先忽略
+
+
+
 ### patch环节
 
 update操作实际上是根据vnode插入一个新的dom元素，然后将旧的dom节点删除掉。实现替换的效果。
@@ -743,7 +749,7 @@ init: function init (vnode, hydrating) {
 
 执行`_init`方法，先是调用了initInternalComponent方法。
 
-```
+```js
 /**
 * @param vm 也就是这个组件的实例
 */
@@ -1011,7 +1017,7 @@ Sub.prototype = Object.create(Super.prototype);
 
 最终在mount的时候被调用。
 
-<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-17-135427.png" alt="image-20200317215426250" style="zoom:50%;" />
+![image-20200317215426250](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-17-135427.png)
 
 <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-17-135818.png" alt="image-20200317215817874" style="zoom:50%;" />
 
