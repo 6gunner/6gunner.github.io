@@ -475,9 +475,9 @@ R：reactive 响应式的，x:代表任何的意思。Rxjava 表示以 java 语�
 
 Rxjava2 解读
 
-# 五、三方组件
+# 三方组件
 
-## 5-1 SmartRefreshLayout
+## SmartRefreshLayout
 
 文档地址：https://github.com/scwang90/SmartRefreshLayout
 
@@ -572,7 +572,17 @@ public class FancyFragment extends Fragment {
 
 ### BaseQuickAdapter
 
-Item 的点击事件
+
+
+设置List的图片
+
+```
+Picasso.with(mContext).load(item.url).fit().into((ImageView) helper.getView(R.id.discount_coin_url));
+```
+
+
+
+设置Item 的点击事件
 
 ```java
 mCFDAssetListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -584,9 +594,22 @@ mCFDAssetListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickList
 				}
 			}
 		});
+
 ```
 
-# 六、升级策略
+
+
+设置列表的分割线
+
+```
+adapter.addItemDecoration(new ItemDecoration(getContext(), LinearLayout.Horizontal))
+```
+
+
+
+
+
+# 升级级策略
 
 ## 强制更新策略
 
@@ -681,7 +704,7 @@ Buggy 底层的检测策略应该一样，都是通过 versionCode 来比较，�
 
 关于 Buggly 的其他用法，参考后面的[集成平台-Buggly](#Buggly)
 
-# 七、代码分析
+# 代码分析
 
 ## LeakCanary
 
@@ -691,7 +714,7 @@ Android Studio 中内置了 Lint，我们小手一点就可以直接使用。
 
 <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-02-25-041156.png" alt="image-20200225121155503" style="zoom:25%;" />
 
-# 八、单元测试
+# 单元测试
 
 
 

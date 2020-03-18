@@ -883,7 +883,7 @@ plugins: [
 
 需要注意的是，并不是配置了hmr前端就能看到效果了，还需要实现对应的[api接口](https://webpack.docschina.org/api/hot-module-replacement)。
 
-好在有很多plugin和loader都帮助我们解决了这些问题；
+好在有很多plugin和loader都帮助我们解决了这些问题，比如vue-loader.
 
 
 
@@ -1784,9 +1784,117 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
 
 
-打包GsComps
+### 打包GsComps
 
 
+
+### 项目支持HMR
+
+```diff
+'use strict'
+const utils = require('./utils')
+const webpack = require('webpack')
+const config = require('../config')
+const merge = require('webpack-merge')
+const path = require('path')
+const baseWebpackConfig = require('./webpack.base.conf')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const apiMocker = require('webpack-api-mocker')
+const portfinder = require('portfinder')
+
+const HOST = process.env.HOST
+const PORT = process.env.PORT && Number(process.env.PORT)
+
+const devWebpackConfig = merge(baseWebpackConfig, {
+  module: {
+    rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
+  },
+  // cheap-module-eval-source-map is faster for development
+  devtool: config.dev.devtool,
+
+  // these devServer options should be customized in /config/index.js.bak
+  devServer: {
+    before(app) {
+      apiMocker(app, path.resolve('./mock/index.js'), {
+        changeHost: true,
+      })
+    },
+    clientLogLevel: 'warning',
+    historyApiFallback: {
+      rewrites: [
+        { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
+      ],
+    },
++    hot: true,
+    disableHostCheck: true,
+    contentBase: false, // since we use CopyWebpackPlugin.
+    compress: true,
+    host: HOST || config.dev.host,
+    port: PORT || config.dev.port,
+    open: config.dev.autoOpenBrowser,
+    overlay: config.dev.errorOverlay
+      ? { warnings: false, errors: true }
+      : false,
+    publicPath: config.dev.assetsPublicPath,
+    proxy: config.dev.proxyTable,
+    quiet: true, // necessary for FriendlyErrorsPlugin
+    watchOptions: {
+      poll: config.dev.poll,
+    }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': require('../config/dev.env')
+    }),
++    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
+    new webpack.NoEmitOnErrorsPlugin(),
+    // https://github.com/ampedandwired/html-webpack-plugin
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'index.html',
+      inject: true
+    }),
+    // copy custom static assets
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../static'),
+        to: config.dev.assetsSubDirectory,
+        ignore: ['.*']
+      }
+    ])
+  ]
+})
+
+module.exports = new Promise((resolve, reject) => {
+  portfinder.basePort = process.env.PORT || config.dev.port
+  portfinder.getPort((err, port) => {
+    if (err) {
+      reject(err)
+    } else {
+      // publish the new Port, necessary for e2e tests
+      process.env.PORT = port
+      // add port to devServer config
+      devWebpackConfig.devServer.port = port
+
+      // Add FriendlyErrorsPlugin
+      devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
+        compilationSuccessInfo: {
+          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`],
+        },
+        onErrors: config.dev.notifyOnErrors
+        ? utils.createNotifierCallback()
+        : undefined
+      }))
+
+      resolve(devWebpackConfig)
+    }
+  })
+})
+
+```
 
 
 
@@ -2116,4 +2224,71 @@ vue-cli2创建的webpack配置里，自动创建了很多处理样式的loader�
 #### vue-cli@3.0 配置
 > 官方文档
 > https://cli.vuejs.org/zh/config/#baseurl
+
+
+
+
+
+## 原理分析
+
+### 实现一个简单的webpack
+
+> https://juejin.im/post/5de099886fb9a071562facad#heading-5
+>
+> 本例自己实现了简单的webpack，对es6的代码进行编译和分析，将依赖文件打包在一起，生成可执行的代码。
+
+
+
+关键代码讲解
+
+```js
+const generateCode = (entry) => {
+	const graph = JSON.stringify(makeDependenciesGraph(entry));
+	// 我们来构造exports和require函数，这两个函数在浏览器里面是不存在的
+	return `
+    (function(graph){
+      // require方法第二次传入的是'./message.js', 需要转化为'./src/message.js', 否则无法找到
+     function require(module) {
+        const exports = {};
+        function innerRequire(relativePath) {
+          // 将代码里写的相对路径转化为绝对路径后，调用外部真正的require方法
+          const absolutePath = graph[module].dependencies[relativePath];
+          return require(absolutePath);
+        }
+        // 写闭包避免变量互相影响, 传入innerRequire作为require，这样内部调用的require方法便是innerRequire
+       (function(exports, require, code) {
+        eval(code)
+       })(exports, innerRequire, graph[module].code)
+       return exports;
+     }
+     require('${entry}')
+    })(${graph})
+  `;
+}
+```
+
+
+
+生成的code为：
+
+```js
+(function(graph){
+	// require方法第二次传入的是'./message.js', 需要转化为'./src/message.js', 否则无法找到
+	function require(module) {
+		const exports = {};
+		function innerRequire(relativePath) {
+			// 将代码里写的相对路径转化为绝对路径后，调用外部真正的require方法
+			const absolutePath = graph[module].dependencies[relativePath];
+			return require(absolutePath);
+		}
+		// 写闭包避免变量互相影响, 传入innerRequire作为require，这样内部调用的require方法便是innerRequire
+		(function(exports, require, code) {
+			eval(code)
+		})(exports, innerRequire, graph[module].code)
+		return exports;
+	}
+	require('./src/index.js')
+})({"./src/index.js":{"dependencies":{"./message.js":"./src/message.js"},"code":"\"use strict\";\n\nvar _message = _interopRequireDefault(require(\"./message.js\"));\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { \"default\": obj }; }\n\nconsole.log(_message[\"default\"]);"},"./src/message.js":{"dependencies":{},"code":"\"use strict\";\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports[\"default\"] = void 0;\nvar message = \"Mock Webpack\";\nvar _default = message;\nexports[\"default\"] = _default;"}})
+
+```
 
