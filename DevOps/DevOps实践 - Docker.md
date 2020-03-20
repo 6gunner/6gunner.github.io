@@ -1,38 +1,23 @@
-# 						CI&CD实践DevOps
+Docker学习
 
-## 准备工作
-
-### Vagrant
-
-```shell
-# 如果设置共享目录失败
-vagrant plugin install vagrant-vbguest
-```
-
-
-
-## Docker简介
-
-### Docker是什么？
-
-Docker提供了一个开发、打包的平台
-
-### Docker能干嘛？
+## Docker能干嘛？
 
 - 简化配置
 - 流水线式生产
 
-![image-20190531075507077](http://ww4.sinaimg.cn/large/006tNc79ly1g3k62sqlpej30z20g2qd3.jpg)
+![image-20190531075507077](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-80922.jpg)
 
 ## Docker技术概述
 
-- 传统部署：
+**传统部署**：所有的系统集成在一起
 
-- 虚拟化技术：
+
+
+**虚拟化技术**：将每一个程序单独部署在一个vm虚拟器里
 
 <img src="http://ww1.sinaimg.cn/large/006tNc79ly1g3k67q707lj30g20codjd.jpg" width="450px" title="虚拟化技术"/> 
 
-- 技术对比
+**技术对比**
 
 |          | 传统物理机部署 | 虚拟化技术 |      |
 | -------- | -------------- | ---------- | ---- |
@@ -46,74 +31,93 @@ Docker提供了一个开发、打包的平台
 
 
 
-### Docker安装
+## Docker安装
 
-#### 在mac上装Docker
+### Docker Machine VS Docker Engine
+
+**Docker Engine**: 也就是我们所说的docker，它是一个CS模型。
+
+包含3个部分：
+
+- Docker Daemon — docker 的守护进程，属于C/S中的server
+- Docker REST API — docker daemon向外暴露的REST 接口
+- Docker CLI — docker向外暴露的命令行接口（Command Line API）
+
+`client` 通过 `rest api` 向` server` 发送请求。
+
+![engine](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-105519.png)
+
+
+
+**Docker Machine**：是一个工具，用来在虚拟主机上安装Docker Engine。
+
+可以通过`docker-machine`命令来连接、管理这些主机上的Engine
+
+他和server之间的关系就像下图：
+
+
+
+![machine](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-112550.png)
+
+![image-20190601074918779](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080923.jpg)
+
+
+
+### 在mac上装Docker
+
+本地安装docker有几种方式：
 
 - 直接安装，缺点是容易有一堆image，不好删除；
 - ~~通过Vmware虚拟化直接来装，缺点是OS太大，而且不免费~~
-- 通过Vagrant + VirtualBox装虚拟机，然后安装docker
+- 通过Vagrant + VirtualBox装虚拟机，然后安装docker ==(推荐)==
 - 通过docker-machine来快速搭建(精简linux系统)
 
-安装教程：
 
-- [centos上安装docker](https://docs.docker.com/install/linux/docker-ce/centos/)
 
-#### 在云上安装Docker 
+学习的时候，我用的就是通过vagrant来安装的，免得镜像一大堆
 
-- Docker Machine + Driver (Aws, Aliyun等服务)
+安装教程：参考官网的教程进行安装
 
-- 直接使用云服务商提供的云服务
+[centos上安装docker](https://docs.docker.com/install/linux/docker-ce/centos/)
 
-  - AWS的ECS服务
-  - Aliyun的Container Service
+
+
+项目里面因为也要用到docker命令，所以我就安装了一个docker toolbox
+
+
+
+### 在云上安装Docker 
+
+现在很多云服务商都提供了docker的云服务
+
+- AWS的ECS服务
+- Aliyun的Container Service
+
+#### 安装方式
+
+- 本地安装docker-machine
 
   
 
-#### Docker Machine
+- 在阿里云创建docker-machine
 
-> 如果你本地环境不支持docker engine的安装，那么你可以本地安装一个client，远程去连docker-machine
+  1.安装driver https://github.com/AliyunContainerService/docker-machine-driver-aliyunecs
 
-![image-20190601074918779](http://ww3.sinaimg.cn/large/006tNc79ly1g3lbj0xja6j310e0bwwh9.jpg)
+  2.设置环境变量 docker-machine-driver-aliyunecs.darwin-amd64 => docker-machine-driver-aliyunecs
 
-##### 安装docker-machine的方式
-
-- 本地创建docker-machine
-
-  Mac上安装docker，会自动在本地安装一个docker-machine
-
-  当然，也可以通过下面命令手动创建一个docker-machine；
-
-  ```bash
-  docker-machine create xxx
-  ```
-
-- 阿里云创建docker-machine
-
-  1. 安装driver https://github.com/AliyunContainerService/docker-machine-driver-aliyunecs
-
-  2. 设置环境变量 docker-machine-driver-aliyunecs.darwin-amd64 => docker-machine-driver-aliyunecs
-  3. 确认driver是否安装成功
+  3.确认driver是否安装成功
 
   ```shell
   docker-machine create -d aliyunecs --help
   ```
 
-  4. 创建阿里云的accessKey和secertKey
+  4.创建阿里云的docker-machin ，指明accessKey和secertKey
 
-     ```shell
-     docker-machine create -d aliyunecs --aliyunecs-io-optimized	optimized --aliyunecs-instance-type	ecs.g5.large --aliyunecs-access-key-id LTAIdBwbnFEoYtgL --aliyunecs-access-key-secret Jgz0lCOnxdpIrKTVMyH46Njmh8CCFr --aliyunecs-region cn-qingdao coda-demo
-     ```
+  ```shell
+  docker-machine create -d aliyunecs --aliyunecs-io-optimized	optimized --aliyunecs-instance-type	ecs.g5.large --aliyunecs-access-key-id ${access-key} --aliyunecs-access-key-secret ${access-key-secret} --aliyunecs-region cn-qingdao coda-demo
+  ```
 
-- 在aws上创建docker-machine
-
-  > 访问密钥 ID: AKIAIX2RMLWKZCGXMMBQ
-  >
-  > 私有访问密钥: ouZzMzUztNBX922Ltmft2DQLcENLFv2nTwXreSRx
-
-  
-
-- 管理本地环境连接的docker -machine
+  5.想要连接docker-machine，可以用下面的命令
 
   ```shell
   docker-machine env xxx // 查看docker-machine的配置
@@ -121,11 +125,17 @@ Docker提供了一个开发、打包的平台
   docker-machine unset
   ```
 
+  当然，也可以通过下面命令手动创建一个docker-machine
+
+  ```
+  docker-machine create xxx
+  ```
+
   
 
 ### Docker架构
 
-![image-20190531215056494](http://ww2.sinaimg.cn/large/006tNc79ly1g3ku8ewminj30v80fmaiu.jpg)
+![image-20190531215056494](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080924.jpg)
 
 > 底层技术支持：
 >
@@ -199,7 +209,7 @@ container和image的关系就类似于面向对象编程中的class和实例的�
 
 Image负责app的存储和分发；Contaienr负责运行app；
 
-![image-20190602103452930](http://ww2.sinaimg.cn/large/006tNc79ly1g3mlxlgar5j30h20bw415.jpg)
+![image-20190602103452930](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080916.jpg)
 
 ##### 怎么创建Docker Container
 
@@ -416,7 +426,7 @@ $ docker run -d -p 5000:5000 --restart always --name registry registry:2
 
 NAT技术：网络端口翻译。将内网的地址转换成公网地址
 
-![image-20190607075056727](http://ww2.sinaimg.cn/large/006tNc79ly1g3s9akhaxmj31cj0u04qp.jpg)
+![image-20190607075056727](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080919.jpg)
 
 
 
@@ -570,11 +580,11 @@ docker0		8000.02421659baae	no		veth39e589a
 
 网络拓扑图如下：
 
-![image-20190607211943412](http://ww2.sinaimg.cn/large/006tNc79ly1g3swo3ghqaj31ks0qygvo.jpg)
+![image-20190607211943412](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080921.jpg)
 
 #### 单个容器怎么访问外网？
 
-![image-20190607212112356](http://ww3.sinaimg.cn/large/006tNc79ly1g3swpn94b2j31h20sg7f8.jpg)
+![image-20190607212112356](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080922.jpg)
 
 
 
@@ -671,7 +681,7 @@ PING test3 (172.18.0.2): 56 data bytes
 
 
 
-![image-20190609210453382](http://ww4.sinaimg.cn/large/006tNc79ly1g3v7hbcbgsj31360nadld.jpg)
+![image-20190609210453382](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080917.jpg)
 
 
 
@@ -689,7 +699,7 @@ PING test3 (172.18.0.2): 56 data bytes
 
 网络结构：
 
-![image-20190614214232085](http://ww4.sinaimg.cn/large/006tNc79ly1g410nzbbtwj31mp0u0qco.jpg)
+![image-20190614214232085](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-80919.jpg)
 
 #### 1. 分组件去部署
 
@@ -706,13 +716,13 @@ PING test3 (172.18.0.2): 56 data bytes
 
 #### 3. 多机器通信
 
-![image-20190614214111867](http://ww3.sinaimg.cn/large/006tNc79ly1g410ml8vnsj31ww0u04bm.jpg)
+![image-20190614214111867](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080920.jpg)
 
 
 
 通信方案：两个服务本身是无法通信的。需要通过vxlan的方式来进行通信。将两个服务的通信包封装到各自eth0的通信包上，通信过程中进行解包，来实现通信。下图是通信包的格式：下面是underlay，上层是overlay。
 
-![image-20190615062812381](http://ww2.sinaimg.cn/large/006tNc79ly1g41fuyczg3j31rc0u0tzq.jpg)
+![image-20190615062812381](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080918.jpg)
 
 依赖分布式存储：etcd 
 
@@ -770,50 +780,3 @@ cluster is healthy
 
 
 创建overlay的网络
-
-
-
-### Docker持久化
-
-为了避免container被删除，将docker的数据持久化
-
-![image-20190614220107727](http://ww1.sinaimg.cn/large/006tNc79ly1g4117c8bm9j31xz0u0nhe.jpg)
-
-### 
-
-#### 持久化方案：
-
-- 本地的volume。 通过-v参数来实现
-- 基于plugin的volume。支持第三方存储，比如aws；
-
-volume类型
-
-自动创建，由docker后台创建
-
-绑定挂载的volume，通过用户指定
-
-### Docker Compose多容器部署
-
-
-
-### Docker Swarm 容器编排
-
-
-
-### Docker Cloud 和 Docker企业版
-
-
-
-### Kubernets 第三方容器编排
-
-
-
-### 容器的运维和监控
-
-
-
-### Docker + DevOps实战 工具&过程
-
-
-
-### 

@@ -108,7 +108,7 @@ cat f84e19a2f44c6386.crt gd_bundle-g2-g1.crt >> coolexample.crt
 
 
 
-学习4： resolver的含义
+## 4： resolver的含义
 
 
 
@@ -116,3 +116,14 @@ cat f84e19a2f44c6386.crt gd_bundle-g2-g1.crt >> coolexample.crt
 
 ![image-20191231153141975](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-12-31-073142.png)
 
+
+
+
+
+## 5: 文件过大413
+
+客户端做了一个上传app包的功能，服务器上测试的时候报错了，因为nginx不允许传太大的文件。
+
+打开nginx主配置文件nginx.conf，找到`http{}`段，添加`client_max_body_size 10M`；
+
+client_max_body_size这个参数限制了上传文件的大小，默认是1M，我在上面的修改中给了10M的限制。

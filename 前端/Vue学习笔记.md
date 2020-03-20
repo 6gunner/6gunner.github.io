@@ -1,4 +1,4 @@
-# Vue概念总结
+# Vue源码分析
 
 https://ustbhuangyi.github.io/vue-analysis/v2/prepare/
 
@@ -53,7 +53,7 @@ function Vue (options) {
 }
 ```
 
-Vue只能通过new来初始化，初始化之后调用了_init(options)方法。
+Vue只能通过new来初始化，初始化之后调用了`_init(options)`方法。
 
 ```js
 Vue.prototype._init = function (options?: Object) {
@@ -97,27 +97,31 @@ Vue.prototype._init = function (options?: Object) {
 
 可以看到，_init方法干了几件事情：
 
-合并配置
+首先，如果new Vue(options)的options传入的是一个组件，那么去初始化组件。
 
-初始化了声明周期、事件
+否则，会先去合并配置
 
-初始化渲染函数
+然后初始化了声明周期、事件、createComponent函数、$vnode-父节点
 
-调用了构造函数
+然后执行钩子函数，后面会在声明周期里详细讲到
 
-初始化data、props、computed、watcher
+initInjections暂时不用了解
 
-最后检测是否有el属性，如果有，那么进行属性的挂载。
+initState里会初始化data、props、computed、watcher
+
+initProvide也先不用管
+
+最后检测是options里否有el对象，如果有，那么将vm实例进行挂载。
 
 
 
-## $mount方法
+## $mount 挂载
 
 
 
-<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-15-093813.png" alt="img" style="zoom:50%;" />
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-18-231436.png" alt="2020-03-18-231340" style="zoom:67%;" />
 
-整个vue的渲染流程如上。
+整个vue的渲染流程如上
 
 ```js
 const mount = Vue.prototype.$mount
@@ -126,7 +130,6 @@ Vue.prototype.$mount = function (
   hydrating?: boolean
 ): Component {
   el = el && query(el)
-
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
     process.env.NODE_ENV !== 'production' && warn(
@@ -188,11 +191,9 @@ Vue.prototype.$mount = function (
 }
 ```
 
-
-
 先用mount变量缓存了`Vue.property.$mount`的方法，然后重新定义`Vue.prototype.$mount方法`，在这个方法里将template转化为render方法。
 
-最后再调用mount方法。
+最后再调用真正的mount方法。
 
 ```js
 // public mount method
@@ -283,17 +284,21 @@ export function mountComponent (
 }
 ```
 
-mountComponent的核心是渲染一个Watcher。Watcher的作用就是在初始化的时候，执行updateComponent 方法，然后在vue的state发生变化的时候，自动执行updateComponent方法。（自动执行的实现在[响应式原理](#响应式原理)里会讲到）。
-
-==updateComponent方法分两步，第一步是执行`_render()`，第二步是执行`_update`。==
+mountComponent的里有一个渲染`Watcher`。Watcher的作用就是在初始化的时候，执行updateComponent 方法，然后在vue的state发生变化的时候，自动执行updateComponent方法。（自动执行的实现在[响应式原理](#响应式原理)里会讲到）。
 
 
 
-## Virtual Dom
-
-[snabbdom 一个很纯粹的virtual dom实现](https://github.com/snabbdom/snabbdom/blob/master/src/vnode.ts)
+==而updateComponent方法分两步，第一步是执行`_render()`，第二步是执行`_update`。==
 
 `_render` 最终是通过执行 `createElement` 方法并返回的是 `vnode`，它是一个虚拟 Node。
+
+所以先要了解一下[Virtual Dom](#Virtual Dom)
+
+
+
+### Virtual Dom
+
+[snabbdom 一个很纯粹的virtual dom实现](https://github.com/snabbdom/snabbdom/blob/master/src/vnode.ts)
 
 Vue 2.0 相比 Vue 1.0 最大的升级就是利用了 Virtual DOM。
 
@@ -307,11 +312,49 @@ Vue 2.0 相比 Vue 1.0 最大的升级就是利用了 Virtual DOM。
 
 
 
-### create环节
+```js
+// vnode
+var VNode = function VNode (
+  tag,
+  data,
+  children,
+  text,
+  elm,
+  context,
+  componentOptions,
+  asyncFactory
+) {
+  this.tag = tag;
+  this.data = data;
+  this.children = children;
+  this.text = text;
+  this.elm = elm;
+  this.ns = undefined;
+  this.context = context;
+  this.fnContext = undefined;
+  this.fnOptions = undefined;
+  this.fnScopeId = undefined;
+  this.key = data && data.key;
+  this.componentOptions = componentOptions;
+  this.componentInstance = undefined;
+  this.parent = undefined;
+  this.raw = false;
+  this.isStatic = false;
+  this.isRootInsert = true;
+  this.isComment = false;
+  this.isCloned = false;
+  this.isOnce = false;
+  this.asyncFactory = asyncFactory;
+  this.asyncMeta = undefined;
+  this.isAsyncPlaceholder = false;
+};
+```
 
-之前我们知道$mount的`_render`方法中，其实是通过`createElement`方法返回一个的VNode，之后再调用`_update`方法，实现patch。
+回过头来，我们再看一下`createElement`。
 
-所以先来看一下createElement方法：
+### createElement
+
+之前我们知道$mount的`_render`方法中，其实是通过`createElement`方法返回一个的VNode。
 
 ```js
 // wrapper function for providing a more flexible interface
@@ -336,8 +379,6 @@ export function createElement (
 }
 ```
 
-
-
 createElement接收5个参数：
 
 - context:  vnode的上下文，类型是component
@@ -355,15 +396,15 @@ Q: how to understand "a functional component  may return an Array"?
 
 
 
-### diff环节
+### diff
 
-先忽略
+先忽略，待详细了解
 
 
 
-### patch环节
+### patch
 
-update操作实际上是根据vnode插入一个新的dom元素，然后将旧的dom节点删除掉。实现替换的效果。
+`_update`函数实际上是根据vnode插入一个新的dom元素，然后将旧的dom节点删除掉。实现替换的效果。
 
 来看下vue是怎么去操作这个vnode的
 
@@ -404,8 +445,6 @@ Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
 `_update`方法调用有两种情况，一种是初始化渲染，一种是页面发生了变化，进行更新渲染。都是调用了内部的`__patch__`方法。
 
 `__patch__`方法其实和平台相关，不同的平台，vue使用的patch方法不一样。 patch方法实际上是通过`createPatchFunction`方法来返回的。这里用到了`柯里化函数`的编程思想，通过不同的调用函数参数，来返回不同的函数，进行不同的逻辑。
-
-
 
 ```js
 const hooks = ['create', 'activate', 'update', 'remove', 'destroy']
@@ -545,19 +584,33 @@ export function createPatchFunction (backend) {
 
 
 
-打断点进行调试：
+### 断点调试
 
-<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-15-092337.png" alt="image-20200315172337067" style="zoom:50%;" />
+断点打在`Vue.prototype._update`方法里:
+
+初始化去渲染的时候，$el传入的是dom节点，vnode是`_render`返回的一个App组件。
+
+![image-20200319072811582](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-18-232812.png)
+
+patch方法里先将el转换为vnode![image-20200319073101200](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-18-233102.png)
+
+然后逻辑走到`createElm`这一步。`createElm` 的作用是 ==通过虚拟节点vnode创建真实的 DOM==，并插入到它的父节点中。
+
+![image-20200319073345943](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-18-233346.png)
 
 
 
-初始化去渲染的时候，传入了当前页面的dom、_render返回的vnode，后面两个参数都是false。
+然后在createComponent里，又进行了子组件的初始化和挂载操作。
 
-然后逻辑走到`createElm`这一步。`createElm` 的作用是通过虚拟节点vnode创建真实的 DOM 并插入到它的父节点中。
+![image-20200319073714665](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-18-233714.png)
 
-这里面用到了递归，一种常用的深度优先的遍历算法。
+这里面用到了递归思想，一种常用的深度优先的遍历算法。
 
-最终顺序是：先插入子节点，再插入父节点。
+所以组件挂载的顺序会是：先插入子节点，再插入父节点。
+
+最后，insert操作就是dom对象的操作
+
+![image-20200319073956638](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-18-233957.png)
 
 
 
@@ -1023,7 +1076,7 @@ Sub.prototype = Object.create(Super.prototype);
 
 
 
-# Vue生命周期
+## Vue生命周期
 
 <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-12-233304.png" alt="Vue 实例生命周期" style="zoom: 50%;" />
 
@@ -1188,7 +1241,47 @@ this.$nextTick(() => {
 
 
 
-### **❗** keep-alive
+## 注册组件
+
+
+
+### 全局注册
+
+组件时创建在Vue.options.components对象上
+
+支持首字母大写、驼峰、分隔符的
+
+
+
+### 局部注册
+
+局部注册时注册在Sub.options.components上，也就是合并到vm实例的$options对象的.components上。
+
+
+
+## 异步组件
+
+异步组件的实现方式主要是通过传入一个工厂函数。
+
+工厂函数的作用里可以通过3种方式来返回组件：
+
+setTimeout
+
+通过require([], resolve)函数
+
+返回异步函数
+
+高级异步组件
+
+
+
+**总结**：
+
+异步组件的本质是2次渲染。先渲染成注释节点，当组件加载成功后，再通过forceRender重新渲染。
+
+
+
+## keep-alive
 
 
 
@@ -1270,7 +1363,7 @@ book.bookName = '妖孽宫廷';
 
 
 
-## 依赖搜集
+### 依赖搜集
 
 > 原理
 
@@ -1504,9 +1597,30 @@ get() -> 搜集正在计算的watcher （Dep.target）-> 将渲染watcher添加�
 
 
 
+### 派发更新
 
 
 
+### nextTick
+
+nextTick的作用是把执行任务推送到一个队列里，在下一个tick同步执行。（和浏览器的循环队列机制相关）
+
+更新触发渲染wathcer 的update，但是wathcers的flush是在nextTick之后，所以重新渲染也是异步的操作。
+
+
+
+### 注意事项
+
+
+
+**1. 哪些数据不能被检测到**
+
+- 数组直接去赋值时，无法检测更新 `array[2]=3`
+- 对象增加新的属性。比如一开始`data.msg = { a: 'Hello'}`, 但是在代码里做了`msg.b = 'World'`这种是没办法检测到的
+
+ Vue提供了全局方法去将数据转化为响应式的
+
+ ```Vue.set(obj, key, val);```
 
 
 

@@ -1,6 +1,6 @@
 # Webpack
 
-## 基本指南
+## 一、基本指南
 
 > 什么是webpack？
 
@@ -10,7 +10,7 @@ webpack的配置文件：webpack.config.js
 
 
 
-### loader
+### 1. loader
 
 > #### loader的作用
 >
@@ -335,7 +335,7 @@ module: {
 
 
 
-### plugins
+### 2. plugins
 
 #### plugins的作用
 
@@ -579,7 +579,7 @@ compiler.hooks.someHook.tap(...)
 
 
 
-### devtool
+### devtool的配置
 
 > 参考博客 https://juejin.im/post/58293502a0bb9f005767ba2f
 
@@ -1176,19 +1176,39 @@ webpack-dev-server 也会默认从 `publicPath` 为基准，使用它来决定�
 
 
 
-### 代码分割
+### 代码分离/代码分割
 
 > 概念介绍
 
-代码分割: 将代码分离到不同的bundle里，然后按需进行加载，分割的产物就是chunk。
+代码分割: 将代码分离到不同的bundle里，然后按需进行加载。
 
-> 关键配置
+代码分离可以用于获取更小的 bundle，以及控制资源加载优先级，如果使用合理，会极大影响加载时间。
 
-*SplitChunksPlugin*
 
-从webpack4开始，自带了`SplitChunkPlugin`插件将代码进行，替代了`CommonsChunkPlugin`
 
-> **同步代码分割**：在js里做optimization里配置。
+> 常用方法
+
+三种常用的代码分离方法：
+
+- 入口起点：使用 [`entry`](https://www.webpackjs.com/configuration/entry-context) 配置手动地分离代码。
+- 防止重复：使用 [`CommonsChunkPlugin`](https://www.webpackjs.com/plugins/commons-chunk-plugin) 去重和分离 chunk。
+- 动态导入：通过模块的内联函数调用来分离代码。
+
+
+
+> `SplitChunkPlugin` VS `CommonsChunkPlugin`
+
+从webpack4开始，自带了`SplitChunkPlugin`插件将代码进行，替代了`CommonsChunkPlugin`。
+
+CommonsChunkPlugin能够将全部的懒加载模块引入的共用模块统一抽取出来，形成一个新的common块，这样就避免了懒加载模块间的代码重复了，
+
+但是**CommonsChunkPlugin的痛，在于只能统一抽取模块到父模块，造成父模块过大，不易于优化**
+
+SplitChunksPlugin它能够抽出懒加载模块之间的公共模块，并且不会抽到父级，而是会与首次用到的懒加载模块并行加载，这样我们就可以放心的使用懒加载模块了。
+
+
+
+> `SplitChunkPlugin`配置
 
 webpack自带了一个optimization的配置项，里面可以手动配置符合自己项目情况的优化项。 
 
@@ -1734,7 +1754,7 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
 
 
-## 实用案例
+## 二、实用案例
 
 
 
@@ -2229,7 +2249,7 @@ vue-cli2创建的webpack配置里，自动创建了很多处理样式的loader�
 
 
 
-## 原理分析
+## 三、原理分析
 
 ### 实现一个简单的webpack
 
