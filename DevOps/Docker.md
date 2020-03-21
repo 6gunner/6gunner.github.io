@@ -1,37 +1,43 @@
-Docker学习
+# Docker学习
 
 ## Docker能干嘛？
+
+容器里可以将应用极其依赖包一起标准化打包，可以运行在任何环境，不依赖操作系统。
+
+以image的形式发布共享。
+
+
 
 - 简化配置
 - 流水线式生产
 
 ![image-20190531075507077](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-80922.jpg)
 
+
+
+
+
 ## Docker技术概述
 
-**传统部署**：所有的系统集成在一起
+### Docker技术基础
+
+namespace：docker基于namespace来进行隔离。
+
+cgroups：docker资源统计和隔离。
+
+unionfs:  分层镜像实现的基础
 
 
 
-**虚拟化技术**：将每一个程序单独部署在一个vm虚拟器里
+### Docker组件
 
-<img src="http://ww1.sinaimg.cn/large/006tNc79ly1g3k67q707lj30g20codjd.jpg" width="450px" title="虚拟化技术"/> 
+docker client  向进程发送命令
 
-**技术对比**
+docker daemon 服务进程用来接收client发送的命令
 
-|          | 传统物理机部署 | 虚拟化技术 |      |
-| -------- | -------------- | ---------- | ---- |
-| 对比缺点 | 部署慢         |            |      |
-|          | 成本高         |            |      |
-|          | 迁移慢，难扩展 |            |      |
-|          | 资源浪费       |            |      |
-|          | 会被限定       |            |      |
+docker registry 镜像仓库
 
 
-
-
-
-## Docker安装
 
 ### Docker Machine VS Docker Engine
 
@@ -59,9 +65,9 @@ Docker学习
 
 ![machine](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-112550.png)
 
-![image-20190601074918779](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080923.jpg)
 
 
+## Docker安装
 
 ### 在mac上装Docker
 
@@ -70,11 +76,11 @@ Docker学习
 - 直接安装，缺点是容易有一堆image，不好删除；
 - ~~通过Vmware虚拟化直接来装，缺点是OS太大，而且不免费~~
 - 通过Vagrant + VirtualBox装虚拟机，然后安装docker ==(推荐)==
-- 通过docker-machine来快速搭建(精简linux系统)
+- 通过docker-machine来快速搭建
 
 
 
-学习的时候，我用的就是通过vagrant来安装的，免得镜像一大堆
+学习的时候，因为参考着视频，所以就通过vagrant来安装的，免得镜像一大堆，到时候想删除都不好删除。
 
 安装教程：参考官网的教程进行安装
 
@@ -82,9 +88,7 @@ Docker学习
 
 
 
-项目里面因为也要用到docker命令，所以我就安装了一个docker toolbox
-
-
+后面项目开发里用到了docker，所以就通过本地安装docker-machine去连接阿里云的机器。
 
 ### 在云上安装Docker 
 
@@ -133,7 +137,7 @@ Docker学习
 
   
 
-### Docker架构
+## Docker架构
 
 ![image-20190531215056494](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080924.jpg)
 
@@ -769,6 +773,8 @@ member 8614974c83d1cc6d is healthy: got healthy result from http://192.168.205.1
 cluster is healthy
 ```
 
+
+
 重启docker服务
 
 
@@ -780,3 +786,39 @@ cluster is healthy
 
 
 创建overlay的网络
+
+
+
+
+
+## Docker持久化数据共享
+
+
+
+### Docker持久化
+
+为了避免container被删除，将docker的数据持久化
+
+![image-20190614220107727](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-100848.jpg)
+
+### 
+
+#### 持久化方案
+
+- 本地的volume。 通过-v参数来实现
+- 基于plugin的volume。支持第三方存储，比如aws；
+
+volume类型
+
+自动创建，由docker后台创建
+
+绑定挂载的volume，通过用户指定
+
+
+
+
+
+## Docker Compose 多容器部署
+
+
+
