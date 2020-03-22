@@ -508,27 +508,33 @@ COPY hello test/  # /root/test/hello
 
 > ENV
 
+可以使用ENV来设置常量
+
 ```dockerfile
 # 尽量用env来增加常亮可维护性
 ENV MYSQL_VERSION 5.6 # 设置常量
 RUN apt-get install -y mysql-server="${MYSQL_VERSION}" \
+	&& rm -rf /var/lib/apt/lists/* # 引用变量
 ```
+>  VOLUME & EXPOSE
+
+存储网络和网络
+
+EXPOSE可以暴露docker container的端口
+
+
 
 > RUN & CMD & ENTRYPOINT
 
-```shell
-#RUN 用来执行命令，并且创建新的Image	Layer
-#CMD 设置容器启动后默认执行的命令和参数
-#ENTRYPOINT 设置容器启动时运行的命令
-# DEMO
-FROM daocloud.io/ubuntu:14.04
-RUN apt-get update && apt-get install -y stress
-ENTRYPOINT ["/usr/bin/stress"]
-# 可以设置默认的stress的命令参数，也可以通过run的时候传入参数进来
-CMD []
-```
+RUN 用来执行命令，并且创建新的ImageLayer
 
-两种命令格式：Shell 格式
+CMD 设置容器==启动后默认执行==的命令和参数
+
+ENTRYPOINT 设置容器==启动时==运行的命令
+
+**两种命令格式：**
+
+- Shell 格式
 
 ```dockerfile
 RUN apt-get install -y vim
@@ -536,69 +542,214 @@ CMD echo "hello docker"
 ENTRYPOINT echo "hello docker"
 ```
 
-Exec 格式
+- Exec 格式
+
+写一个字符串数组，以“,”分割
 
 ```dockerfile
 RUN ["apt-get", "install", "-y", "vim"]
-CMD echo "hello docker"
+CMD ["bin/echo", "hello docker"]
 ENTRYPOINT ["/bin/echo", "hello docker"]
 ```
 
-CMD 和 ENTRYPOINT的区别
+**举个例子**
 
-| 区别     | CMD                                                       | ENTRYPOINT                       |
-| -------- | --------------------------------------------------------- | -------------------------------- |
-| 最佳实践 |                                                           | 写一个shell脚本作为entrypoint    |
-| 作用     | 设置容器启动后默认执行的命令和参数                        | 执行应用程序                     |
-| 执行     | 如果docker run指定了其他命令或者参数，CMD里面命令会被忽略 | ENTRYPOINT不会被忽略, 一定会执行 |
+我有2个dockerfile，代码分别如下
+
+```dockerfile
+#dockerfile1
+FROM centos
+ENV name Docker
+ENTRYPOINT echo "hello $name"
+
+#dockerfile2
+FROM centos
+ENV name Docker
+ENTRYPOINT ["/bin/echo", "hello $name"]
+```
+
+上面的image run出来的container，打印的是hello Docker.
+
+但是下面的image run出来的结果是 hello $name;
+
+原因是因为：在shell格式下，变量能被识别。但是用exce的格式下，它执行的是命令，不是通过shell来执行的，==需要我们通过参数指明通过什么来执行==
+
+将下面的dockerfile修改如下
+
+```dockerfile
+FROM centos
+ENV name Docker
+ENTRYPOINT ["/bin/bash", "-c", "echo hello $name"]
+```
 
 
 
-### 发布自己的docker image
+**CMD**
 
-- 注册docker hub账户密码
+容器启动时，默认执行的命令。
 
-在terminal登录docker hub账户密码
+如果`docker run`指定了其他命令，CMD会被忽略。比如，`docker run -it image /bin/bash`，cmd就不会执行了。
+
+如果定义了多个CMD，只有最后一个会被执行
+
+
+
+**ENTRYPOINT**
+
+不会被忽略，一定会执行。
+
+一般用来让容器以应用程序或者服务的形式运行。
+
+
+
+**CMD 和 ENTRYPOINT的区别**
+
+| 区别     | CMD                                                       | ENTRYPOINT                        |
+| -------- | --------------------------------------------------------- | --------------------------------- |
+| 最佳实践 |                                                           | ==写一个shell脚本作为entrypoint== |
+| 作用     | 设置容器启动后默认执行的命令和参数                        | 执行应用程序                      |
+| 执行     | 如果docker run指定了其他命令或者参数，CMD里面命令会被忽略 | ENTRYPOINT不会被忽略, 一定会执行  |
+
+
+
+### 发布docker image
+
+#### 1.注册docker hub账户密码
+
+#### 2.在terminal登录docker hub账户密码
 
 ```shell
+$ docker login
 Username: gunner6
 Password:
-WARNING! Your password will be stored unencrypted in /home/vagrant/.docker/config.json.
+WARNING! Your password will be stored unencrypted in /Users/keyang/.docker/config.json.
 Configure a credential helper to remove this warning. See
 https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 
 Login Succeeded
 ```
 
-- push docker image
+#### 3.push docker image
+
+`docker push [OPTIONS] NAME[:TAG]`
+
+NAME需要是一个`dockerId/project`的格式
 
 ```sh
-[vagrant@docker-host hello-gpp]$ docker push gunner6/hello-gpp:latest
+$ docker push gunner6/hello-gpp:latest
 The push refers to repository [docker.io/gunner6/hello-gpp]
 c0d1d7ec5bba: Pushed
 ```
 
-- 拉取docker image
+#### 4.拉取docker image
 
 ```sh
-[vagrant@docker-host hello-gpp]$ docker pull gunner6/hello-gpp
+$ docker pull gunner6/hello-gpp
 ```
 
 
 
-### 搭建私有的docker hub
+### 搭建私有的docker registry
+
+https://docs.docker.com/registry/deploying/
 
 ```sh
-#1. 拉取registry 
+#1. 拉取docker registry
 $ docker pull registry
 #2. 运行dokcer hub 
 $ docker run -d -p 5000:5000 --restart always --name registry registry:2
-#3. push image 到本地镜像
+
+
+```
+
+完成以上步骤后，就相当于启动了一个docker registry了。
+
+
+
+> 推送Image到私有仓库
+
+```shell
 $ docker tag gunner6/hello-gpp:latest localhost:5000/hello-gpp
+#3. push image 到本地镜像
 $ docker push localhost:5000/hello-gpp
 ```
 
+上面是localhost，如果是在一个远程的服务上搭建私有仓库，push或pull的时候会出现不安全的提示，那是因为docker默认只支持https的服务。
 
+好在Docker允许去推送non-distributable layers到私有仓库
+
+1.修改本地`/etc/docker/daemon.json`
+
+```shell
+{
+  "allow-nondistributable-artifacts": ["myregistrydomain.com:5000"]
+}
+```
+
+2.重启docker
+
+`sudo service docker restart`
+
+
+
+因为我用的是toolbox的方式，所以不太一样
+
+1.修改profile文件
+
+编辑 /var/lib/boot2docker/profile文件，
+ 在 `--label provider=virtualbox` 的下一行添加下述代码
+` --insecure-registry xxx.xxx.xxx.xxx:yyy`
+
+2.重启docker
+
+`sudo /etc/init.d/docker restart`
+
+或者
+
+`docker-machine restart`
+
+
+
+做完上面2步后就可以推送了
+
+![image-20200322205710047](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-22-125710.png)
+
+通过接口确认已经上传成功 http://39.107.26.141:5000/v2/_catalog
+
+
+
+## 实战-stress
+
+dockerfile
+
+```dockerfile
+FROM ubuntu:14.04
+RUN apt-get update && apt-get install -y stress
+ENTRYPOINT ["/usr/bin/stress"]
+CMD []
+```
+
+指明参数去运行
+
+`docker run -it stress --cpu 8 --io 4 --vm 2 --vm-bytes 128M --timeout 10s`
+
+**总结一下**
+
+通过`ENTRYPOINT`和`CMD`结合，可以实现一个接收命令行参数的image。
+
+通过 -it + 参数的形式去运行，可以在CMD里去接收参数，最终传给ENTRYPOINT。
+
+
+
+### 如何去debug dockerfile
+
+dockerfile运行每一步都会创建临时镜像
+
+哪一步出错了，可以进入临时镜像去看一下
+
+执行下面命令：
+
+`docker run -it ${imageid} /bin/bash`
 
 
 
@@ -606,7 +757,7 @@ $ docker push localhost:5000/hello-gpp
 
 
 
-## Docker网络
+## Docker网络(未完待续)
 
 ### 网络基础知识
 
@@ -1029,26 +1180,36 @@ cluster is healthy
 
 ## Docker持久化数据共享
 
+### 需求场景
+
+传统的container删除后，数据文件也会被删除。
+
+但是对于类似数据之类的container，我们希望数据库的数据能被保存下来。
 
 
-### Docker持久化
 
-为了避免container被删除，将docker的数据持久化
+### Docker持久化原理
+
+程序写的数据通过volume挂载到其他地方，不保存在layer上。
 
 ![image-20190614220107727](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-100848.jpg)
 
-### 
+
 
 #### 持久化方案
 
-- 本地的volume。 通过-v参数来实现
-- 基于plugin的volume。支持第三方存储，比如aws；
+**两种volume方案：**
 
-volume类型
+- 本地的volume。 通过-v参数来实现，将本机host的目录作为数据存储卷。
+- 基于plugin的volume。支持第三方存储，比如NAS, aws；
 
-自动创建，由docker后台创建
+**volume类型**
 
-绑定挂载的volume，通过用户指定
+- 受管理的data volume。由docker后台自动创建，名字位置都是docker自动创建的。
+
+- 绑定挂载的volume，通过用户指定具体的位置。
+
+
 
 
 
