@@ -118,6 +118,8 @@ cat f84e19a2f44c6386.crt gd_bundle-g2-g1.crt >> coolexample.crt
 
 
 
+nginx会动态利用resolver设置的DNS服务器（本机设置的DNS服务器或/etc/hosts无效），将域名解析成IP，proxy模块会将请求转发到解析后的IP上
+
 
 
 ## 5: 文件过大413

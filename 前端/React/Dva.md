@@ -1,8 +1,4 @@
-# React开发
-
-
-
-# Dva
+# Dva学习
 
 > 官方文档 https://dvajs.com/guide/
 >
@@ -136,8 +132,6 @@ export default connect(mapStateToProps)(IndexPage);
 
 
 
-
-
 #### dva路由跳转
 
 - 通过LINK组件跳转
@@ -150,23 +144,15 @@ export default connect(mapStateToProps)(IndexPage);
 
 ### 组件定义
 
-在 dva 中我们通常将Container Components（容器组件）约束为 Route Components，因为在 dva 中我们通常以页面维度来设计 Container Components。
+在 dva 中我们通常将Container Components（容器组件）约束为 Rout.，因为在 dva 中我们通常以页面维度来设计 Container Components。
 
 所以在 dva 中，通常需要 connect Model的组件都是 Route Components，组织在`/routes/`目录下，而`/components/`目录下则是纯组件（Presentational Components 展示组件）。
 
 
 
-
-
-## [dva图解](./dva图解)
+## [dva图解](./Dva-图解)
 
 https://www.yuque.com/flying.ni/the-tower/tvzasn
-
-
-
-
-
-
 
 
 
@@ -178,7 +164,7 @@ https://umijs.org/guide/#architecture
 - **插件机制**，比如 [dva-loading](https://github.com/dvajs/dva/tree/master/packages/dva-loading) 可以自动处理 loading 状态，不用一遍遍地写 showLoading 和 hideLoading
 - **支持 HMR**，基于 [babel-plugin-dva-hmr](https://github.com/dvajs/babel-plugin-dva-hmr) 实现 components、routes 和 models 的 HMR
 
-##  
+
 
 ### 和react 框架对比
 
@@ -348,21 +334,219 @@ const PageComponet = dynamic({
 - models: 返回 Promise 数组的函数，Promise 返回 dva model
 - component：返回 Promise 的函数，Promise 返回 React Component
 
-## 
+
 
 ## 复杂用法
 
+## dva配置
+
+dva的服务是使用roadhog来启动的，默认隐藏了webpack的配置文件。如果需要配置，需要去读roadhog的文档。
+
+[roadhog](https://github.com/sorrycc/roadhog/blob/master/README_zh-cn.md)
+
+通过`npm i -g roadhog` 安装的版本一直都是roadhog@0.6.1, 很奇怪。
+
+新版本的roadhog安装，可以安装项目级别的 `yarn add roadhog`。
+
+其实个人还是很不喜欢这些封装过的打包工具，一方面增加学习成本，另一方面，配置不透明，文档不全，出现问题都不知道怎么修改。
+
+还是==推荐通过webpakc自己去搭建，或者使用别人提供的cli来搭建好基础架子，进行个性化调整==。
+
+
+
+关闭编译时ESLINT检查
+
+eslint本地开发工具支持就好了，编译时检查太慢。
+
+```shell
+ESLINT=none roadhog dev
+```
+
+
+
+### HMR配置
+
+关于roadhog的配置有很多，这里介绍一个常用的hmr配置。
+
+dva里默认修改代码都是刷新浏览器页面的，想要不刷新页面，可以通过dva-hmr这个插件进行配置.
+
+先按照github教程：安装依赖
+
+```
+npm install babel-plugin-dva-hmr redbox-react@1.x --save-dev
+```
+
+在.webpackrc文件里配置
+
+```diff
+{
++ "env": {
++   "development": {
++     "extraBabelPlugins": [
++      "dva-hmr"
++    ]
++  }
++ }
+}
+```
+
+然后运行，然而并没有什么鸟用。
+
+去这个插件的issues里查看了一番，
+
+发现是因为index.js 里没写 module.hot，修改app.js代码：
+
+```diff
+import dva from 'dva';
+import createHistory from 'history/createHashHistory';
+
+import './index.css';
+
+// 1. Initialize
+const app = dva({
+	history: createHistory(),
++	onHmr: () => {
++		if (module.hot) {
++			module.hot.accept();
++		}
++	}
+});
+
+// 2. Plugins
+// app.use({});
+
+// 3. Model
+app.model(require('./models/example').default);
+
+// 4. Router
+app.router(require('./router').default);
+
+// 5. Start
+app.start('#root');
+
+
+
+```
+
+开启后，就实现了hmr了。
+
+==这个就和vue里面的不一样。vue-loader他可以帮我们实现hmr，所以只需要在webpack里配置就可以，但是react里就不行了。==
+
+
+
+然后还有一个方式是使用这个插件 [react-hot-loader](https://github.com/gaearon/react-hot-loader)
+
+先安装react-hot-loader插件
+
+然后在代码里使用这个插件
+
+```diff
+import dva from 'dva';
++ import { hot } from 'react-hot-loader/root';
+
+import './index.css';
+
+// 1. Initialize
+- const app = dva();
++ const app = hot(dva({
++	onHmr: (module) => {
++		if (module.hot) {
++			module.accept();
++		}
++	}
++}));
+
+// 2. Plugins
+// app.use({});
+
+// 3. Model
+app.model(require('./models/example').default);
+
+// 4. Router
+app.router(require('./router').default);
+
+// 5. Start
+app.start('#root');
+
+```
+
+配置.webpackrc的babelPlugins
+
+```js
+{
+	"extraBabelPlugins": ["react-hot-loader/babel"]
+}
+```
+
+
+
+总结一下：虽然上面两种方式，最终结果是支持了hmr，但是state都会丢失！！！
+所以这也是不想用dva的原因。
+
+
+
+## 经验总结
+
+1.put的时候，需要加一个yield
+
+```diff
+*watchFetchProducts({}, {call, put}) {
++			const ret = yield call(Api.fetch, apis.products, { method: 'get'});
+		
++			yield put({
+				type: 'UPDATE_PRODUCTS',
+				products: ret.data
+			})
+		}
+```
+
+
+
+2.调用异步方法，尽量用call(Api.fetch,  ...args)方法，有利于单元测试。
+
+
+
+3.effects里调用另一个 effects通过yield
+
+```javascript
+yield put({
+  type: 'user/getusergroupinfo',
+  payload,
+});
+ //直到监听到结束才继续
+yield take('user/getusergroupinfo/@@end')
+```
+
+
+
+4.yield 获取 state
+
+```js
+let address_list = yield select(state => state.finance.address_list);
+```
+
+
+
+5.mockjs的统一写法，实现去读取某一个文件夹里面的js文件
+
+```
+const fs = require('fs');
+const path = require('path')
+const mockPath = path.join(__dirname + '/mock');
+
+const mock = {};
+fs.readdirSync(mockPath).forEach(file => {
+	Object.assign(mock,require('./mock/'+file));
+})
+module.exports=mock;
+
+```
 
 
 
 
 
-
-
-
-
-
-# UMI
+## UMI
 
 ## 快速入门
 
@@ -532,51 +716,3 @@ export default (props) => {
 
 
 
-# Redux-Saga
-
-重新定义 side-effects 为`Effects`
-
-yield 调用另一个 effects
-
-```javascript
-yield put({
-  type: 'user/getusergroupinfo',
-  payload,
-});
- //直到监听到结束才继续
-yield take('user/getusergroupinfo/@@end')
-```
-
-yield 获取 state
-
-```js
-let address_list = yield select(state => state.finance.address_list);
-```
-
-解释一下 take
-
-```
-*editpassword({ payload, history }, { call, put, take}) {
-```
-
-// 这个是干嘛的？
-
-```
-this.props.loading.effects
-```
-
-监听浏览器的路径变化
-
-```
- subscriptions: {
-    setup ({ dispatch, history }) {
-		// 在这里可以对浏览器的url进行监听
-		history.listen(location => {
-			const pathname = location.pathname
-			const search = location.search
-			const preview = /preview/.test(search)
-		});
-	}),
-
- }
-```

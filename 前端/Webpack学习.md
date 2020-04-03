@@ -1,4 +1,4 @@
-# Webpack
+# Webpack学习
 
 ## 一、基本指南
 
@@ -1754,9 +1754,7 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
 
 
-## 二、实用案例
-
-
+## 二、案例
 
 
 
@@ -1804,11 +1802,11 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
 
 
-### 打包GsComps
+### 2.打包GsComps
 
 
 
-### 项目支持HMR
+### 3.项目支持HMR
 
 ```diff
 'use strict'
@@ -1924,7 +1922,47 @@ module.exports = new Promise((resolve, reject) => {
 
 
 
+### 3.create-react-app支持 HMR
 
+之前项目里发现一个情况，create-reacta-app eject后创建的项目，虽然是支持hmr的，但是只有css是支持HMR的，每次修改js代码依然需要刷新页面才能生效。
+
+那如何去支持js也支持hmr呢？
+
+通过react-hot-loader
+
+https://github.com/gaearon/react-hot-loader
+
+
+
+1. Install React Hot Loader (`npm install --save-dev react-hot-loader`)
+2. 在`config/webpack.config.dev.js`里添加 `'react-hot-loader/babel'`  plugin . The loader should now look like:
+
+```js
+  {
+    test: /\.(js|jsx)$/,
+    include: paths.appSrc,
+    loader: require.resolve('babel-loader'),
+    options: {
+      // This is a feature of `babel-loader` for webpack (not Babel itself).
+      // It enables caching results in ./node_modules/.cache/babel-loader/
+      // directory for faster rebuilds.
+      cacheDirectory: true,
+      plugins: ['react-hot-loader/babel'],
+    },
+  }
+```
+
+3. Mark your App (`src/App.js`) as *hot-exported*:
+
+```js
+// ./containers/App.js
+import React from 'react';
+import { hot } from 'react-hot-loader';
+
+const App = () => <div>Hello World!</div>;
+
+export default hot(module)(App);
+```
 
 
 

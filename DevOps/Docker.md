@@ -238,7 +238,7 @@ https://docs.docker.com/machine/examples/aws/
 
 ![image-20190531215056494](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080924.jpg)
 
-#### Docker Image (Docker镜像)
+### Docker Image (Docker镜像)
 
 **Docker Image的概念图**
 
@@ -313,7 +313,7 @@ $ docker rmi hello-world
 
 
 
-#### Docker Container (容器)
+### Docker Container (容器)
 
 ##### Docker Container的定义
 
@@ -345,7 +345,7 @@ Image负责app的存储和分发；Contaienr负责运行app；
 
 
 
-##### 相关命令
+## Docker 相关命令
 
 ```sh
 docker ps # 查看docker中所有contaienr
@@ -373,7 +373,7 @@ $ docker rm $(docker container ls -aq)  #删除所有的container
 
 
 
-##### 运行一个nginx
+### 运行一个nginx
 
 1.创建一个dokcerfile
 
@@ -1166,12 +1166,6 @@ cluster is healthy
 
 
 
-
-
-
-
-
-
 创建overlay的网络
 
 
@@ -1179,6 +1173,8 @@ cluster is healthy
 
 
 ## Docker持久化数据共享
+
+https://www.cnblogs.com/edisonchou/p/docker_volumes_introduction.html
 
 ### 需求场景
 
@@ -1190,15 +1186,17 @@ cluster is healthy
 
 ### Docker持久化原理
 
-程序写的数据通过volume挂载到其他地方，不保存在layer上。
-
 ![image-20190614220107727](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-100848.jpg)
 
 
 
 #### 持久化方案
 
-**两种volume方案：**
+docker持久化两种方案，要么将文件存在host主机指定的目录上（bind mount）
+
+要么用docker自己管理的volume（/var/lib/docker/volumes）。
+
+
 
 - 本地的volume。 通过-v参数来实现，将本机host的目录作为数据存储卷。
 - 基于plugin的volume。支持第三方存储，比如NAS, aws；
@@ -1211,11 +1209,230 @@ cluster is healthy
 
 
 
+### Data Volume(数据卷)
+
+简单创建一个数据库containner
+
+```shell
+docker run -d --name mysql1 -e -e MYSQL_ALLOW_EMPTY_PASSWORD=true mysql
+```
+
+docker会自动创建一个volume
+
+```shell
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               0aa048295f85925d893e7b3ecbf0e235db7b47a2fae70aa440bd812495c1eac1
+```
+
+验证删除container后,volume还在
+
+```shell
+$ docker stop mysql1
+mysql1
+$ docker rm mysql1
+mysql1
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               0aa048295f85925d893e7b3ecbf0e235db7b47a2fae70aa440bd812495c1eac1
+```
 
 
 
+上面的volume name是系统随机生成的，怎么指定一个volume？
 
-## Docker Compose 多容器部署
+查看官网mysql的dockerfile，发现里面用到的是`/var/lib/mysql`这个路径
+
+```shell
+$ docker run -d -v my-mysql:/var/lib/mysql --name mysql1 -e MYSQL_ALLOW_EMPTY_PASSWORD=true mysql 
+```
+看一下docker volume
+```shell
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               my-mysql
+```
+
+查看这个volume的详细信息
+
+```dockerfile
+$ docker volume inspect my-mysql
+[
+    {
+        "CreatedAt": "2020-03-23T22:26:36Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/mnt/sda1/var/lib/docker/volumes/my-mysql/_data",
+        "Name": "my-mysql",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
+下面去验证下，这个volume可以保存数据库的数据
+
+先去这个container里创建一个数据库
+
+```shell
+$ docker exec -it mysql1 /bin/bash
+root@a022c358001e:/# mysql -uroot
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.01 sec)
+
+mysql> create database docker;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| docker             |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+
+```
+
+删除docker container，重新创建一个docker container，将volume指定为之前的my-mysql。
+
+==注==：如果不指定 -v，docker会自动创建一个新的volume。
+
+​	   下面意思是：volume的用my-mysql。因为当前名字已经存在，所以直接使用。如果不存在，那么会创建一个volume，名字叫my-mysql。
+
+​	 `/var/lib/mysql`是mysql容器的目录路径，这个是在Dockerfile就指定了的。如果传别的路径，相当于创建了2个volume。这个自定义的volume没任何意义。
+
+```
+$ docker run -d -v my-mysql:/var/lib/mysql --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=true mysql 
+```
+
+查看volume
+
+```
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               my-mysql
+```
+
+可以看到，还是只有1个volume
+
+进入container内部
+
+```shell
+$ docker exec -it mysql2 /bin/bash
+root@2c1ec424075f:/# mysql -uroot
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| docker             |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.00 sec)
+```
+
+数据库数量和mysql1的一样。
+
+
+
+**总结一下**
+
+docker volume会在host上的一个目录上 做一个软连接，指向cotainer上的一个目录。这两个目录上做修改文件可以相互感知。
+
+==volume一般在host机器上的指定目录里：/var/lib/docker/volumes==，我这里路径因为是装了虚拟机，所以前面有一些不一样。![image-20200324064605274](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-23-224605.png)
+
+在containenr里可以看到volume的目录内容，和host里的目录是一致的。这里路径就是我们上面说的mysql的volume`/var/lib/mysql`
+
+![image-20200324064646552](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-23-224647.png)
+
+
+
+### Bind Mounts
+
+Data Volume的host目录是由docker自动创建并管理的，都在`/var/lib/docker/volumes`目录下
+
+那怎么去指定一个自定义的目录呢？
+
+```
+docker run -d -it --name=edc-nginx -v /app/wwwroot:/usr/share/nginx/html nginx
+```
+
+这里指定了将宿主机上的 /app/wwwroot 目录（如果没有会自动创建）挂载到 /usr/share/nginx/html （这个目录是nginx container的目录）
+
+这里host机器==目录路径必须为全路径==(准确的说需要以`/`或`~/`开始的路径)，不然docker会将其当做volume name，而不是bind mounst处理。
+
+
+
+#### nginx demo
+
+沿用之前的Demo，做一些改造。
+
+目录结构：
+
+<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-23-232423.png" alt="image-20200324072422444" style="zoom:50%;" />
+
+static.conf是nginx的配置文件，内容如下：
+
+```shell
+server {
+	listen 8080;
+
+	server_name localhost;
+
+    root /home/docker/static-htmls;
+
+    location / {
+        try_files $uri $uri/ @router; 
+        index  index.html index.htm;
+    }
+    location @router {
+        rewrite ^.*$ /index.html last;
+    }
+}
+```
+
+
+
+修改Dockerfile:
+
+```shell
+FROM nginx
+COPY static-htmls/* /home/docker/static-htmls/
+copy static.conf /etc/nginx/conf.d
+expose 8080
+```
+
+Build Image
+
+```shell
+docker build -t nginx-mount .
+```
+
+创建容器，指明挂载目录。
+
+```shell
+docker run -d -v $(pwd):/home/docker -p 7777:8080 nginx-mount
+```
+
+这里我把我的目录挂载到/home/docker目录下，和nginx里读取的目录一致。
+
+这样，当我在本地修改代码时，容器里的文件就一起被修改了。
+
+演示就省略了。
 
 
 

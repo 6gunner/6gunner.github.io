@@ -1,8 +1,14 @@
 # Vue源码分析
 
+参考电子书：
+
 https://ustbhuangyi.github.io/vue-analysis/v2/prepare/
 
+https://github.com/answershuto/learnVue
 
+
+
+## 准备工作
 
 ## Runtime Only VS Runtime + Compiler
 
@@ -1621,6 +1627,114 @@ nextTick的作用是把执行任务推送到一个队列里，在下一个tick�
  Vue提供了全局方法去将数据转化为响应式的
 
  ```Vue.set(obj, key, val);```
+
+
+
+
+
+## Computed & Watcher
+
+### Computed
+
+计算属性会单独创建一个 `computed watcher`对象，对计算属性进行监听。 这个watcher和渲染watcher会有所不同。
+
+computed属性和vm实例上已有的属性不能冲突。
+
+computed属性会通过`defineComputed`方法进行创建。其实关键点也还是Object.defineProperty这个方法，定义了一个getter拦截器。当访问computed属性时，会调用createComputedGetter()方法。
+
+```js
+export function defineComputed (
+  target: any,
+  key: string,
+  userDef: Object | Function
+) {
+  const shouldCache = !isServerRendering()
+  if (typeof userDef === 'function') {
+    sharedPropertyDefinition.get = shouldCache
+      ? createComputedGetter(key)
+      : userDef
+    sharedPropertyDefinition.set = noop
+  } else {
+    sharedPropertyDefinition.get = userDef.get
+      ? shouldCache && userDef.cache !== false
+        ? createComputedGetter(key)
+        : userDef.get
+      : noop
+    sharedPropertyDefinition.set = userDef.set
+      ? userDef.set
+      : noop
+  }
+  if (process.env.NODE_ENV !== 'production' &&
+      sharedPropertyDefinition.set === noop) {
+    sharedPropertyDefinition.set = function () {
+      warn(
+        `Computed property "${key}" was assigned to but it has no setter.`,
+        this
+      )
+    }
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition)
+}
+```
+
+```js
+function createComputedGetter (key) {
+  return function computedGetter () {
+    const watcher = this._computedWatchers && this._computedWatchers[key]
+    if (watcher) {
+      watcher.depend()
+      return watcher.evaluate()
+    }
+  }
+}
+```
+
+computed watcher的依赖搜集过程，实际上搜集的是一个渲染 watcher。
+
+当依赖属性发生变化的时候，重新进行计算值。但是只有当最终的值也发生变化时，才会触发渲染watcher重新渲染。
+
+
+
+
+
+## 编译
+
+vue在不同平台下都有不同的编译过程。
+
+编译的步骤：
+
+- 构建ast
+- 优化ast
+
+
+
+
+
+能借鉴的东西：
+
+利用函数柯里化，保留参数；
+
+利用柯里化，剥离函数方法；
+
+
+
+### AST对象
+
+https://segmentfault.com/a/1190000016231512
+
+**模板解析**
+
+http://blog.jobbole.com/56689/
+
+https://gist.github.com/xgz123/3c039d60bdeab36bc9082f134c2d1953
+
+https://blog.risingstack.com/writing-a-javascript-framework-sandboxed-code-evaluation/
+
+
+
+### parse解析过程
+
+
 
 
 
