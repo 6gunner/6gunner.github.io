@@ -1,6 +1,37 @@
 # React学习
 
+## 函数组件
+
+**在函数组件内部使用 `ref` 属性**
+
+```js
+function CustomTextInput(props) {
+  // 这里必须声明 textInput，这样 ref 才可以引用它 
+  const textInput = useRef(null);
+  function handleClick() {
+    textInput.current.focus();  
+  }
+
+  return (
+    <div>
+      <input
+        type="text"
+        ref={textInput} /> 
+			<input
+        type="button"
+        value="Focus the text input"
+        onClick={handleClick}
+      />
+    </div>
+  );
+}
+```
+
+
+
 ## [Dva](./Dva)
+
+## [React样式 classnames](https://github.com/JedWatson/classnames#readme)
 
 ## React Hook
 
@@ -23,9 +54,29 @@ const [state, setState] = useState(() => {
 
 返回一个缓存了结果的函数；
 
+> useEffect
+
+**`useEffect` 会在每次渲染后都执行吗？** 是的，默认情况下，它在第一次渲染之后*和*每次更新之后都会执行。React 保证了每次运行 effect 的同时，DOM 都已经更新完毕。
+
+ **`effect` 可选的清除机制**。每个 effect 都可以返回一个清除函数。如此可以将添加和移除订阅的逻辑放在一起。它们都属于 effect 的一部分。
+
+**怎么避免重复执行useEffect?**
+
+```js
+useEffect(() => {
+  document.title = `You clicked ${count} times`;
+}, [count]); // 仅在 count 更改时更新
+```
+
+
+
 
 
 > #### useReducer
+
+
+
+
 
 
 
@@ -82,4 +133,78 @@ Input代码
 
 
 
+
+
+
+### 2.Can't perform a React state update on an unmounted component 
+
+现象如标题所说，不能在unmounted的组件上进行state的更新操作。
+
+这个现象发生的原因一般有2种，一个是忘了取消定时任务，一个是异步请求回来的时候，触发了setState，但是这个时候组件已经销毁了。
+
+
+
+解决方案：
+
+第一种很好解决，在`componentWillUnmount里面取消定时任务`
+
+第二种，因为一般异步任务不好去手动取消，所以一般是在setState的时候，对component的状态进行判断。
+
+可以写一个装饰器(没验证过)
+
+```js
+function withUnmounted (target){
+  // 改装componentWillUnmount，销毁的时候记录一下
+  let next = target.prototype.componentWillUnmount
+  target.prototype.componentWillUnmount = function () {
+    if (next) next.call(this, ...arguments);
+    this.unmount = true
+  }
+  // 对setState的改装，setState查看目前是否已经销毁
+  let setState = target.prototype.setState
+  target.prototype.setState = function () {
+    if ( this.unmount ) return ;
+    setState.call(this, ...arguments)
+  }
+}
+@withUnmounted
+class BaseComponent extends Component {
+}
+```
+
+或者手动去修改component的组件
+
+```js
+class Page extends Component {
+  _isMounted = false;
+
+  state = {
+    isLoading: true
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  
+    callAPI_or_DB(...).then(result => {
+      if (this._isMounted) {
+        this.setState({isLoading: false})
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  render() {
+    return (
+      <div>Whatever</div>
+    );
+  }
+}
+
+export default Page;
+```
+
+思路都一样
 

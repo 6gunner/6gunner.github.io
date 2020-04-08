@@ -745,7 +745,16 @@ eval：打包后模块会通过eval的方式来执行，速度最快；
 
 #### //todo SourceMap原理
 
-### devServer配置
+### webpackDevServer
+
+> #### 安装
+
+```
+npm install --save-dev webpack-dev-server
+```
+
+
+
 > #### contentBase
 
 告诉服务器，从哪里去读取静态文件。它和`publicPath`的区别是,`publicPath`用于确定从哪里提供bundler。默认情况下，使用当前工作目录作为提供内容的目录。
@@ -1041,7 +1050,20 @@ optimization: {
 
 防止打包的时候将import的组件打包到bundle里，而是在运行时(`runtime`)再去外部获取这些扩展依赖；
 
+比如，我从cdn引入了jquery，而不是把它打包到我的代码里。
+
 > 配置实例
+
+**index.html**
+
+```html
+<script
+  src="https://code.jquery.com/jquery-3.1.0.js"
+  integrity="sha256-slogkvB1K3VOkzAI8QITxV3VzpOnkeNVsKvtkYLMjfk="
+  crossorigin="anonymous">
+</script>
+```
+**webpack.config.js**
 
 ```js
 externals: {
@@ -1049,7 +1071,15 @@ externals: {
 },
 ```
 
-上述配置意思是代码里面用到的jquery依赖不打包到bundle里；
+然后下面展示的代码还可以正常运行：
+
+```js
+import $ from 'jquery';
+
+$('.my-element').animate(...);
+```
+
+
 
 比较一下配置前后的打包大小：
 
@@ -1077,6 +1107,10 @@ externals: {
 第二行：表示应该排除`import $ from 'jquery'`中的 `jquery`模块。为了替换这个模块，`jquery`的值将被用来检索一个全局的`jQuery`变量。
 
 换句话说，当设置为一个字符串时，它将被视为**全局的**，我们需要在全局变量中，找到这个字符串，才能使程序正确运行。
+
+也就是说，需要有一个window.jQuery，才能正确使用。
+
+
 
 **Object** 也可以配置成对象的形式
 
@@ -1275,9 +1309,9 @@ import('./b');
 
 这就导致一个问题：一些老的依赖lib里面，没有用到es6的import语法，比如很早以前的`jquery-ui`这种库，它的使用是需要全局依赖`jquery`插件的。那这种就没法在webpack里使用。
 
-所以webpack提供了一个插件: `webpack.ProvidePlugin`，可以进行自动引入模块。
+#### webpack.ProvidePlugin
 
-
+好在webpack提供了一个插件: `webpack.ProvidePlugin`，可以进行自动引入模块。
 
 > webpack.ProvidePlugin使用介绍
 

@@ -2,6 +2,8 @@
 
 https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
 
+
+
 ## 绘制矩形
 
 canvas只支持两种形式的图形绘制：矩形和路径（由一系列点连成的线段）。
@@ -50,6 +52,8 @@ function draw() {
 3. 把路径封闭。
 4. 通过==描边或填充路径区域==来渲染图形。
 
+
+
 beignPath()新建一条路径，生成之后，图形绘制命令被指向到路径上生成路径。
 
 closePath()方法会通过绘制一条从当前点到开始点的直线来闭合图形。如果图形是已经闭合了的，即当前点为开始点，该函数什么也不做。
@@ -57,6 +61,8 @@ closePath()方法会通过绘制一条从当前点到开始点的直线来闭合
 fill()会自动闭合图形，产生一个实心图形。
 
 stroke不会自动闭合图形。他通过线条绘制轮廓
+
+moveTo() 把路径移动到画布中的指定点，不创建线条
 
 
 
@@ -95,13 +101,27 @@ drawPath2D () {
 
 ## 填充颜色
 
-ctx默认的填充颜色是黑色的。
+ctx默认的填充颜色、绘制线条是黑色的。
+
+设置需要通过手动的去设置
+
+```js
+context.strokeStyle = color[2];
+context.fillStyle = color[2];
+context.font = "22px 'Roboto', 'Helvetica', 'Arial', sans-serif";
+
+```
 
 设置完颜色后，后面的填充、绘制都会使用上面的颜色。
 
 
 
+## 写字
 
+```js
+ctx.font="20px Georgia";
+ctx.fillText("Hello World!",10,50);
+```
 
 
 
