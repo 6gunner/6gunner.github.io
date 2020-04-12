@@ -361,6 +361,30 @@ new webpack.optimize.CommonsChunkPlugin({
 
 
 
+> ExtractTextPlugin
+
+它会将所有的入口 chunk(entry chunks)中引用的 `*.css`，移动到独立分离的 CSS 文件。因此，你的样式将不再内嵌到 JS bundle 中，而是会放到一个单独的 CSS 文件（即 `styles.css`）当中。 如果你的样式文件大小较大，这会做更快提前加载，因为 CSS bundle 会跟 JS bundle 并行加载。
+
+==已过期==，替换成mini-css-extract-plugin。作用相同
+
+```js
+module.exports = {
+  plugins: [new MiniCssExtractPlugin()],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+    ],
+  },
+};
+```
+
+
+
+
+
 > CopyWebpackPlugin
 
 它可以将代码里面的资源原封不动copy到dist指定的目录里。 
@@ -1303,8 +1327,6 @@ import('./b');
 
 ### shimming 垫片
 
-> 作用
-
 因为webpack打包是基于模块的，模块与模块之间不会产生互相的影响。所以不同的包之间即使依赖相同的依赖包，也不能公用。
 
 这就导致一个问题：一些老的依赖lib里面，没有用到es6的import语法，比如很早以前的`jquery-ui`这种库，它的使用是需要全局依赖`jquery`插件的。那这种就没法在webpack里使用。
@@ -1334,7 +1356,7 @@ import('./b');
   };
 ```
 
-上面配置的意思是：如果你遇到了至少一处用到 `_` 变量的模块实例，那请你将 `lodash` package 引入进来，并将其提供给需要用到它的模块。
+上面配置的意思是：==如果你遇到了至少一处用到 `_` 变量的模块实例，那请你将 `lodash` package 引入进来，并将其提供给需要用到它的模块。==
 
 有了这个配置，在代码里就不需要引入`lodash`这个模块就能使用`lodash`的方法了。
 
@@ -1792,7 +1814,7 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
 
 
-### 配置优化
+### 项目配置优化
 
 #### 打包分析 
 
@@ -1836,11 +1858,91 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
 
 
-### 2.打包GsComps
+### webpack 转化未模块化的 js 库
+
+#### 项目需求
+
+依赖zepto，但是zepto不支持模块化
+
+如果不是自己修改过的代码，可以直接在webpack里加externals，然后再index.html里引入script.
+
+```
+externals: {
+	'webpack-zepto': '$'
+},
+```
+
+```html
+<script crossorigin="anonymous"
+        src="https://xxx.cdn/zepto.min.js"></script>
+```
+
+```js
+import $ from 'webpack-zepto' // scripts标签提供了$变量，所以这行使用ok。
+```
 
 
 
-### 3.项目支持HMR
+如果是修改过的zepto代码，尤其是模块做过修改的。就没办法用上面的了，因为webpack-zepto返回的`$`对象没有对应的功能，开发过程会出错。
+
+需要用`script-loader exports-loader`
+
+#### **zepto.js 自定义模块打包步骤如下：**
+
+1、从 github 上 down 一份下来（https://github.com/madrobby/zepto）
+
+2、安装 nodejs 环境以及 npm 包管理器
+
+3、运行，编辑目录下的 make 文件，找到 **modules = (env['MODULES'] || 'zepto event ajax form ie').split(' ')** 这一行。我标红的部分就是要引入打包的模块名，以空格符隔开，在当中加入你需要用到的模块名，然后保存。（当然，也可以减少模块，核心模块 zepto 别删掉就行了）
+
+4、回到命令行，输入 npm install 回车安装构建 zepto.js 所需的 node 模块。安装好后，再输入 npm run-script dist 命令，然后回车，开始打包构建。
+
+5、如果没有报错的话，就ok了。可以看到 zepto 目录下 多出一个 dist 目录，里面可以看到生成的三个文件：原始文件 zepto.js，压缩后的 zepto.min.js，gzip 后的 zepto.min.gz。生产环境使用 zepto.min.js 就行了。
+
+这样zepto.js自定义模块打包就完成了
+
+
+
+#### 安装依赖
+
+#### webpack配置
+
+```js
+resolve: {
+  alias: {
+      'zepto': path.resolve(__dirname, './src/js/lib/zepto.min.js')
+  }
+}
+rules: [{
+	test: require.resolve('zepto'),
+	loader: 'exports-loader?window.Zepto!script-loader'
+}],
+...
+plugins: [
+	new webpack.ProvidePlugin({
+			$: 'zepto',
+			Zepto: 'zepto',
+		}),
+]
+```
+
+
+
+webpack.ProvidePlugin的配置是说：如果项目里用到了`$`或者`Zepto`，那么webpack会自动去引入zepto，不用我去手动引入。
+
+rules的配置是说：当我引入`zepto`的时候，会把对象暴露给window.Zepto。
+
+script-loader 把我们指定的模块 JS 文件转成纯字符串，exports-loader 将需要的 js 对象 module.exports 导出，以支持 import 或 require 导入
+
+它两结合，可以处理一个 *"可以 npm 安装，但又不符合 webpack 模块化规范"* 的库“，处理后可以直接 import xx from XX 后使用。
+
+resolve里的alias将自己本地的代码，配置了一个别名，这样就可以通过zepto找到本地的js文件。
+
+
+
+
+
+### 项目支持HMR
 
 ```diff
 'use strict'
@@ -1956,7 +2058,7 @@ module.exports = new Promise((resolve, reject) => {
 
 
 
-### 3.create-react-app支持 HMR
+### create-react-app支持 HMR
 
 之前项目里发现一个情况，create-reacta-app eject后创建的项目，虽然是支持hmr的，但是只有css是支持HMR的，每次修改js代码依然需要刷新页面才能生效。
 
@@ -2093,7 +2195,7 @@ Preload用于更早地发现资源，并避免发起类似瀑布一样的请求�
 
 
 
-### create-react-app
+### create-react-app配置分析
 
 首先用`create-react-app`脚手架创建好工程，然后执行脚本`npm run eject`将webpack等相关的配置显示出来。
 
@@ -2165,7 +2267,7 @@ Preload用于更早地发现资源，并避免发起类似瀑布一样的请求�
 
 核心的webpack配置存在webpack.config.js
 
-### vue-cli
+### vue-cl配置分析
 vue-cli是官方提供的脚手架工具。~2.0版本会自动创建webpack的很多配置项。 ~3.0版本做了很大改动，封装了所有的webpack配置项，开发如果需要更改配置，需在项目里创建一个vue.config.js文件，根据文档进行配置。
 
 #### vue-cli@2.0 loader部分

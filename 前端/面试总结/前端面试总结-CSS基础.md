@@ -40,9 +40,23 @@ IE的content部分包含了border和pading
 
 
 
+### 深入理解vertical-align
+
+https://juejin.im/post/5a7d6b886fb9a06349129463
+
+初学者使用`vertical-align`属性时，经常会发现最终的表现结果并不能如愿，“vertical-align无效”也是CSS问题里搜索频率比较高的一个。大部分是因为对于该属性理解不够透彻引起的，只有理解了该属性的特点，表现行为以及与其他属性（`如line-height`）的共同作用机制和效果，才能很好的解决vertical-align带来的一些问题，并有效的利用它。
+
+1. **起作用的前提**
+
+   vertical-align起作用的前提是元素为inline水平元素或table-cell元素，包括`span`, `img`,`input`, `button`, `td` 以及通过display改变了显示水平为inline水平或者table-cell的元素。这也意味着，默认情况下，`div`, `p`等元素设置vertical-align无效。
+
+
+
+
+
 ## 重绘回流
 
-浏览器的渲染流程：
+**浏览器的渲染流程：**
 
 ```js
 解析html,形成DOM树；
@@ -52,19 +66,19 @@ IE的content部分包含了border和pading
 根据render树和layout信息，进行paninting，得到元素的像素大小，绘制在屏幕上。
 ```
 
-什么是回流 （reflow）?
+**什么是回流 （reflow）?**
 
 回流其实就是指重新计算layout。
 
 
 
-什么是重绘（repaint）?
+**什么是重绘（repaint）?**
 
 重绘其实就是浏览器根据render树以及回流阶段重新得到的layout信息，进行像素的绘制。
 
 
 
-什么时候会发生回流？
+**什么时候会发生回流？**
 
 当页面发生布局变化，或者几何信息发生变化的时候，就会产生回流。
 
@@ -78,7 +92,7 @@ IE的content部分包含了border和pading
 
 
 
-怎么避免发生回流？
+**怎么避免发生回流？**
 
 - 当需要对元素进行修改时，让元素脱离文档流。因为脱离文档流的元素， 不会引起回流；对其进行多次修改后，再将其加入文档流。
 
@@ -86,7 +100,7 @@ IE的content部分包含了border和pading
 
 - 避免触发同步布局事件。比如去读取元素的offsetWidth属性，会导致浏览器强制清空执行队列，引发回流重绘。
 
-
+  需要控制元素显示隐藏时，用z-index、transform属性来替代display的属性。避免回流。
 
 
 
@@ -96,7 +110,7 @@ IE的content部分包含了border和pading
 
 1. 子元素position设置absolute，margin设置为auto, left和right设置为0； 需要设置width、height
 2. 父级设置`text-align: center`，`line-height`等同高度。 对inline元素有效
-3. position设置为absolute，top:50%，left:50%，transform: translate(-50%, -50%);
+3. 子元素position设置为absolute，top:50%，left:50%，transform: translate(-50%, -50%);
 4. 父元素设置table布局，子元素设置display：table-cell; vertical-align: middle;
 5. 父元素设置flex布局，设置justify-content: center,  align-items:center;
 6. 父元素设置grid布局，子元素设置 justify-self: center, align-self: center;
