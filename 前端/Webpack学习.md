@@ -1236,7 +1236,7 @@ webpack-dev-server 也会默认从 `publicPath` 为基准，使用它来决定�
 
 ### 代码分离/代码分割
 
-> 概念介绍
+> #### 概念介绍
 
 代码分割: 将代码分离到不同的bundle里，然后按需进行加载。
 
@@ -1244,7 +1244,7 @@ webpack-dev-server 也会默认从 `publicPath` 为基准，使用它来决定�
 
 
 
-> 常用方法
+> #### 常用方法
 
 三种常用的代码分离方法：
 
@@ -1254,27 +1254,122 @@ webpack-dev-server 也会默认从 `publicPath` 为基准，使用它来决定�
 
 
 
-> `SplitChunkPlugin` VS `CommonsChunkPlugin`
-
-从webpack4开始，自带了`SplitChunkPlugin`插件将代码进行，替代了`CommonsChunkPlugin`。
-
-CommonsChunkPlugin能够将全部的懒加载模块引入的共用模块统一抽取出来，形成一个新的common块，这样就避免了懒加载模块间的代码重复了，
-
-但是**CommonsChunkPlugin的痛，在于只能统一抽取模块到父模块，造成父模块过大，不易于优化**
-
-SplitChunksPlugin它能够抽出懒加载模块之间的公共模块，并且不会抽到父级，而是会与首次用到的懒加载模块并行加载，这样我们就可以放心的使用懒加载模块了。
+> #### 插件使用 `SplitChunkPlugin` VS `CommonsChunkPlugin`
 
 
 
-> `SplitChunkPlugin`配置
+CommonsChunkPlugin能够将公共用模块统一抽取出来，形成一个新的common块。最终合成的文件能够在最开始的时候加载一次，便存到缓存中供后续使用。这个带来速度上的提升，因为浏览器会迅速将公共的代码从缓存中取出来，而不是每次访问一个新页面时，再去加载一个更大的文件。
+
+但是**CommonsChunkPlugin的痛，在于只能统一抽取模块到父模块，造成父模块过大，不易于优化**。
+
+==从webpack4开始，自带了`SplitChunkPlugin`插件将代码进行，替代了`CommonsChunkPlugin`。==
+
+`SplitChunksPlugin`它能够抽出懒加载模块之间的公共模块，并且不会抽到父级，而是会与首次用到的懒加载模块并行加载，这样我们就可以放心的使用懒加载模块了。
+
+
+
+> #### `SplitChunkPlugin`介绍
+>
+> https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
 
 webpack自带了一个optimization的配置项，里面可以手动配置符合自己项目情况的优化项。 
+
+先介绍一下默认情况下，SplitChunkPlugin的分割策略。
+
+------
+
+情况A:
+
+`chunk-a`: react, react-dom, some components
+
+`chunk-b`: react, react-dom, some other components
+
+`chunk-c`: angular, some components
+
+`chunk-d`: angular, some other components
+
+------
+
+webpack 自动生成下面2个vendor:
+
+`vendors~chunk-a~chunk-b`: react, react-dom
+
+`vendors~chunk-c~chunk-d`: angular
+
+`chunk-a` to `chunk-d`: Only the components
+
+
+
+情况B: 
+
+------
+
+`chunk-a`: react, react-dom, some components
+
+`chunk-b`: react, react-dom, lodash, some other components
+
+`chunk-c`: react, react-dom, lodash, some components
+
+webpack同样创建2个vendors
+
+`vendors~chunk-a~chunk-b~chunk-c`: react, react-dom
+
+`vendors~chunk-b~chunk-c`: lodash
+
+`chunk-a` to `chunk-c`: Only the components
+
+
+
+情况C: 
+
+------
+
+`chunk-a`: vue, some components, some shared components
+
+`chunk-b`: vue, some other components, some shared components
+
+`chunk-c`: vue, some more components, some shared components
+
+j假设shared components 超过30kb, webpack创建一个 vendors chunk 和 一个commons chunk、
+
+`vendors~chunk-a~chunk-b~chunk-c`: vue
+
+`commons~chunk-a~chunk-b~chunk-c`: some shared components
+
+`chunk-a` to `chunk-c`: Only the components
+
+
+
+情况D: 
+
+------
+
+`chunk-a`: react, react-dom, some components, some shared react components
+
+`chunk-b`: react, react-dom, angular, some other components
+
+`chunk-c`: react, react-dom, angular, some components, some shared react components, some shared angular components
+
+`chunk-d`: angular, some other components, some shared angular components
+
+webpack会创建2个 vendors chunks 和 2个 commons chunks
+
+`vendors~chunk-a~chunk-b~chunk-c`: react, react-dom
+
+`vendors~chunk-b~chunk-c~chunk-d`: angular
+
+`commons~chunk-a~chunk-c`: some shared react components
+
+`commons~chunk-c~chunk-d`: some shared angular components
+
+`chunk-a` to `chunk-d`: Only the components
+
+
 
 同步分割就主要依赖于`webpack.optimization.splitChunks`这一配置项。
 
 ```js
-
-	optimization: {
+ optimization: {
 		splitChunks: {
 			chunks: 'all', // 默认是async，意思是只分割异步代码
 			// 代码分割的下限
@@ -1743,7 +1838,7 @@ eslint的配置其实很简单，只需要安装好eslint，eslint-loader，配�
 
 
 
-### DDLPlugin
+### DLLPlugin
 
 `DLLPlugin` 和 `DLLReferencePlugin` 用某种方法实现了拆分 bundles，同时还大大提升了构建的速度。
 
@@ -1763,7 +1858,7 @@ const vendors = [
 ];
 webpack({
   entry: {
-    vendor: require.resolve(path.join(__dirname, "./vendor.js"))
+    vendor: vendors,
   },
   output: {
     path: path.join(__dirname, "../dll"),
@@ -1800,7 +1895,7 @@ module.exports = {
 
 dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有哪些依赖项在里面，这样webpack就不会将这些依赖打包到bundle里，从而减少包的体积。
 
-
+==AddAssetHtmlPlugin==将dll文件加到html里去
 
 
 
@@ -1828,9 +1923,7 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
 - [webpack bundle optimize helper](https://webpack.jakoblind.no/optimize)：此工具会分析你的 bundle，并为你提供可操作的改进措施建议，以减少 bundle 体积大小。
 
-  
-
- ![image-20200207121247825](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-02-07-041248.png)
+   ![image-20200207121247825](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-02-07-041248.png)
 
 
 
@@ -1846,7 +1939,7 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 
   - 使用[ddl](#DDLPlugin)来抽离出不经常变化的代码。
 
-  - 通过[treeshaking](#treeshaking)来去除没被使用的代码
+  - 通过[treeshaking](#treeshaking)来去除没被使用的代码。
 
   - 通过splitChunks来动态引入代码，打包拆分为小的代码，加快打包速度。
 
@@ -1855,6 +1948,64 @@ dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有�
 - 开启多进程打包： thread-loader, parallel-webpack, happypack
 - 合理使用[sourcemap](#devtool)
 - 结合[打包分析](#打包分析 )工具
+
+
+
+### 优化打包
+
+一开始打包完，显示如下信息
+
+![image-20200414103539301](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-14-023543.png)
+
+![image-20200414112159488](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-14-032200.png)
+
+问题主要是2块：
+
+app.css太大
+
+bundle.js太大
+
+
+
+#### 优化步骤：
+
+**1.先解决js的问题。**
+
+首先，想到的是将公共的模块抽离出来。所以我手动加了一个entry。
+
+```diff
+entry: {
+		app: './src/main.js',
++		common: './src/common.js'
+},
+```
+
+并且在common里加入了公共的模块
+
+```
+import $ from 'zepto';
+import html2canvas from 'html2canvas';
+import TWEEN from '@tweenjs/tween.js';
+import QRCode from 'qrcode';
+
+```
+
+然后，这个手动加入的entry和app会重复，所以需要将重复的剥离出来，于是，再配置一下optimization
+
+```diff
+optimization: {
++		splitChunks: {
++			chunks: 'all',
++		},
+		minimizer: [new UglifyJsPlugin(), new OptimizeCssAssetsWebpackPlugin({})],
+},
+```
+
+![image-20200414111755986](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-14-031756.png)
+
+
+
+
 
 
 
