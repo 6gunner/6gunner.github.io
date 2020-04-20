@@ -1842,6 +1842,10 @@ eslint的配置其实很简单，只需要安装好eslint，eslint-loader，配�
 
 `DLLPlugin` 和 `DLLReferencePlugin` 用某种方法实现了拆分 bundles，同时还大大提升了构建的速度。
 
+它只是提升打包速度，如果要提取公共类，还是需要通过**CommonsChunkPlugin**或者`SplitChunkPlugin.`
+
+
+
 > #### DllPlugin
 
 ddlplugin会生成一个`manifest.json` 的文件，这个文件是用来给 [`DLLReferencePlugin`](#dllreferenceplugin) 映射到相关的依赖上去的。
@@ -1896,6 +1900,14 @@ module.exports = {
 dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有哪些依赖项在里面，这样webpack就不会将这些依赖打包到bundle里，从而减少包的体积。
 
 ==AddAssetHtmlPlugin==将dll文件加到html里去
+
+低版本webpack用2.1.3的
+
+```
+yarn add add-asset-html-webpack-plugin@^2.1.3 --dev
+```
+
+
 
 
 
@@ -1987,10 +1999,9 @@ import $ from 'zepto';
 import html2canvas from 'html2canvas';
 import TWEEN from '@tweenjs/tween.js';
 import QRCode from 'qrcode';
-
 ```
 
-然后，这个手动加入的entry和app会重复，所以需要将重复的剥离出来，于是，再配置一下optimization
+但是这个手动加入的entry和app会重复，所以需要将重复的剥离出来，于是，再配置一下optimization
 
 ```diff
 optimization: {
@@ -2003,7 +2014,51 @@ optimization: {
 
 ![image-20200414111755986](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-14-031756.png)
 
+上面的虽然能够将公共的抽离出来，但是多加载了一个common.js。没有什么必要
 
+
+
+**2.通过dll来解决bundle太大的问题。**
+
+**配置前：**
+
+![image-20200420170738351](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-090738.png)
+
+![image-20200420170142007](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-090142.png)
+
+
+
+**配置后：**
+
+![image-20200420171313445](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-091314.png)
+
+![image-20200420171247295](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-091247.png)
+
+很奇怪，vendors和app并没有减小。原因是因为context配置的问题
+
+
+
+> 修正后的效果：
+
+配置前
+
+Hash: ec7cc07aa4de537ede18
+Version: webpack 4.42.1
+Time: 2940ms
+Built at: 04/20/2020 6:35:00 PM
+
+![image-20200420183537776](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-232245.png)
+
+
+
+配置后
+
+Hash: 6433381ed503ccc7b79b
+Version: webpack 4.42.1
+Time: 2044ms
+Built at: 04/20/2020 6:36:48 PM
+
+![image-20200420183444555](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-232244.png)                                 
 
 
 

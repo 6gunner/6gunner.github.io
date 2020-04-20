@@ -110,15 +110,37 @@ cat f84e19a2f44c6386.crt gd_bundle-g2-g1.crt >> coolexample.crt
 
 ## 4： resolver的含义
 
+背景：
+
+![image-20191231153141975](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-062918.png)
+
+给客户搭建的前端服务里，看见了一个resolver的配置。
+
+这块一直不是很了解。今天尝试自己模拟了一下服务器的nginx配置，终于明白了这个配置的含义。
+
+
+
+当nginx的proxy_pass配置的是域名时，为了快速定位到域名的ip，需要增加一个resolver配置。
+
+当resolver配置后，nginx会动态利用resolver设置的DNS服务器（本机设置的DNS服务器或/etc/hosts无效），将域名解析成IP，proxy模块会将请求转发到解析后的IP上。
+
+一般我们去看/etc/resolve.conf就可以看见默认的dns解析配置。
+
 
 
 ![image-20191231153014650](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-12-31-073015.png)
 
-![image-20191231153141975](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2019-12-31-073142.png)
 
 
 
-nginx会动态利用resolver设置的DNS服务器（本机设置的DNS服务器或/etc/hosts无效），将域名解析成IP，proxy模块会将请求转发到解析后的IP上
+
+
+
+附加：如何利用dnsmasq搭建一个本地的dns解析服务，实现前端hosts文件和请求接口需要的hosts文件动态解析的功能。
+
+https://segmentfault.com/a/1190000020086790
+
+
 
 
 
