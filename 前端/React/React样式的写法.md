@@ -387,7 +387,7 @@ export default withTheme(ThemeComponent)
 安装插件 以`jss-plugin-nested`为例子
 
 ```
-yarn add jss-plugin-nested
+yarn add jss-plugin-nested --dev
 ```
 
 写法1
@@ -548,6 +548,18 @@ export default function () {
 
 
 
+# 附：如何写background-image
+
+```js
+		background: `url(${require('../../assets/nycex/vip_bg.png')})`,
+```
+
+
+
+
+
+
+
 
 
 # 附：classnames
@@ -592,3 +604,4 @@ https://github.com/JedWatson/classnames#readme
 所以用`+`拼接也可以
 
 ![image-20200419165627062](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-19-085627.png)
+

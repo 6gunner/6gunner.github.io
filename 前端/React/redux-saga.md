@@ -146,3 +146,7 @@ const takeLatest = (pattern, saga, ...args) => fork(function*() {
 
 `takeLatest` 不允许多个 `saga` 任务并行地执行。一旦接收到新的发起的 action，它就会取消前面所有 fork 过的任务（如果这些任务还在执行的话）。
 
+
+
+
+

@@ -2042,10 +2042,14 @@ optimization: {
 
 配置前
 
+```
 Hash: ec7cc07aa4de537ede18
 Version: webpack 4.42.1
 Time: 2940ms
 Built at: 04/20/2020 6:35:00 PM
+
+```
+
 
 ![image-20200420183537776](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-232245.png)
 
@@ -2053,10 +2057,12 @@ Built at: 04/20/2020 6:35:00 PM
 
 配置后
 
+```
 Hash: 6433381ed503ccc7b79b
 Version: webpack 4.42.1
 Time: 2044ms
 Built at: 04/20/2020 6:36:48 PM
+```
 
 ![image-20200420183444555](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-20-232244.png)                                 
 
@@ -2087,6 +2093,8 @@ externals: {
 import $ from 'webpack-zepto' // scripts标签提供了$变量，所以这行使用ok。
 ```
 
+```
+
 
 
 如果是修改过的zepto代码，尤其是模块做过修改的。就没办法用上面的了，因为webpack-zepto返回的`$`对象没有对应的功能，开发过程会出错。
@@ -2113,7 +2121,7 @@ import $ from 'webpack-zepto' // scripts标签提供了$变量，所以这行使
 
 #### webpack配置
 
-```js
+​```js
 resolve: {
   alias: {
       'zepto': path.resolve(__dirname, './src/js/lib/zepto.min.js')
