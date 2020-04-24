@@ -4,8 +4,6 @@ https://kubernetes.io/zh/docs/concepts/
 
 
 
-## 准备工作
-
 
 
 ## 概念
@@ -16,14 +14,17 @@ https://www.kubernetes.org.cn/6986.html?from=singlemessage&isappinstalled=0
 
 假设我们有了一个编排系统，那么肯定有一些服务是用来运行这个编排系统的，剩下的机器用来运行业务容器。
 
-我们把运行编排系统的服务器叫master节点，剩下的称为worker节点。
+我们把运行编排系统的服务器叫==master节点==，剩下的称为==worker节点==。
 
-master节点负责管理服务器集群。==对外需要提供api接口，用来对接集群进行管理==。对内，woker节点通过api接口要，定时上报运行状态，接收管理。
+master节点负责管理服务器集群。
+
+1. ==对外需要提供api接口，用来对接集群进行管理==。
+2. 对内，woker节点通过api接口要，定时上报运行状态，接收管理。
 
 master 上提供管理接口的组件称为 kube apiserver，对应的还需要两个用于和 api server 交互的客户端：
 
-- 一个是提供给集群的运维管理员使用的，我们称为 kubectl；
-- 一个是提供给 worker 节点使用的，我们称为 kubelet。
+- 一个是提供给集群的运维管理员使用的，我们称为 ==kubectl==；
+- 一个是提供给 worker 节点使用的，我们称为 ==kubelet==。
 
 master对worker的管理调度组件，都是通过 kube scheduler来进行。
 
@@ -136,25 +137,17 @@ kubectl config view # 查看kubeconfig 配置
 kubectl cluster-info # 看当前k8s集群的情况
 ```
 
-
-
 ```shell
 minikube ssh # 连接到一个kube上
 ```
 
 
 
-### 2.kubeadm
-
-**kubeadm** 能帮助您建立一个小型的符合最佳实践的 Kubernetes 集群。通过使用 kubeadm, 您的集群会符合 [Kubernetes 合规性测试](https://kubernetes.io/blog/2017/10/software-conformance-certification)的要求. Kubeadm 也支持其他的集群生命周期操作，比如升级、降级和管理[启动引导令牌](https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/)。
-
-
-
-
-
 ## POD
 
-pod是k8s里最小的单位，他用来运行容器，一般通过yml文件对pod进行创建、删除操作。
+pod是k8s里最小的单位，他用来运行容器。
+
+一般通过yml文件对pod进行创建、删除操作。命令如下：
 
 ```shell
 # 通过pod.json文件中指定的资源类型和名称删除一个pod
@@ -162,17 +155,9 @@ $ kubectl create -f ./pod.yml
 $ kubectl delete -f ./pod.yml
 ```
 
+### Eg.实际案例
 
-
-```shell
-$ kubectl exec -it nginx sh # 可以进入某一个pod的容器里
-```
-
-
-
-### 实际案例
-
-启动一个nginx pod
+我们通过yml文件创建并且启动一个nginx pod
 
 1.创建一个`pod-nginx.yml `
 
@@ -190,7 +175,7 @@ spec:
     ports:
     - containerPort: 80
 ```
-2.确认kubectl能连上
+2.验证pod创建成功
 
 ```shell
 $ kubectl cversion #先确认kubectl连接上了
@@ -200,11 +185,17 @@ $ kubectl get pods -o wide # 查看pod详细信息
 
 ![image-20200327201551379](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-27-121551.png)
 
+3.如果需要进入一个pod里，运行 `--it`命令
+
+```shell
+$ kubectl exec -it nginx sh # 可以进入某一个pod的容器里
+```
 
 
-3.让外界去访问这个pod的nginx服务？
 
-将nginx服务映射到minikube的ip上
+#### **思考：如何让外界去访问这个pod的nginx服务？**
+
+方案1：可以将nginx服务映射到minikube机器的ip上
 
 通过port-forward命令，将本地端口映射到pod端口上
 
@@ -234,6 +225,10 @@ deployment
 ```
 
 
+
+## Node
+
+什么是node？
 
 
 
@@ -427,6 +422,56 @@ $ kubectl rollout history deployment nginx-deployment
 ```
 
 ![image-20200328074558262](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-27-234558.png)
+
+
+
+## ExternalName
+
+```
+kubectl create svc externalname -n test-bhop prerender --external-name prerender.broker.svc.cluster.local
+```
+
+
+
+## 命名空间
+
+```
+kubectl get namespace
+```
+
+
+
+# 其他待了解
+
+## Nginx Ingress 教程
+
+
+
+# 常用东西
+
+## 查看网页界面
+
+### 安装Dashboard UI
+
+
+
+### 命令行代理
+
+您可以使用 kubectl 命令行工具访问 Dashboard，命令如下：
+
+```
+kubectl proxy
+```
+
+这个命令可以让本地通过[这个地址](http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/ )来访问
+
+如果命名空间错误的话，
+
+![image-20200423171043037](https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-04-23-091043.png)
+
+查看一下k8s上面的dashboard的服务名称，然后替换掉。
+
+
 
 
 

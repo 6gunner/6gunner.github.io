@@ -1,6 +1,22 @@
 # React学习
 
-## 函数组件
+
+
+## 组件优化笔记
+
+### 通过`shouldComponentUpdate`来
+
+
+
+### React.PureComponent
+
+pureComponent会对传入的props进行浅比较。对于==复杂数据结构的props==不要用这个组件
+
+
+
+
+
+## 函数组件                                  
 
 **在函数组件内部使用 `ref` 属性**
 
@@ -107,7 +123,7 @@ Input代码
 
 
 
-解决方案：
+**解决方案**：
 
 第一种很好解决，在`componentWillUnmount里面取消定时任务`
 
@@ -171,3 +187,10 @@ export default Page;
 
 思路都一样
 
+
+
+==总结一下：==
+
+事件监听、网络请求、定时任务等方法
+
+在组 件销毁时需要取消掉。

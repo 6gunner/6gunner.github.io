@@ -343,150 +343,9 @@ plugins可以帮助webpack，在打包的不同生命周期中，做不同的处
 
 比如在打包之前，做清空处理，使用`CleanWebpackPlugin`。
 
-#### 常用插件
-
->CommonsChunkPlugin
-
-有些类库如utils, bootstrap之类的可能被==多个页面==共享，最好是可以合并成一个js，而非每个js单独去引用。这样能够节省一些空间。
-
-这种场景就需要用到CommonsChunkPlugin，我们指定好生成文件的名字，以及想抽取哪些入口js文件的公共代码，webpack就会自动帮我们合并好。
-
-```js
-new webpack.optimize.CommonsChunkPlugin({
-    name: "common",
-  	filename: "js/common.js",
-  	chunks: ['index', 'detail]  // 可以指定需要哪些库
- })
-```
 
 
-
-> ExtractTextPlugin
-
-它会将所有的入口 chunk(entry chunks)中引用的 `*.css`，移动到独立分离的 CSS 文件。因此，你的样式将不再内嵌到 JS bundle 中，而是会放到一个单独的 CSS 文件（即 `styles.css`）当中。 如果你的样式文件大小较大，这会做更快提前加载，因为 CSS bundle 会跟 JS bundle 并行加载。
-
-==已过期==，替换成mini-css-extract-plugin。作用相同
-
-```js
-module.exports = {
-  plugins: [new MiniCssExtractPlugin()],
-  module: {
-    rules: [
-      {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      },
-    ],
-  },
-};
-```
-
-
-
-
-
-> CopyWebpackPlugin
-
-它可以将代码里面的资源原封不动copy到dist指定的目录里。 
-
-一般用来copy一些static的静态资源，比如我们项目里面的`tradingview`插件。
-
-
-
-> HtmlWebpackPlugin + AddAssetHtmlPlugin + [InterpolateHtmlPlugin](https://github.com/zanettin/react-dev-utils)
-
-这几个插件配合使用：
-
-HtmlWebpackPlugin自动生成html文件
-
-AddAssetHtmlPlugin可以向html里面增加js引用
-
-interpolateHtmlPlugin可以在index.html里面使用变量。 
-
-```
-
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-  <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
-```
-
-实际例子
-
-```json
-{
-    "webpack": "^3.6.0",
-    "add-asset-html-webpack-plugin": "2.1.3",
-    "html-webpack-plugin": "^2.30.1",
-    "interpolate-html-plugin": "2.0.0"
-}
-```
-
-在webpack是3版本的时候，依赖如上。
-
-在配置文件里配置：
-
-```js
-const PUBLIC_URL = process.env.PUBLIC_URL  
-module.exports = {
-  plugins: [
-  	new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'index.html',
-      inject: true,
-    }),
-    new AddAssetHtmlPlugin({
-      filepath: path.resolve(__dirname, '../static/image-config.js'),
-      includeSourcemap: false,
-      publicPath: config.dev.assetsPublicPath
-    }),
-    new InterpolateHtmlPlugin({
-      publicUrl: PUBLIC_URL,
-    })
-  }]
-}
-```
-
-在页面里使用：htmlplugin自带支持lodash的plugin
-
-```html
-window.__login= {
-	user: JSON.parse(sessionStorage.getItem('user'))
-}
-window.__config = {
-  publicUrl: '%publicUrl%', // 变量
-  thirdType: 'firstbi',
-  title: 'firstbi',
-  loginMode: '3', // 1: "Company", 2: "Cust", 3: "External
-}
-```
-
-
-
-> DefinePlugin
-
-DefinePlugin可以配置一个全局的变量。在webpack打包的时候，帮助开发者进行一个字符串的替换。这样在业务代码里面，就可以忽略开发环境和生产环境的打包规则限制，避免出错。比如：在开发构建中，而不在发布构建中执行日志记录。
-
-**基本用法**
-
-```javascript
-new webpack.DefinePlugin({
-  PRODUCTION: JSON.stringify(true),
-  VERSION: JSON.stringify('5fa3b9'),
-  BROWSER_SUPPORTS_HTML5: true,
-  TWO: '1+1',
-  'typeof window': JSON.stringify('object'),
-  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
-});
-```
-
-```js
-if (!PRODUCTION) {
-  console.log('Debug info');
-}
-
-if (PRODUCTION) {
-  console.log('Production log');
-}
-```
+#### [常用插件](./webpack常用plugins)
 
 
 
@@ -530,7 +389,7 @@ module.export = {
 
 
 
-##### compiler 和 cmpiler 钩子
+##### compiler 和 compiler 钩子
 
 - `compiler` 对象代表了完整的 webpack 环境配置。这个对象在启动 webpack 时被一次性建立，并配置好所有可操作的设置，包括 options，loader 和 plugin。当webpack调用插件时，会把这个compiler 对象传给plugin的apply方法。
 
@@ -596,10 +455,6 @@ compiler.hooks.someHook.tap(...)
 ```json
 "debug": "node --inspect --inspect-brk ./node_modules/webpack/bin/webpack.js"
 ```
-
-
-
-
 
 
 
@@ -1835,84 +1690,6 @@ eslint的配置其实很简单，只需要安装好eslint，eslint-loader，配�
 所以一般不会用webpack进行配置，而是会在git hook上进行配置，在代码提交时对代码规范进行判断。
 
 // todo 配置git hook
-
-
-
-### DLLPlugin
-
-`DLLPlugin` 和 `DLLReferencePlugin` 用某种方法实现了拆分 bundles，同时还大大提升了构建的速度。
-
-它只是提升打包速度，如果要提取公共类，还是需要通过**CommonsChunkPlugin**或者`SplitChunkPlugin.`
-
-
-
-> #### DllPlugin
-
-ddlplugin会生成一个`manifest.json` 的文件，这个文件是用来给 [`DLLReferencePlugin`](#dllreferenceplugin) 映射到相关的依赖上去的。
-
-```js
-const webpack = require("webpack");
-const path = require("path");
-
-const vendors = [
-  "react",
-  "react-dom",
-  "moment"
-  // ...其它库
-];
-webpack({
-  entry: {
-    vendor: vendors,
-  },
-  output: {
-    path: path.join(__dirname, "../dll"),
-    filename: "[name].js"
-  },
-  plugins: [
-    new webpack.DllPlugin({
-      path: path.join(__dirname, "dll", "[name]-manifest.json"),
-      name: "[name]",
-      context: __dirname
-    })
-  ]
-});
-```
-
-上面的config文件时用来生成dll.js文件和json文件的。
-
-
-
-> #### DllReferencePlugin
-
-```diff
-module.exports = {
-	plugins: [
-+   new AddAssetHtmlPlugin({
-+      filepath: path.resolve(__dirname, '../dll/vendors.dll.js'),
-+    }),
-+ 	new webpack.DllReferencePlugin({
-+      manifest: path.resolve(__dirname, '../dll/vendors-manifest.json'),
-+    }),
-	]
-}
-```
-
-dllReferencePlugin会根据上面生成的mainfest.json文件，知道已经有哪些依赖项在里面，这样webpack就不会将这些依赖打包到bundle里，从而减少包的体积。
-
-==AddAssetHtmlPlugin==将dll文件加到html里去
-
-低版本webpack用2.1.3的
-
-```
-yarn add add-asset-html-webpack-plugin@^2.1.3 --dev
-```
-
-
-
-
-
-
-### ManifestPlugin
 
 
 
