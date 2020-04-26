@@ -1,6 +1,6 @@
 # React学习
 
-
+## [React原理](./React原理)
 
 ## 组件优化笔记
 
@@ -46,6 +46,14 @@ function CustomTextInput(props) {
 
 
 ## [Dva](./Dva)
+
+用dva的好处是，不用再导出写reducers和actions了。统一由models来处理。
+
+代码更加规范。
+
+
+
+
 
 ## [React样式的写法](./React样式的写法)
 
