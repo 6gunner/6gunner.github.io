@@ -26,6 +26,24 @@ IE的content部分包含了border和pading
 
 
 
+## margin穿透怎么解决
+
+> 父级设置
+
+```css
+display: flex;
+display: inline-block;
+display: table;
+overflow: auto;
+overflow: hidden;
+padding: 0.1px;
+border: 1px solid #000000;
+```
+
+
+
+
+
 ## 行内元素/块状元素
 
 - 块级元素：div,p,h1,form,ul,li; 

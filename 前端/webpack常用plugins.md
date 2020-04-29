@@ -199,6 +199,47 @@ plugins:[
 
 
 
+> ### webpack.ProvidePlugin
+
+好在webpack提供了一个插件: `webpack.ProvidePlugin`，可以进行自动引入模块。
+
+**使用介绍**
+
+```diff
+  const path = require('path');
++ const webpack = require('webpack');
+
+  module.exports = {
+    entry: './src/index.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, 'dist')
+-   }
++   },
++   plugins: [
++     new webpack.ProvidePlugin({
++       _: 'lodash'
++     })
++   ]
+  };
+```
+
+上面配置的意思是：==如果你遇到了至少一处用到 `_` 变量的模块实例，那请你将 `lodash` package 引入进来，并将其提供给需要用到它的模块。==
+
+有了这个配置，在代码里就不需要引入`lodash`这个模块就能使用`lodash`的方法了。
+
+```js
+// 页面代码，不需要import _ from 'lodash';
+function component() {
+	var element = document.createElement('div');
+	element.innerHTML = _.join(['Hello', 'webpack'], ' ');
+
+	return element;
+}
+
+document.body.appendChild(component());
+```
+
 
 
 

@@ -504,6 +504,14 @@ export default {
 
 比如想要支持嵌套的css类选择
 
+使用：
+
+```
+jss-plugin-nested
+```
+
+
+
 
 
 # 第五种
