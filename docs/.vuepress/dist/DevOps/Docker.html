@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Docker学习 | Coda的博客</title>
+    <meta name="generator" content="VuePress 1.5.1">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="description" content="闲着无聊？那就读书吧">
+    <link rel="preload" href="/assets/css/0.styles.8b98dac0.css" as="style"><link rel="preload" href="/assets/js/app.32e12eb3.js" as="script"><link rel="preload" href="/assets/js/2.6edd83cd.js" as="script"><link rel="preload" href="/assets/js/9.0861933c.js" as="script"><link rel="prefetch" href="/assets/js/10.5d860292.js"><link rel="prefetch" href="/assets/js/11.6cdb759c.js"><link rel="prefetch" href="/assets/js/12.bde1e69c.js"><link rel="prefetch" href="/assets/js/13.216bacd3.js"><link rel="prefetch" href="/assets/js/14.2a3abe69.js"><link rel="prefetch" href="/assets/js/15.3d9c6b68.js"><link rel="prefetch" href="/assets/js/16.18276b87.js"><link rel="prefetch" href="/assets/js/17.14218967.js"><link rel="prefetch" href="/assets/js/18.998f2171.js"><link rel="prefetch" href="/assets/js/19.2012aed8.js"><link rel="prefetch" href="/assets/js/20.6509a17b.js"><link rel="prefetch" href="/assets/js/21.0bc2a0f4.js"><link rel="prefetch" href="/assets/js/22.3111bd92.js"><link rel="prefetch" href="/assets/js/23.1bd76e73.js"><link rel="prefetch" href="/assets/js/24.b3607768.js"><link rel="prefetch" href="/assets/js/25.1452f3e8.js"><link rel="prefetch" href="/assets/js/26.0f8d5532.js"><link rel="prefetch" href="/assets/js/27.aaacbeb6.js"><link rel="prefetch" href="/assets/js/28.031d6cc2.js"><link rel="prefetch" href="/assets/js/29.f80d4218.js"><link rel="prefetch" href="/assets/js/3.528f2ac2.js"><link rel="prefetch" href="/assets/js/30.e73c5725.js"><link rel="prefetch" href="/assets/js/31.2c4fc103.js"><link rel="prefetch" href="/assets/js/32.5d9d70ee.js"><link rel="prefetch" href="/assets/js/33.3edc8ef9.js"><link rel="prefetch" href="/assets/js/34.d737b9d0.js"><link rel="prefetch" href="/assets/js/35.b1002ebc.js"><link rel="prefetch" href="/assets/js/36.f2521692.js"><link rel="prefetch" href="/assets/js/37.b6426d8e.js"><link rel="prefetch" href="/assets/js/38.d0a0ee87.js"><link rel="prefetch" href="/assets/js/39.f3679dc8.js"><link rel="prefetch" href="/assets/js/4.c4955446.js"><link rel="prefetch" href="/assets/js/40.357862d4.js"><link rel="prefetch" href="/assets/js/41.6fed3f80.js"><link rel="prefetch" href="/assets/js/42.80b27fdb.js"><link rel="prefetch" href="/assets/js/43.4370c74d.js"><link rel="prefetch" href="/assets/js/44.9715bcb9.js"><link rel="prefetch" href="/assets/js/45.68d22b79.js"><link rel="prefetch" href="/assets/js/46.9e4a3272.js"><link rel="prefetch" href="/assets/js/47.ad2a26dc.js"><link rel="prefetch" href="/assets/js/48.c50dd57f.js"><link rel="prefetch" href="/assets/js/49.d6d02e2b.js"><link rel="prefetch" href="/assets/js/5.790d3fc0.js"><link rel="prefetch" href="/assets/js/50.5471688c.js"><link rel="prefetch" href="/assets/js/51.2c0592ce.js"><link rel="prefetch" href="/assets/js/52.43dd2ad6.js"><link rel="prefetch" href="/assets/js/53.74915775.js"><link rel="prefetch" href="/assets/js/54.fb04a694.js"><link rel="prefetch" href="/assets/js/55.ad1ef4c8.js"><link rel="prefetch" href="/assets/js/56.9bde5166.js"><link rel="prefetch" href="/assets/js/57.ee0be054.js"><link rel="prefetch" href="/assets/js/58.8e80c160.js"><link rel="prefetch" href="/assets/js/59.de109384.js"><link rel="prefetch" href="/assets/js/6.720e350f.js"><link rel="prefetch" href="/assets/js/60.dc802ce2.js"><link rel="prefetch" href="/assets/js/61.1ce3d67f.js"><link rel="prefetch" href="/assets/js/62.9270017e.js"><link rel="prefetch" href="/assets/js/63.1496fed4.js"><link rel="prefetch" href="/assets/js/64.3ab620da.js"><link rel="prefetch" href="/assets/js/65.a0e7b609.js"><link rel="prefetch" href="/assets/js/66.0347d098.js"><link rel="prefetch" href="/assets/js/67.4407627b.js"><link rel="prefetch" href="/assets/js/68.48663ef7.js"><link rel="prefetch" href="/assets/js/69.518a0c93.js"><link rel="prefetch" href="/assets/js/7.9f6e7a1c.js"><link rel="prefetch" href="/assets/js/70.c04443a7.js"><link rel="prefetch" href="/assets/js/71.e6762531.js"><link rel="prefetch" href="/assets/js/72.a9e7fb91.js"><link rel="prefetch" href="/assets/js/73.3f904ce3.js"><link rel="prefetch" href="/assets/js/74.f694a8d1.js"><link rel="prefetch" href="/assets/js/75.ad47c556.js"><link rel="prefetch" href="/assets/js/76.77ad8060.js"><link rel="prefetch" href="/assets/js/77.2739103a.js"><link rel="prefetch" href="/assets/js/78.5c7ecb4e.js"><link rel="prefetch" href="/assets/js/79.a9b54f8a.js"><link rel="prefetch" href="/assets/js/8.77018880.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.8b98dac0.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Coda的博客</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  主页
+</a></div><div class="nav-item"><a href="/服务端/" class="nav-link">
+  服务端
+</a></div><div class="nav-item"><a href="/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/node/" class="nav-link">
+  node
+</a></div><div class="nav-item"><a href="/android/" class="nav-link">
+  android
+</a></div><div class="nav-item"><a href="/DevOps/" class="nav-link router-link-active">
+  devOps
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  主页
+</a></div><div class="nav-item"><a href="/服务端/" class="nav-link">
+  服务端
+</a></div><div class="nav-item"><a href="/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/node/" class="nav-link">
+  node
+</a></div><div class="nav-item"><a href="/android/" class="nav-link">
+  android
+</a></div><div class="nav-item"><a href="/DevOps/" class="nav-link router-link-active">
+  devOps
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Docker学习</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/DevOps/Docker.html#docker能干嘛？" class="sidebar-link">Docker能干嘛？</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/DevOps/Docker.html#docker技术概述" class="sidebar-link">Docker技术概述</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#docker技术基础" class="sidebar-link">Docker技术基础</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#docker组件" class="sidebar-link">Docker组件</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#docker-machine-vs-docker-engine" class="sidebar-link">Docker Machine VS Docker Engine</a></li></ul></li><li><a href="/DevOps/Docker.html#docker安装" class="sidebar-link">Docker安装</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#在mac上装docker" class="sidebar-link">在mac上装Docker</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#在云上安装docker" class="sidebar-link">在云上安装Docker</a></li></ul></li><li><a href="/DevOps/Docker.html#docker架构" class="sidebar-link">Docker架构</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#docker-image-docker镜像" class="sidebar-link">Docker Image (Docker镜像)</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#docker-container-容器" class="sidebar-link">Docker Container (容器)</a></li></ul></li><li><a href="/DevOps/Docker.html#docker-相关命令" class="sidebar-link">Docker 相关命令</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#运行container" class="sidebar-link">==运行container==</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#停止所有的container" class="sidebar-link">==停止所有的container==</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#删除所有的container" class="sidebar-link">==删除所有的container==</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#运行一个nginx" class="sidebar-link">==运行一个nginx==</a></li></ul></li><li><a href="/DevOps/Docker.html#维护自己的image" class="sidebar-link">维护自己的Image</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#dockerfile语法" class="sidebar-link">Dockerfile语法</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#发布docker-image" class="sidebar-link">发布docker image</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#搭建私有的docker-registry" class="sidebar-link">搭建私有的docker registry</a></li></ul></li><li><a href="/DevOps/Docker.html#怎么去配置docker-machine的镜像？" class="sidebar-link">怎么去配置docker-machine的镜像？</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/DevOps/Docker.html#怎么去调试我的image" class="sidebar-link">怎么去调试我的image</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/DevOps/Docker.html#实战-stress" class="sidebar-link">实战-stress</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#如何去debug-dockerfile" class="sidebar-link">如何去debug dockerfile</a></li></ul></li><li><a href="/DevOps/Docker.html#docker网络-未完待续" class="sidebar-link">Docker网络(未完待续)</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#网络基础知识" class="sidebar-link">网络基础知识</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#网络命名空间" class="sidebar-link">网络命名空间</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#docker部署多容器复杂应用程序" class="sidebar-link">Docker部署多容器复杂应用程序</a></li></ul></li><li><a href="/DevOps/Docker.html#docker持久化数据共享" class="sidebar-link">Docker持久化数据共享</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#需求场景" class="sidebar-link">需求场景</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#docker持久化原理" class="sidebar-link">Docker持久化原理</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#data-volume-数据卷" class="sidebar-link">Data Volume(数据卷)</a></li><li class="sidebar-sub-header"><a href="/DevOps/Docker.html#bind-mounts" class="sidebar-link">Bind Mounts</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="docker学习"><a href="#docker学习" class="header-anchor">#</a> Docker学习</h1> <h2 id="docker能干嘛？"><a href="#docker能干嘛？" class="header-anchor">#</a> Docker能干嘛？</h2> <p>容器里可以将应用极其依赖包一起标准化打包，可以运行在任何环境，不依赖操作系统。</p> <p>以image的形式发布共享。</p> <ul><li>简化配置</li> <li>流水线式生产</li></ul> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-80922.jpg" alt="image-20190531075507077"></p> <p>docker和传统虚拟化技术的区别在于：</p> <p>传统的虚拟机是需要包含操作系统的，它的虚拟化是基于硬件；</p> <p>而docker容器，只包含应用以及应用程序的依赖项，以独立的进程运行在操作系统的用户空间上，共享着操作系统的kernel。</p> <h2 id="docker技术概述"><a href="#docker技术概述" class="header-anchor">#</a> Docker技术概述</h2> <h3 id="docker技术基础"><a href="#docker技术基础" class="header-anchor">#</a> Docker技术基础</h3> <p>namespace：docker基于namespace来进行隔离。</p> <p>control groups：docker资源统计和隔离。</p> <p>union file system:  分层镜像实现的基础</p> <h3 id="docker组件"><a href="#docker组件" class="header-anchor">#</a> Docker组件</h3> <p>docker client  向进程发送命令</p> <p>docker daemon 服务进程用来接收client发送的命令</p> <p>docker registry 镜像仓库</p> <h3 id="docker-machine-vs-docker-engine"><a href="#docker-machine-vs-docker-engine" class="header-anchor">#</a> Docker Machine VS Docker Engine</h3> <p><strong>Docker Engine</strong>: 也就是我们所说的docker，它是一个CS模型。</p> <p>包含3个部分：</p> <ul><li>Docker Daemon — docker 的守护进程，属于C/S中的server</li> <li>Docker REST API — docker daemon向外暴露的REST 接口</li> <li>Docker CLI — docker向外暴露的命令行接口（Command Line API）</li></ul> <p><code>client</code> 通过 <code>rest api</code> 向<code>server</code> 发送请求。</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-105519.png" alt="engine"></p> <p><strong>Docker Machine</strong>：是一个工具，用来在虚拟主机上安装Docker Engine。</p> <p>可以通过<code>docker-machine</code>命令来连接、管理这些主机上的Engine</p> <p>他和server之间的关系就像下图：</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-112550.png" alt="machine"></p> <h2 id="docker安装"><a href="#docker安装" class="header-anchor">#</a> Docker安装</h2> <h3 id="在mac上装docker"><a href="#在mac上装docker" class="header-anchor">#</a> 在mac上装Docker</h3> <p>本地安装docker有几种方式：</p> <ul><li>直接安装，缺点是容易有一堆image，不好删除；</li> <li><s>通过Vmware虚拟化直接来装，缺点是OS太大，而且不免费</s></li> <li>通过Vagrant + VirtualBox装虚拟机，然后安装docker ==(推荐)==</li> <li>通过docker-machine来快速搭建</li></ul> <p>学习的时候，因为参考着视频，所以就通过vagrant来安装的，免得镜像一大堆，到时候想删除都不好删除。</p> <p>安装教程：参考官网的教程进行安装<a href="https://docs.docker.com/install/linux/docker-ce/centos/" target="_blank" rel="noopener noreferrer">centos上安装docker<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></p> <p>后面了解到安装docker可以通过<a href="https://docs.docker.com/docker-for-mac/docker-toolbox/" target="_blank" rel="noopener noreferrer">docker toolbox<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>的方式安装。</p> <p>docker toolbox里包含了几个组成：</p> <ul><li><em>docker-cli</em> : 客户端命令行,目前的版本是19.03.1</li> <li><em>docker-machine</em> : 可以在本机启动用于Docker Engine虚拟机并管理他们</li> <li><em>docker-compose</em> : docker提供的编排工具，支持compose文件，这个并不常用。</li> <li><em>Kitematic</em> : Docker的客户端GUI，官方已经废弃了。</li> <li><em>Boot2Docker ISO</em>: 用于创建Docker Engine虚拟机的镜像。由于包中的这个版本并不是最新的，所以创建虚拟机的时候可能会需要重新下载。</li> <li><em>VirtualBox</em> : 虚拟机</li></ul> <p>实际上就是本地用了一下docker-machine，然后通过docker-machine去连接虚拟机的docker-engine, 或者阿里云的docker-engine。</p> <p><strong>附</strong></p> <p><strong>启动docker命令</strong></p> <div class="language-shell extra-class"><pre class="language-shell"><code><span class="token function">sudo</span> systemctl start docker
+</code></pre></div><p><strong>docker-machine命令</strong></p> <blockquote><p>创建一个docker</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>docker-machine create demo
+</code></pre></div><p>会用到最新的镜像iso，如果下载失败可以用迅雷下载<a href="https://github.com/boot2docker/boot2docker/releases" target="_blank" rel="noopener noreferrer">最新版本<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>，然后放到<code>/Users/keyang/.docker/machine/machines/default</code>目录下.</p> <blockquote><p>查看本地有哪可以连接的docker主机</p></blockquote> <div class="language- extra-class"><pre class="language-text"><code>docker-machine ls
+</code></pre></div><p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-132850.png" alt="image-20200321212849799"></p> <blockquote><p>连接、停止、删除</p></blockquote> <div class="language-shell extra-class"><pre class="language-shell"><code>docker-machine <span class="token function">ssh</span> demo
+docker-machine stop demo
+docker-machine <span class="token function">rm</span> demo
+</code></pre></div><p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-133057.png" alt="image-20200321213057626"></p> <blockquote><p>Docker 去连接 虚拟机的 docker engine</p></blockquote> <div class="language-shell extra-class"><pre class="language-shell"><code>docker-machine <span class="token function">env</span> xxx // 查看docker-machine的配置
+<span class="token builtin class-name">eval</span> <span class="token variable"><span class="token variable">$(</span>docker-machine <span class="token function">env</span> xxx<span class="token variable">)</span></span> // 连接远程docker-machine
+<span class="token builtin class-name">eval</span> <span class="token variable"><span class="token variable">$(</span>docker-machine <span class="token function">env</span> --unset<span class="token variable">)</span></span> // 取消连接远程
+</code></pre></div><p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-133500.png" alt="image-20200321213500420"></p> <h3 id="在云上安装docker"><a href="#在云上安装docker" class="header-anchor">#</a> 在云上安装Docker</h3> <p>现在很多云服务商都提供了docker的云服务，比如：</p> <ul><li>AWS的ECS服务</li> <li>Aliyun的Container Service</li></ul> <blockquote><p>阿里云创建</p></blockquote> <p>我们可以通过docker-machine去在阿里云上去创建一个docker。</p> <p>1.本地安装docker-machine</p> <p>2.在阿里云查看driver， https://github.com/AliyunContainerService/docker-machine-driver-aliyunecs</p> <p>3.将driver重命名，并且设置到环境变量中。</p> <p><code>docker-machine-driver-aliyunecs.darwin-amd64 =&gt; docker-machine-driver-aliyunecs</code></p> <p>移动到<code>/usr/local/bin</code>目录下</p> <p>4.确认driver是否安装成功</p> <div class="language-shell extra-class"><pre class="language-shell"><code>docker-machine create -d aliyunecs --help
+</code></pre></div><p>5.创建阿里云的docker-machin ，指明accessKey和secertKey</p> <div class="language-shell extra-class"><pre class="language-shell"><code>docker-machine create -d aliyunecs --aliyunecs-io-optimized	optimized --aliyunecs-instance-type	ecs.g5.large --aliyunecs-access-key-id <span class="token variable">${access-key}</span> --aliyunecs-access-key-secret <span class="token variable">${access-key-secret}</span> --aliyunecs-region cn-qingdao coda-demo
+</code></pre></div><p>完成以上步骤后，如果想要连接docker-machine，可以用下面的命令</p> <div class="language-shell extra-class"><pre class="language-shell"><code>docker-machine <span class="token function">env</span> xxx // 查看docker-machine的配置
+<span class="token builtin class-name">eval</span> <span class="token variable"><span class="token variable">$(</span>docker-machine <span class="token function">env</span> xxx<span class="token variable">)</span></span> // 连接远程docker-machine
+<span class="token builtin class-name">eval</span> <span class="token variable"><span class="token variable">$(</span>docker-machine <span class="token function">env</span> --unset<span class="token variable">)</span></span> // 取消连接远程
+</code></pre></div><blockquote><p>在AWS上安装</p></blockquote> <p>https://docs.docker.com/machine/examples/aws/</p> <p>1.拿到access key</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-140204.png" alt="image-20200321220204504"></p> <p>2.设置indentity</p> <p>3.创建machine</p> <p>我这边创建实例总是报错，说账户被锁住了，所以没成功。</p> <h2 id="docker架构"><a href="#docker架构" class="header-anchor">#</a> Docker架构</h2> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080924.jpg" alt="image-20190531215056494"></p> <h3 id="docker-image-docker镜像"><a href="#docker-image-docker镜像" class="header-anchor">#</a> Docker Image (Docker镜像)</h3> <p><strong>Docker Image的概念图</strong></p> <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-22-003643.jpg" width="400px"> <p>linux操作系统分为内核空间和用户空间。</p> <ul><li><p>bootfs：内核空间</p></li> <li><p>rootfs：用户空间</p></li></ul> <p>操作系统是挂载在用户空间上的，他们被称为Base Image。</p> <p><strong>Docker的Image的定义</strong></p> <p>镜像（Image）就是一堆只读层（read-only layer）的统一视角。</p> <p>什么意思？</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-22-004424.png" alt="2.png"></p> <p>左边是一堆只读层的层叠，每一层都有一个指针指向下一层。</p> <p>Docker的 <code>统一文件系统（union file system）</code>技术能够将不同的层整合成一个文件系统，为这些层提供了一个统一的视角，隐藏了多层的存在。在用户的角度看来，只存在一个文件系统。</p> <p>==不同的Image可以去整合不同的layer，也可以从一个Image上去修改，生成一个新的Image。==</p> <p>所以也就理解了第一张图的结构。 Image#4是在Image#2的上面，且Image#4和Image#2共享Centos Image。</p> <p>Image是read-only的</p> <h5 id="docker-image的获取"><a href="#docker-image的获取" class="header-anchor">#</a> Docker Image的获取</h5> <p>从Docker Hub的Registry中拉取Base Image</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment"># 拉取 hello world</span>
+<span class="token punctuation">[</span>vagrant@docker-host ~<span class="token punctuation">]</span>$ docker pull hello-world
+<span class="token punctuation">[</span>vagrant@docker-host ~<span class="token punctuation">]</span>$ docker run hello-world
+</code></pre></div><p>通过Dockerfile来build，创建一个Base Image</p> <div class="language-shell extra-class"><pre class="language-shell"><code><span class="token comment">#1. 创建一个简单的可执行文件，如c语言的执行文件</span>
+$ <span class="token function">ls</span>
+hello  hello.c
+<span class="token comment">#2. 创建自己的Dockerfile</span>
+$ <span class="token function">touch</span> Dockerfile
+FROM scratch
+ADD hello /
+CMD <span class="token punctuation">[</span><span class="token string">&quot;/hello&quot;</span><span class="token punctuation">]</span>
+<span class="token comment">#3. 从当前目录build docker</span>
+$ docker build -t coda/hello-gpp <span class="token builtin class-name">.</span>
+</code></pre></div><h5 id="docker-image删除"><a href="#docker-image删除" class="header-anchor">#</a> Docker Image删除</h5> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker rmi hello-world
+</code></pre></div><h3 id="docker-container-容器"><a href="#docker-container-容器" class="header-anchor">#</a> Docker Container (容器)</h3> <h5 id="docker-container的定义"><a href="#docker-container的定义" class="header-anchor">#</a> Docker Container的定义</h5> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-22-005115.png" alt="3.png"></p> <p>container和image的定义一模一样，只不过container在image的基础上，多了一层可读写的layer。</p> <p>contaienr通过Image来创建。</p> <p>container和image的关系就类似于面向对象编程中的class和实例的关系；image是class，contaienr是实例；</p> <p>Image负责app的存储和分发；Contaienr负责运行app；</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080916.jpg" alt="image-20190602103452930"></p> <h5 id="创建docker-container"><a href="#创建docker-container" class="header-anchor">#</a> 创建Docker Container</h5> <ul><li><p>最简单的方式：直接run image</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-host hello-gpp<span class="token punctuation">]</span>$ docker run coda/hello-gpp
+</code></pre></div></li> <li><p>创建可交互式的container</p> <div class="language- extra-class"><pre class="language-text"><code>[vagrant@docker-host hello-gpp]$ docker run -it centos
+</code></pre></div></li></ul> <h2 id="docker-相关命令"><a href="#docker-相关命令" class="header-anchor">#</a> Docker 相关命令</h2> <div class="language-sh extra-class"><pre class="language-sh"><code>docker <span class="token function">ps</span> <span class="token comment"># 查看docker中所有contaienr</span>
+docker <span class="token builtin class-name">exec</span> -it <span class="token variable">${cotainerid}</span> /bin/bash <span class="token comment"># 可交互式的进入到容器中</span>
+docker logs
+docker stop/start 
+docker inspect <span class="token comment"># 查看container信息</span>
+</code></pre></div><div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment"># 查看docker中所有contaienr</span>
+$ docker container <span class="token function">ls</span> -a 
+$ docker <span class="token function">ps</span> <span class="token comment"># 作用一样</span>
+
+<span class="token comment"># 查看所有docker images</span>
+$ docker images 
+
+<span class="token comment"># 删除contaienr</span>
+$ docker container <span class="token function">ls</span> -aq <span class="token comment"># 列出所有container的id</span>
+$ docker stop <span class="token variable"><span class="token variable">$(</span>docker container <span class="token function">ls</span> -aq<span class="token variable">)</span></span>  <span class="token comment">#停止所有的container</span>
+$ docker <span class="token function">rm</span> <span class="token variable"><span class="token variable">$(</span>docker container <span class="token function">ls</span> -aq<span class="token variable">)</span></span>  
+</code></pre></div><h3 id="运行container"><a href="#运行container" class="header-anchor">#</a> ==运行container==</h3> <div class="language- extra-class"><pre class="language-text"><code>docker run -p 80:80 -d image
+</code></pre></div><h3 id="停止所有的container"><a href="#停止所有的container" class="header-anchor">#</a> ==停止所有的container==</h3> <div class="language- extra-class"><pre class="language-text"><code>docker stop $(docker container ls -aq)
+</code></pre></div><h3 id="删除所有的container"><a href="#删除所有的container" class="header-anchor">#</a> ==删除所有的container==</h3> <div class="language- extra-class"><pre class="language-text"><code>docker rm $(docker container ls -aq)
+</code></pre></div><h3 id="运行一个nginx"><a href="#运行一个nginx" class="header-anchor">#</a> ==运行一个nginx==</h3> <p>1.创建一个dokcerfile</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">FROM</span> nginx
+<span class="token keyword">COPY</span> dist/* /home/docker/static<span class="token punctuation">-</span>htmls/
+<span class="token keyword">copy</span> static.conf /etc/nginx/conf.d
+<span class="token keyword">expose</span> 8080
+</code></pre></div><p>2.build image</p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker build -t docker-nginx <span class="token builtin class-name">.</span>
+</code></pre></div><p>3.创建一个container</p> <p>因为是在虚拟机上运行的，所以还要 映射<code>宿主端口</code>和<code>容器端口</code>: <code>-p &lt;宿主端口&gt;:&lt;容器端口&gt;</code></p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker run -d -p <span class="token number">8080</span>:8080 docker-nginx <span class="token comment"># 容器端口是后面的8080，我们是访问的宿主端口是安装docker的机器端口</span>
+</code></pre></div><p>4.看一下container运行的情况</p> <p><code>$ docker ps</code></p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-22-021134.png" alt="image-20200322101133883"></p> <p>5.访问宿主的host+端口</p> <p>宿主的host就是在docker上访问ifconfig 拿到对应的ip地址，比如192.168.0.101。再带上端口去访问就可以了；</p> <p>http://192.168.99.100:8080/#</p> <h2 id="维护自己的image"><a href="#维护自己的image" class="header-anchor">#</a> 维护自己的Image</h2> <p>方法1：commit新的base image</p> <blockquote><p>不要使用这种方式，不好管理</p></blockquote> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-host ~<span class="token punctuation">]</span>$ docker commit agitated_panini coda/centos-vim <span class="token comment"># agitated_panini是container的名称</span>
+</code></pre></div><p>方法2：通过Dockerfile来创建base image</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">FROM</span> centos
+<span class="token keyword">RUN</span> yum install <span class="token punctuation">-</span>y vim
+</code></pre></div><p><strong>==推荐：尽量用dockerfile来build，避免安全问题==</strong></p> <h3 id="dockerfile语法"><a href="#dockerfile语法" class="header-anchor">#</a> Dockerfile语法</h3> <blockquote><p>FROM</p></blockquote> <p>指定base image以及版本号，==尽量用官方的==</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">FROM</span> scratch <span class="token comment"># 重头制作base image (hello world image)</span>
+<span class="token keyword">FROM</span> centos <span class="token comment"># 在centos基础上来制作base image</span>
+<span class="token keyword">FROM</span> ubuntu<span class="token punctuation">:</span>14.04
+</code></pre></div><blockquote><p>LABEL</p></blockquote> <p>用来定义image的meta data信息</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">LABEL</span> maintainer=<span class="token string">&quot;gunner6@163.com&quot;</span> <span class="token comment"># 作者</span>
+<span class="token keyword">LABEL</span> version=<span class="token string">&quot;1.0&quot;</span> <span class="token comment"># 版本</span>
+<span class="token keyword">LABEL</span> description=<span class="token string">&quot;xxx&quot;</span> <span class="token comment"># 描述信息</span>
+</code></pre></div><blockquote><p>RUN</p></blockquote> <p>执行命令</p> <p>需要注意一点，run每执行一次，都会进行分层。所以尽量合并成一条语句。</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">RUN</span> yum update &amp;&amp; yum install <span class="token punctuation">-</span>y vim python<span class="token punctuation">-</span>dev
+<span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get update &amp;&amp; apt<span class="token punctuation">-</span>get install <span class="token punctuation">-</span>y perl \
+	pwgen <span class="token punctuation">-</span><span class="token punctuation">-</span>no<span class="token punctuation">-</span>install<span class="token punctuation">-</span>recommennds &amp;&amp; \
+	rm <span class="token punctuation">-</span>rf /var/lib/apt/lists/* <span class="token comment"># 如果命令太长，不好阅读，可以通过\换行，美化代码</span>
+</code></pre></div><blockquote><p>WORKDIR</p></blockquote> <p>设定当前工作目录</p> <p>==使用WORKDIR，不用RUN cd==</p> <p>==尽量用绝对目录==</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">WORKDIR</span> /root <span class="token comment"># 绝对目录 改变当前目录,进入到root中</span>
+
+<span class="token keyword">WORKDIR</span> /test <span class="token comment"># 如果没有test目录，会自动创建test目录</span>
+<span class="token keyword">WORKDIR</span> demo  <span class="token comment"># 相对目录</span>
+<span class="token keyword">RUN</span> PWD <span class="token comment"># 输出/test/demo</span>
+
+</code></pre></div><blockquote><p>ADD or COPY</p></blockquote> <p>ADD 不仅可以添加文件到根目录，还==可以自动进行解压==</p> <p>==优先考虑使用COPY==</p> <p>添加远程文件/目录，用curl或者wget</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">ADD</span> hello / <span class="token comment"># 把hello这个文件添加到更目录下面</span>
+<span class="token keyword">ADD</span> test.tar.gz / <span class="token comment"># 把test.tar.gz这个添加到更目录下面并且解压</span>
+
+<span class="token keyword">WORKDIR</span> /root <span class="token comment"># 切换当前目录</span>
+<span class="token keyword">ADD</span> hello test/  <span class="token comment"># 将hello添加到/root/test/hello</span>
+
+<span class="token keyword">WORKDIR</span> /root
+<span class="token keyword">COPY</span> hello test/  <span class="token comment"># /root/test/hello</span>
+</code></pre></div><blockquote><p>ENV</p></blockquote> <p>可以使用ENV来设置常量</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token comment"># 尽量用env来增加常亮可维护性</span>
+<span class="token keyword">ENV</span> MYSQL_VERSION 5.6 <span class="token comment"># 设置常量</span>
+<span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get install <span class="token punctuation">-</span>y mysql<span class="token punctuation">-</span>server=<span class="token string">&quot;${MYSQL_VERSION}&quot;</span> \
+	&amp;&amp; rm <span class="token punctuation">-</span>rf /var/lib/apt/lists/* <span class="token comment"># 引用变量</span>
+</code></pre></div><blockquote><p>VOLUME &amp; EXPOSE</p></blockquote> <p>存储网络和网络</p> <p>EXPOSE可以暴露docker container的端口</p> <blockquote><p>RUN &amp; CMD &amp; ENTRYPOINT</p></blockquote> <p>RUN 用来执行命令，并且创建新的ImageLayer</p> <p>CMD 设置容器==启动后默认执行==的命令和参数</p> <p>ENTRYPOINT 设置容器==启动时==运行的命令</p> <p><strong>两种命令格式：</strong></p> <ul><li>Shell 格式</li></ul> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get install <span class="token punctuation">-</span>y vim
+<span class="token keyword">CMD</span> echo <span class="token string">&quot;hello docker&quot;</span>
+<span class="token keyword">ENTRYPOINT</span> echo <span class="token string">&quot;hello docker&quot;</span>
+</code></pre></div><ul><li>Exec 格式</li></ul> <p>写一个字符串数组，以“,”分割</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">RUN</span> <span class="token punctuation">[</span><span class="token string">&quot;apt-get&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;install&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;-y&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;vim&quot;</span><span class="token punctuation">]</span>
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">&quot;bin/echo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hello docker&quot;</span><span class="token punctuation">]</span>
+<span class="token keyword">ENTRYPOINT</span> <span class="token punctuation">[</span><span class="token string">&quot;/bin/echo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hello docker&quot;</span><span class="token punctuation">]</span>
+</code></pre></div><p><strong>举个例子</strong></p> <p>我有2个dockerfile，代码分别如下</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token comment">#dockerfile1</span>
+<span class="token keyword">FROM</span> centos
+<span class="token keyword">ENV</span> name Docker
+<span class="token keyword">ENTRYPOINT</span> echo <span class="token string">&quot;hello $name&quot;</span>
+
+<span class="token comment">#dockerfile2</span>
+<span class="token keyword">FROM</span> centos
+<span class="token keyword">ENV</span> name Docker
+<span class="token keyword">ENTRYPOINT</span> <span class="token punctuation">[</span><span class="token string">&quot;/bin/echo&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hello $name&quot;</span><span class="token punctuation">]</span>
+</code></pre></div><p>上面的image run出来的container，打印的是hello Docker.</p> <p>但是下面的image run出来的结果是 hello $name;</p> <p>原因是因为：在shell格式下，变量能被识别。但是用exce的格式下，它执行的是命令，不是通过shell来执行的，==需要我们通过参数指明通过什么来执行==</p> <p>将下面的dockerfile修改如下</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">FROM</span> centos
+<span class="token keyword">ENV</span> name Docker
+<span class="token keyword">ENTRYPOINT</span> <span class="token punctuation">[</span><span class="token string">&quot;/bin/bash&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;-c&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;echo hello $name&quot;</span><span class="token punctuation">]</span>
+</code></pre></div><p><strong>CMD</strong></p> <p>容器启动时，默认执行的命令。</p> <p>如果<code>docker run</code>指定了其他命令，CMD会被忽略。比如，<code>docker run -it image /bin/bash</code>，cmd就不会执行了。</p> <p>如果定义了多个CMD，只有最后一个会被执行</p> <p><strong>ENTRYPOINT</strong></p> <p>不会被忽略，一定会执行。</p> <p>一般用来让容器以应用程序或者服务的形式运行。</p> <p><strong>CMD 和 ENTRYPOINT的区别</strong></p> <table><thead><tr><th>区别</th> <th>CMD</th> <th>ENTRYPOINT</th></tr></thead> <tbody><tr><td>最佳实践</td> <td></td> <td>==写一个shell脚本作为entrypoint==</td></tr> <tr><td>作用</td> <td>设置容器启动后默认执行的命令和参数</td> <td>执行应用程序</td></tr> <tr><td>执行</td> <td>如果docker run指定了其他命令或者参数，CMD里面命令会被忽略</td> <td>ENTRYPOINT不会被忽略, 一定会执行</td></tr></tbody></table> <h3 id="发布docker-image"><a href="#发布docker-image" class="header-anchor">#</a> 发布docker image</h3> <h4 id="_1-注册docker-hub账户密码"><a href="#_1-注册docker-hub账户密码" class="header-anchor">#</a> 1.注册docker hub账户密码</h4> <h4 id="_2-在terminal登录docker-hub账户密码"><a href="#_2-在terminal登录docker-hub账户密码" class="header-anchor">#</a> 2.在terminal登录docker hub账户密码</h4> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker login
+Username: gunner6
+Password:
+WARNING<span class="token operator">!</span> Your password will be stored unencrypted <span class="token keyword">in</span> /Users/keyang/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/<span class="token comment">#credentials-store</span>
+
+Login Succeeded
+</code></pre></div><h4 id="_3-push-docker-image"><a href="#_3-push-docker-image" class="header-anchor">#</a> 3.push docker image</h4> <p><code>docker push [OPTIONS] NAME[:TAG]</code></p> <p>NAME需要是一个<code>dockerId/project</code>的格式</p> <div class="language-sh extra-class"><pre class="language-sh"><code>$ docker push gunner6/hello-gpp:latest
+The push refers to repository <span class="token punctuation">[</span>docker.io/gunner6/hello-gpp<span class="token punctuation">]</span>
+c0d1d7ec5bba: Pushed
+</code></pre></div><h4 id="_4-拉取docker-image"><a href="#_4-拉取docker-image" class="header-anchor">#</a> 4.拉取docker image</h4> <div class="language-sh extra-class"><pre class="language-sh"><code>$ docker pull gunner6/hello-gpp
+</code></pre></div><h3 id="搭建私有的docker-registry"><a href="#搭建私有的docker-registry" class="header-anchor">#</a> 搭建私有的docker registry</h3> <p>https://docs.docker.com/registry/deploying/</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment">#1. 拉取docker registry</span>
+$ docker pull registry
+<span class="token comment">#2. 运行dokcer hub </span>
+$ docker run -d -p <span class="token number">5000</span>:5000 --restart always --name registry registry:2
+
+
+</code></pre></div><p>完成以上步骤后，就相当于启动了一个docker registry了。</p> <blockquote><p>推送Image到私有仓库</p></blockquote> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker tag gunner6/hello-gpp:latest localhost:5000/hello-gpp
+<span class="token comment">#3. push image 到本地镜像</span>
+$ docker push localhost:5000/hello-gpp
+</code></pre></div><p>上面是localhost，如果是在一个远程的服务上搭建私有仓库，push或pull的时候会出现不安全的提示，那是因为docker默认只支持https的服务。</p> <p>好在Docker允许去推送non-distributable layers到私有仓库</p> <p>1.修改本地<code>/etc/docker/daemon.json</code></p> <div class="language-shell extra-class"><pre class="language-shell"><code><span class="token punctuation">{</span>
+  <span class="token string">&quot;allow-nondistributable-artifacts&quot;</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><span class="token string">&quot;myregistrydomain.com:5000&quot;</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>2.重启docker</p> <p><code>sudo service docker restart</code></p> <p>因为我用的是toolbox的方式，所以不太一样</p> <p>1.修改profile文件</p> <p>编辑 /var/lib/boot2docker/profile文件，
+在 <code>--label provider=virtualbox</code> 的下一行添加下述代码
+<code>--insecure-registry xxx.xxx.xxx.xxx:yyy</code></p> <p>2.重启docker</p> <p><code>sudo /etc/init.d/docker restart</code></p> <p>或者</p> <p><code>docker-machine restart</code></p> <p>做完上面2步后就可以推送了</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-22-125710.png" alt="image-20200322205710047"></p> <p>通过接口确认已经上传成功 http://39.107.26.141:5000/v2/_catalog</p> <h2 id="怎么去配置docker-machine的镜像？"><a href="#怎么去配置docker-machine的镜像？" class="header-anchor">#</a> 怎么去配置docker-machine的镜像？</h2> <p>https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors</p> <h2 id="怎么去调试我的image"><a href="#怎么去调试我的image" class="header-anchor">#</a> 怎么去调试我的image</h2> <p>在运行错误的步骤上，执行 run -it</p> <div class="language-shell extra-class"><pre class="language-shell"><code>docker run -it 6a499438b095
+</code></pre></div><p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-05-09-120155.png" alt="image-20200509200154366"></p> <h2 id="实战-stress"><a href="#实战-stress" class="header-anchor">#</a> 实战-stress</h2> <p>dockerfile</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code><span class="token keyword">FROM</span> ubuntu<span class="token punctuation">:</span>14.04
+<span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get update &amp;&amp; apt<span class="token punctuation">-</span>get install <span class="token punctuation">-</span>y stress
+<span class="token keyword">ENTRYPOINT</span> <span class="token punctuation">[</span><span class="token string">&quot;/usr/bin/stress&quot;</span><span class="token punctuation">]</span>
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+</code></pre></div><p>指明参数去运行</p> <p><code>docker run -it stress --cpu 8 --io 4 --vm 2 --vm-bytes 128M --timeout 10s</code></p> <p><strong>总结一下</strong></p> <p>通过<code>ENTRYPOINT</code>和<code>CMD</code>结合，可以实现一个接收命令行参数的image。</p> <p>通过 -it + 参数的形式去运行，可以在CMD里去接收参数，最终传给ENTRYPOINT。</p> <h3 id="如何去debug-dockerfile"><a href="#如何去debug-dockerfile" class="header-anchor">#</a> 如何去debug dockerfile</h3> <p>dockerfile运行每一步都会创建临时镜像</p> <p>哪一步出错了，可以进入临时镜像去看一下</p> <p>执行下面命令：</p> <p><code>docker run -it ${imageid} /bin/bash</code></p> <hr> <h2 id="docker网络-未完待续"><a href="#docker网络-未完待续" class="header-anchor">#</a> Docker网络(未完待续)</h2> <h3 id="网络基础知识"><a href="#网络基础知识" class="header-anchor">#</a> 网络基础知识</h3> <p>网络类型</p> <img src="http://ww2.sinaimg.cn/large/006tNc79ly1g3s8jrcg6mj30yw0oyq9h.jpg" width="500" style="zoom:44%;"> <p><strong>网络分层模型</strong></p> <p>​	ISO/OSI 7层分层</p> <p>​	TCP/IP 5层分层模型</p> <p>​		应用层  （ftp协议、http协议）</p> <p>​		传输层  （TCP协议、UDP协议）</p> <p>​		IP层  （IP数据报）</p> <p>​		链路 （网络接口协议）</p> <p>​		物理层 （网线、光纤）</p> <p><strong>网络路由</strong></p> <p>​	网络中去访问服务器，是通过路由器去自动查找路径的。路由器是中间的转化器</p> <p><strong>公有IP、私有IP</strong></p> <p>​	公有类型</p> <p>​		互联网上唯一标识</p> <p>​	私有类型 （不可以在互联网上使用，只有在内部使用）</p> <p>​		A类 10.0.0.0 ~ 10.255.255.255.255</p> <p>​		B类 172.16.0.0 ~ 172.31.255.255</p> <p>​		C类 192.168.0.0 ~ 192.168.255.255</p> <p><strong>NAT 网络地址转化</strong></p> <p>NAT会将私有类型的地址转换成公网地址，记录在翻译表里。等得到数据后，再将公有地址，转化为私有地址。</p> <p>​	网络地址转化端口翻译。将内网的地址转换成公网地址</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080919.jpg" alt="image-20190607075056727"></p> <p><strong>ping</strong></p> <p>​	验证ip的可达性</p> <p><strong>telnet</strong></p> <p>​	验证服务端口的可用性</p> <h3 id="网络命名空间"><a href="#网络命名空间" class="header-anchor">#</a> 网络命名空间</h3> <h4 id="docker-network-namespace"><a href="#docker-network-namespace" class="header-anchor">#</a> Docker Network Namespace</h4> <blockquote><p>docker在创建容器时，会同时创建独立的network namespace。如下所示</p></blockquote> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-node1 labs<span class="token punctuation">]</span>$ docker run -d --name test1 busybox /bin/sh -c <span class="token string">&quot;while true; do sleep 3600; done&quot;</span> <span class="token comment"># 启用run命令创建一个container，将其命名为test1，使用的镜像为用busybox</span>
+</code></pre></div><div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-node1 labs<span class="token punctuation">]</span>$ docker <span class="token builtin class-name">exec</span> -it 0c4129204eec /bin/sh
+/ <span class="token comment"># ip a</span>
+<span class="token number">1</span>: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">65536</span> qdisc noqueue qlen <span class="token number">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet <span class="token number">127.0</span>.0.1/8 scope <span class="token function">host</span> lo
+       valid_lft forever preferred_lft forever
+<span class="token number">5</span>: eth0@if6: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+    inet <span class="token number">172.17</span>.0.2/16 brd <span class="token number">172.17</span>.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+/ <span class="token comment"># 查看这个contaienr的ip地址，可以看到它被分配了一个172.17.0.2的ip地址。</span>
+</code></pre></div><p>同理，如果我们再用第一个命令，再创建一个container “test2”。docker也会创建一个network namespace。且这两个namespace可以相互连接。</p> <p>那它底层的原理究竟是什么呢？我们先来做个试验：</p> <h4 id="linux-network-namespace"><a href="#linux-network-namespace" class="header-anchor">#</a> Linux Network Namespace</h4> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment"># 1首先，使用linux的ip netns命令创建两个netns &quot;test1&quot;和&quot;test2&quot;</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 labs<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token function">add</span> test1
+<span class="token punctuation">[</span>vagrant@docker-node1 labs<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token function">add</span> test2
+<span class="token punctuation">[</span>vagrant@docker-node1 labs<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns list
+test2
+test1
+<span class="token comment"># 2分别查看test1和test2的netns</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test1 <span class="token function">ip</span> a
+<span class="token number">1</span>: lo: <span class="token operator">&lt;</span>LOOPBACK<span class="token operator">&gt;</span> mtu <span class="token number">65536</span> qdisc noop state DOWN group default qlen <span class="token number">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test2 <span class="token function">ip</span> a
+<span class="token number">1</span>: lo: <span class="token operator">&lt;</span>LOOPBACK<span class="token operator">&gt;</span> mtu <span class="token number">65536</span> qdisc noop state DOWN group default qlen <span class="token number">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00 <span class="token comment"># 这个时候我们看到这两个netns的lo端口是down的，而且没有mac地址</span>
+
+<span class="token comment"># 3使用ip link命令将lo端口开启，但是lo的state还是unknow的</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test1 <span class="token function">ip</span> <span class="token function">link</span> <span class="token builtin class-name">set</span> dev lo up
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test1 <span class="token function">ip</span> <span class="token function">link</span>
+<span class="token number">1</span>: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span class="token number">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+
+<span class="token comment"># 4 使用veth pair将两个netns连接起来</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> <span class="token function">link</span> <span class="token function">add</span> veth-test1 <span class="token builtin class-name">type</span> veth peer name veth-test2 <span class="token comment"># 创建veth peer对</span>
+<span class="token number">4</span>: veth-test2@veth-test1: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,M-DOWN<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen <span class="token number">1000</span>
+    link/ether 3a:21:3b:9d:43:4e brd ff:ff:ff:ff:ff:ff
+<span class="token number">5</span>: veth-test1@veth-test2: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,M-DOWN<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noop state DOWN mode DEFAULT group default qlen <span class="token number">1000</span>
+    link/ether <span class="token number">56</span>:a8:37:0c:12:34 brd ff:ff:ff:ff:ff:ff
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> <span class="token function">link</span> <span class="token builtin class-name">set</span> veth-test1 netns test1 <span class="token comment"># 将veth-test1添加到test1的netns中去</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> <span class="token function">link</span> <span class="token builtin class-name">set</span> veth-test2 netns test2 <span class="token comment"># 将veth-test2添加到test2的netns中去</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test1 <span class="token function">ip</span> addr <span class="token function">add</span> <span class="token number">192.168</span>.5.1/24 dev veth-test1
+<span class="token comment"># 为veth-test1添加ip地址</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test2 <span class="token function">ip</span> addr <span class="token function">add</span> <span class="token number">192.168</span>.5.2/24 dev veth-test2
+<span class="token comment"># 为veth-test2添加ip地址</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test1 <span class="token function">ip</span> <span class="token function">link</span> <span class="token builtin class-name">set</span> dev veth-test1 up <span class="token comment"># 将veth-test1端口启动起来</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> <span class="token function">ip</span> netns <span class="token builtin class-name">exec</span> test2 <span class="token function">ip</span> <span class="token function">link</span> <span class="token builtin class-name">set</span> dev veth-test2 up <span class="token comment"># 将veth-test2端口启动起来</span>
+<span class="token comment"># 至此，两个netns就可以相互通信了</span>
+</code></pre></div><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g3s9ttixmdj31jc0u07bf.jpg" width="500"> <p>以上，docker的namespace的原理和linux的网络原理类似；</p> <h4 id="两个容器是如何连接的？"><a href="#两个容器是如何连接的？" class="header-anchor">#</a> 两个容器是如何连接的？</h4> <p>先看下本地的docker的network</p> <div class="language- extra-class"><pre class="language-text"><code>[vagrant@docker-node1 ~]$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+a1010ce919fe        bridge              bridge              local
+b37c3a6633c5        host                host                local
+c915a3cf2c83        none                null                local
+</code></pre></div><p>我们看到一个bridge类型的网络, 通过insepct命令查看这个bridge网络</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker network inspect a1010ce919fe
+<span class="token punctuation">..</span>.
+<span class="token string">&quot;Containers&quot;</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+            <span class="token string">&quot;fb1fd0092971f06c794ac00b3c76aa847f5d3a04ce06121df5bdecfbf94daa05&quot;</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+                <span class="token string">&quot;Name&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;test2&quot;</span>,
+                <span class="token string">&quot;EndpointID&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;ed20c7186ee7ea73285dbffdbf10e4d4d161773fff1c29eac621b14703f98379&quot;</span>,
+                <span class="token string">&quot;MacAddress&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;02:42:ac:11:00:02&quot;</span>,
+                <span class="token string">&quot;IPv4Address&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;172.17.0.2/16&quot;</span>,
+                <span class="token string">&quot;IPv6Address&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;&quot;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+<span class="token punctuation">..</span>.
+</code></pre></div><p>思考一个问题：test2的contaienr想要连接到主机上，需要怎么去建立连接？</p> <p>那根据前面linux的network namespace知识我们了解到，需要test2 contaienr的namespace中有一个veth连接到主机的namespace上。</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment"># 先查看test2这个容器上的ip address</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker <span class="token builtin class-name">exec</span> -it test2 <span class="token function">ip</span> a
+<span class="token number">1</span>: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">65536</span> qdisc noqueue qlen <span class="token number">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet <span class="token number">127.0</span>.0.1/8 scope <span class="token function">host</span> lo
+       valid_lft forever preferred_lft forever
+<span class="token number">7</span>: eth0@if8: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+    inet <span class="token number">172.17</span>.0.2/16 brd <span class="token number">172.17</span>.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+  
+<span class="token comment"># 再来看一下本机的ip address，可以看到有一个veth39e589a@if7的端口。它其实和test2的eth0端口是一对儿。</span>
+ <span class="token number">6</span>: docker0: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue state UP group default
+    link/ether 02:42:16:59:ba:ae brd ff:ff:ff:ff:ff:ff
+    inet <span class="token number">172.17</span>.0.1/16 brd <span class="token number">172.17</span>.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::42:16ff:fe59:baae/64 scope <span class="token function">link</span>
+       valid_lft forever preferred_lft forever
+<span class="token number">8</span>: veth39e589a@if7: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue master docker0 state UP group default
+    link/ether da:9b:ea:44:9f:44 brd ff:ff:ff:ff:ff:ff link-netnsid <span class="token number">2</span>
+    inet6 fe80::d89b:eaff:fe44:9f44/64 scope <span class="token function">link</span>
+       valid_lft forever preferred_lft forever
+</code></pre></div><p>我们可以通过brctl这个命令来证明！veth39e589a是docker0的一个接口，就是用来将docker0和eth0连接起来；</p> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ brctl show
+bridge name	bridge <span class="token function">id</span>		STP enabled	interfaces
+docker0		<span class="token number">8000</span>.02421659baae	no		veth39e589a
+
+<span class="token comment"># 再添加一个container，经验证，证明的确是这样的一个关系；</span>
+<span class="token number">8</span>: veth39e589a@if7: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue master docker0 state UP mode DEFAULT group default
+    link/ether da:9b:ea:44:9f:44 brd ff:ff:ff:ff:ff:ff link-netnsid <span class="token number">2</span>
+<span class="token number">12</span>: vethb2551a2@if11: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue master docker0 state UP mode DEFAULT group default
+    link/ether b6:99:79:20:6a:89 brd ff:ff:ff:ff:ff:ff link-netnsid <span class="token number">3</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ brctl show
+bridge name	bridge <span class="token function">id</span>		STP enabled	interfaces
+docker0		<span class="token number">8000</span>.02421659baae	no		veth39e589a
+							                    vethb2551a2
+</code></pre></div><p>网络拓扑图如下：</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080921.jpg" alt="image-20190607211943412"></p> <h4 id="单个容器怎么访问外网？"><a href="#单个容器怎么访问外网？" class="header-anchor">#</a> 单个容器怎么访问外网？</h4> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080922.jpg" alt="image-20190607212112356"></p> <h4 id="docker-network-link-作了解"><a href="#docker-network-link-作了解" class="header-anchor">#</a> Docker Network Link (作了解)</h4> <blockquote><p>在创建后台服务时，经常我们会碰到在代码里面配置服务器的ip地址，以实现后台服务器之间的相互通信。这个时候，一般我们事先并不知道ip地址是什么，但是我们可以通过用name的方式来连接。</p></blockquote> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment"># docker run --link name</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker run -d --name test2 --link test1 busybox /bin/sh -c <span class="token string">&quot;while true; do sleep 3600; done&quot;</span>
+<span class="token comment">#我们通过docker run --link的命令，创建了一个test2的容器，并且把test1 link到了test2上面，这样test2容器就可以通过test1这个名字来连通服务器了。</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker <span class="token builtin class-name">exec</span> -it test2 <span class="token function">ping</span> test1
+PING test1 <span class="token punctuation">(</span><span class="token number">172.17</span>.0.3<span class="token punctuation">)</span>: <span class="token number">56</span> data bytes
+<span class="token number">64</span> bytes from <span class="token number">172.17</span>.0.3: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">0</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.087</span> ms
+<span class="token number">64</span> bytes from <span class="token number">172.17</span>.0.3: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.083</span> ms
+<span class="token comment"># 注意，link是有方向性的，所以在test1的container中，是没办法用test2这个名字去ping通的</span>
+
+</code></pre></div><h4 id="docker-network-bridge"><a href="#docker-network-bridge" class="header-anchor">#</a> Docker Network Bridge</h4> <blockquote><p><strong>如何创建自己的network，并且将container指向这个network</strong></p></blockquote> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment"># 创建一个自己的bridge类型的network</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ <span class="token function">sudo</span> docker network create my-bridge -d bridge 
+<span class="token comment"># 查看当前network</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker network <span class="token function">ls</span>
+<span class="token comment"># 通过 --network参数，指定新建的container的network; -d参数表示后台执行</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker run -d --name test3 --network my-bridge busybox /bin/sh -c <span class="token string">&quot;while true; do sleep 3600; done&quot;</span>
+<span class="token comment"># 查看这个新的network，可以看到有一个test3的contaienr</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker network inspect 958b7afe0c77
+<span class="token punctuation">..</span>.
+<span class="token string">&quot;Containers&quot;</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+            <span class="token string">&quot;a5469d704899c3ba4e514f9ecd742e1f5e118026ec90556606fe03e0e670a049&quot;</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+                <span class="token string">&quot;Name&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;test3&quot;</span>,
+                <span class="token string">&quot;EndpointID&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;e8fbbac97d36d7b27c97f5194e4a7b22eee85ab9c1c86629c6c1365f98d37e4a&quot;</span>,
+                <span class="token string">&quot;MacAddress&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;02:42:ac:12:00:02&quot;</span>,
+                <span class="token string">&quot;IPv4Address&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;172.18.0.2/16&quot;</span>,
+                <span class="token string">&quot;IPv6Address&quot;</span><span class="token builtin class-name">:</span> <span class="token string">&quot;&quot;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>,
+<span class="token punctuation">..</span>.
+<span class="token comment"># 也可以看到这个network也有了一个新的interface</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ brctl show
+bridge name	bridge <span class="token function">id</span>		STP enabled	interfaces
+br-958b7afe0c77		<span class="token number">8000</span>.0242a5447697	no		vetha835200
+</code></pre></div><blockquote><p><strong>如何把之前的contaienr连接到新的network上？</strong></p></blockquote> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker network connect my-bridge test1 <span class="token comment"># 通过network connect命令将test1连接到my-bridge网络上</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker <span class="token builtin class-name">exec</span> -it test1 <span class="token function">ip</span> a <span class="token comment"># test1就有了两个端口</span>
+<span class="token number">1</span>: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">&gt;</span> mtu <span class="token number">65536</span> qdisc noqueue qlen <span class="token number">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet <span class="token number">127.0</span>.0.1/8 scope <span class="token function">host</span> lo
+       valid_lft forever preferred_lft forever
+<span class="token number">11</span>: eth0@if12: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue
+    link/ether 02:42:ac:11:00:03 brd ff:ff:ff:ff:ff:ff
+    inet <span class="token number">172.17</span>.0.3/16 brd <span class="token number">172.17</span>.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+<span class="token number">20</span>: eth1@if21: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN<span class="token operator">&gt;</span> mtu <span class="token number">1500</span> qdisc noqueue
+    link/ether 02:42:ac:12:00:04 brd ff:ff:ff:ff:ff:ff
+    inet <span class="token number">172.18</span>.0.4/16 brd <span class="token number">172.18</span>.255.255 scope global eth1
+       valid_lft forever preferred_lft forever
+       
+<span class="token comment"># 很神奇的，如果两个contaienr是在同一个bridge里，那么这两个contaienr是会自动link上。也就是可以相互通过name来找到对方</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker <span class="token builtin class-name">exec</span> -it test1 <span class="token function">ping</span> test2
+PING test2 <span class="token punctuation">(</span><span class="token number">172.18</span>.0.3<span class="token punctuation">)</span>: <span class="token number">56</span> data bytes
+<span class="token number">64</span> bytes from <span class="token number">172.18</span>.0.3: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">0</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.107</span> ms
+<span class="token number">64</span> bytes from <span class="token number">172.18</span>.0.3: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.084</span> ms
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker <span class="token builtin class-name">exec</span> -it test2 <span class="token function">ping</span> test1
+PING test1 <span class="token punctuation">(</span><span class="token number">172.17</span>.0.3<span class="token punctuation">)</span>: <span class="token number">56</span> data bytes
+<span class="token number">64</span> bytes from <span class="token number">172.17</span>.0.3: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">0</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.076</span> ms
+<span class="token number">64</span> bytes from <span class="token number">172.17</span>.0.3: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.106</span> ms
+<span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker <span class="token builtin class-name">exec</span> -it test2 <span class="token function">ping</span> test3
+PING test3 <span class="token punctuation">(</span><span class="token number">172.18</span>.0.2<span class="token punctuation">)</span>: <span class="token number">56</span> data bytes
+<span class="token number">64</span> bytes from <span class="token number">172.18</span>.0.2: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">0</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.081</span> ms
+<span class="token number">64</span> bytes from <span class="token number">172.18</span>.0.2: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.128</span> ms
+<span class="token number">64</span> bytes from <span class="token number">172.18</span>.0.2: <span class="token assign-left variable">seq</span><span class="token operator">=</span><span class="token number">2</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">64</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">0.088</span> ms
+
+</code></pre></div><h4 id="如何把docker-container的端口映射到本地？"><a href="#如何把docker-container的端口映射到本地？" class="header-anchor">#</a> 如何把docker container的端口映射到本地？</h4> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-node1 ~<span class="token punctuation">]</span>$ docker run --name nginx -d -p <span class="token number">80</span>:80 nginx <span class="token comment">#将container的80端口映射到本地的80端口</span>
+</code></pre></div><p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080917.jpg" alt="image-20190609210453382"></p> <h4 id="docker-host-network"><a href="#docker-host-network" class="header-anchor">#</a> Docker Host Network</h4> <p>没有自己独立的netns，只能共享host的。</p> <h4 id="docker-none-network"><a href="#docker-none-network" class="header-anchor">#</a> Docker None Network</h4> <p>任何人都无法访问到这个网络</p> <h3 id="docker部署多容器复杂应用程序"><a href="#docker部署多容器复杂应用程序" class="header-anchor">#</a> Docker部署多容器复杂应用程序</h3> <p>网络结构：</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-80919.jpg" alt="image-20190614214232085"></p> <h4 id="_1-分组件去部署"><a href="#_1-分组件去部署" class="header-anchor">#</a> 1. 分组件去部署</h4> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token punctuation">[</span>vagrant@docker-node1 flask-redis<span class="token punctuation">]</span>$ docker run -d --name redis redis
+</code></pre></div><h4 id="_2-设置link、映射端口、设置环境变量"><a href="#_2-设置link、映射端口、设置环境变量" class="header-anchor">#</a> 2. 设置link、映射端口、设置环境变量</h4> <div class="language-sh extra-class"><pre class="language-sh"><code><span class="token comment"># -e 可以设置docker contaienr的环境变量</span>
+<span class="token punctuation">[</span>vagrant@docker-node1 flask-redis<span class="token punctuation">]</span>$ docker run -d --link redis --name flask-redis -p <span class="token number">5000</span>:5000 -e <span class="token assign-left variable">REDIS_HOST</span><span class="token operator">=</span>redis coda/flask-redis
+</code></pre></div><h4 id="_3-多机器通信"><a href="#_3-多机器通信" class="header-anchor">#</a> 3. 多机器通信</h4> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080920.jpg" alt="image-20190614214111867"></p> <p>通信方案：两个服务本身是无法通信的。需要通过vxlan的方式来进行通信。将两个服务的通信包封装到各自eth0的通信包上，通信过程中进行解包，来实现通信。下图是通信包的格式：下面是underlay，上层是overlay。</p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-20-080918.jpg" alt="image-20190615062812381"></p> <p>依赖分布式存储：etcd</p> <p><strong>在两台机器上建立etcd的服务</strong></p> <p>在docker-node1上</p> <div class="language-sh extra-class"><pre class="language-sh"><code>vagrant@docker-node1:~$ <span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token function">wget</span>
+vagrant@docker-node1:~$ <span class="token function">sudo</span> <span class="token function">wget</span> https://github.com/coreos/etcd/releases/download/v3.0.12/etcd-v3.0.12-linux-amd64.tar.gz
+vagrant@docker-node1:~$ <span class="token function">sudo</span> <span class="token function">tar</span> zxvf etcd-v3.0.12-linux-amd64.tar.gz
+vagrant@docker-node1:~$ <span class="token builtin class-name">cd</span> etcd-v3.0.12-linux-amd64
+vagrant@docker-node1:~$ <span class="token function">nohup</span> ./etcd --name docker-node1 --initial-advertise-peer-urls http://192.168.205.10:2380 <span class="token punctuation">\</span>
+--listen-peer-urls http://192.168.205.10:2380 <span class="token punctuation">\</span>
+--listen-client-urls http://192.168.205.10:2379,http://127.0.0.1:2379 <span class="token punctuation">\</span>
+--advertise-client-urls http://192.168.205.10:2379 <span class="token punctuation">\</span>
+--initial-cluster-token etcd-cluster <span class="token punctuation">\</span>
+--initial-cluster docker-node1<span class="token operator">=</span>http://192.168.205.10:2380,docker-node2<span class="token operator">=</span>http://192.168.205.11:2380 <span class="token punctuation">\</span>
+--initial-cluster-state new<span class="token operator">&amp;</span>
+</code></pre></div><p>在docker-node2上</p> <div class="language-sh extra-class"><pre class="language-sh"><code>vagrant@docker-node1:~$ <span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token function">wget</span>
+vagrant@docker-node2:~$ <span class="token function">sudo</span> <span class="token function">wget</span> https://github.com/coreos/etcd/releases/download/v3.0.12/etcd-v3.0.12-linux-amd64.tar.gz
+vagrant@docker-node2:~$ <span class="token function">sudo</span> <span class="token function">tar</span> zxvf etcd-v3.0.12-linux-amd64.tar.gz
+vagrant@docker-node2:~$ <span class="token builtin class-name">cd</span> etcd-v3.0.12-linux-amd64/
+vagrant@docker-node2:~$ <span class="token function">nohup</span> ./etcd --name docker-node2 --initial-advertise-peer-urls http://192.168.205.11:2380 <span class="token punctuation">\</span>
+--listen-peer-urls http://192.168.205.11:2380 <span class="token punctuation">\</span>
+--listen-client-urls http://192.168.205.11:2379,http://127.0.0.1:2379 <span class="token punctuation">\</span>
+--advertise-client-urls http://192.168.205.11:2379 <span class="token punctuation">\</span>
+--initial-cluster-token etcd-cluster <span class="token punctuation">\</span>
+--initial-cluster docker-node1<span class="token operator">=</span>http://192.168.205.10:2380,docker-node2<span class="token operator">=</span>http://192.168.205.11:2380 <span class="token punctuation">\</span>
+--initial-cluster-state new<span class="token operator">&amp;</span>
+</code></pre></div><p>检查cluster状态</p> <div class="language- extra-class"><pre class="language-text"><code>vagrant@docker-node2:~/etcd-v3.0.12-linux-amd64$ ./etcdctl cluster-health
+member 21eca106efe4caee is healthy: got healthy result from http://192.168.205.10:2379
+member 8614974c83d1cc6d is healthy: got healthy result from http://192.168.205.11:2379
+cluster is healthy
+</code></pre></div><p>重启docker服务</p> <p>创建overlay的网络</p> <h2 id="docker持久化数据共享"><a href="#docker持久化数据共享" class="header-anchor">#</a> Docker持久化数据共享</h2> <p>https://www.cnblogs.com/edisonchou/p/docker_volumes_introduction.html</p> <h3 id="需求场景"><a href="#需求场景" class="header-anchor">#</a> 需求场景</h3> <p>传统的container删除后，数据文件也会被删除。</p> <p>但是对于类似数据之类的container，我们希望数据库的数据能被保存下来。</p> <h3 id="docker持久化原理"><a href="#docker持久化原理" class="header-anchor">#</a> Docker持久化原理</h3> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-21-100848.jpg" alt="image-20190614220107727"></p> <h4 id="持久化方案"><a href="#持久化方案" class="header-anchor">#</a> 持久化方案</h4> <p>docker持久化两种方案，要么将文件存在host主机指定的目录上（bind mount）</p> <p>要么用docker自己管理的volume（/var/lib/docker/volumes）。</p> <ul><li>本地的volume。 通过-v参数来实现，将本机host的目录作为数据存储卷。</li> <li>基于plugin的volume。支持第三方存储，比如NAS, aws；</li></ul> <p><strong>volume类型</strong></p> <ul><li><p>受管理的data volume。由docker后台自动创建，名字位置都是docker自动创建的。</p></li> <li><p>绑定挂载的volume，通过用户指定具体的位置。</p></li></ul> <h3 id="data-volume-数据卷"><a href="#data-volume-数据卷" class="header-anchor">#</a> Data Volume(数据卷)</h3> <p>简单创建一个数据库containner</p> <div class="language-shell extra-class"><pre class="language-shell"><code>docker run -d --name mysql1 -e -e <span class="token assign-left variable">MYSQL_ALLOW_EMPTY_PASSWORD</span><span class="token operator">=</span>true mysql
+</code></pre></div><p>docker会自动创建一个volume</p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker volume <span class="token function">ls</span>
+DRIVER              VOLUME NAME
+<span class="token builtin class-name">local</span>               0aa048295f85925d893e7b3ecbf0e235db7b47a2fae70aa440bd812495c1eac1
+</code></pre></div><p>验证删除container后,volume还在</p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker stop mysql1
+mysql1
+$ docker <span class="token function">rm</span> mysql1
+mysql1
+$ docker volume <span class="token function">ls</span>
+DRIVER              VOLUME NAME
+<span class="token builtin class-name">local</span>               0aa048295f85925d893e7b3ecbf0e235db7b47a2fae70aa440bd812495c1eac1
+</code></pre></div><p>上面的volume name是系统随机生成的，怎么指定一个volume？</p> <p>查看官网mysql的dockerfile，发现里面用到的是<code>/var/lib/mysql</code>这个路径</p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker run -d -v my-mysql:/var/lib/mysql --name mysql1 -e <span class="token assign-left variable">MYSQL_ALLOW_EMPTY_PASSWORD</span><span class="token operator">=</span>true mysql 
+</code></pre></div><p>看一下docker volume</p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker volume <span class="token function">ls</span>
+DRIVER              VOLUME NAME
+<span class="token builtin class-name">local</span>               my-mysql
+</code></pre></div><p>查看这个volume的详细信息</p> <div class="language-dockerfile extra-class"><pre class="language-dockerfile"><code>$ docker volume inspect my<span class="token punctuation">-</span>mysql
+<span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+        <span class="token string">&quot;CreatedAt&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;2020-03-23T22:26:36Z&quot;</span><span class="token punctuation">,</span>
+        <span class="token string">&quot;Driver&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;local&quot;</span><span class="token punctuation">,</span>
+        <span class="token string">&quot;Labels&quot;</span><span class="token punctuation">:</span> null<span class="token punctuation">,</span>
+        <span class="token string">&quot;Mountpoint&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;/mnt/sda1/var/lib/docker/volumes/my-mysql/_data&quot;</span><span class="token punctuation">,</span>
+        <span class="token string">&quot;Name&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;my-mysql&quot;</span><span class="token punctuation">,</span>
+        <span class="token string">&quot;Options&quot;</span><span class="token punctuation">:</span> null<span class="token punctuation">,</span>
+        <span class="token string">&quot;Scope&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;local&quot;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre></div><p>下面去验证下，这个volume可以保存数据库的数据</p> <p>先去这个container里创建一个数据库</p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker <span class="token builtin class-name">exec</span> -it mysql1 /bin/bash
+root@a022c358001e:/<span class="token comment"># mysql -uroot</span>
+mysql<span class="token operator">&gt;</span> show databases<span class="token punctuation">;</span>
++--------------------+
+<span class="token operator">|</span> Database           <span class="token operator">|</span>
++--------------------+
+<span class="token operator">|</span> information_schema <span class="token operator">|</span>
+<span class="token operator">|</span> mysql              <span class="token operator">|</span>
+<span class="token operator">|</span> performance_schema <span class="token operator">|</span>
+<span class="token operator">|</span> sys                <span class="token operator">|</span>
++--------------------+
+<span class="token number">4</span> rows <span class="token keyword">in</span> <span class="token builtin class-name">set</span> <span class="token punctuation">(</span><span class="token number">0.01</span> sec<span class="token punctuation">)</span>
+
+mysql<span class="token operator">&gt;</span> create database docker<span class="token punctuation">;</span>
+Query OK, <span class="token number">1</span> row affected <span class="token punctuation">(</span><span class="token number">0.00</span> sec<span class="token punctuation">)</span>
+
+mysql<span class="token operator">&gt;</span> show databases<span class="token punctuation">;</span>
++--------------------+
+<span class="token operator">|</span> Database           <span class="token operator">|</span>
++--------------------+
+<span class="token operator">|</span> docker             <span class="token operator">|</span>
+<span class="token operator">|</span> information_schema <span class="token operator">|</span>
+<span class="token operator">|</span> mysql              <span class="token operator">|</span>
+<span class="token operator">|</span> performance_schema <span class="token operator">|</span>
+<span class="token operator">|</span> sys                <span class="token operator">|</span>
++--------------------+
+<span class="token number">5</span> rows <span class="token keyword">in</span> <span class="token builtin class-name">set</span> <span class="token punctuation">(</span><span class="token number">0.00</span> sec<span class="token punctuation">)</span>
+
+</code></pre></div><p>删除docker container，重新创建一个docker container，将volume指定为之前的my-mysql。</p> <p>==注==：如果不指定 -v，docker会自动创建一个新的volume。</p> <p>​	   下面意思是：volume的用my-mysql。因为当前名字已经存在，所以直接使用。如果不存在，那么会创建一个volume，名字叫my-mysql。</p> <p>​	 <code>/var/lib/mysql</code>是mysql容器的目录路径，这个是在Dockerfile就指定了的。如果传别的路径，相当于创建了2个volume。这个自定义的volume没任何意义。</p> <div class="language- extra-class"><pre class="language-text"><code>$ docker run -d -v my-mysql:/var/lib/mysql --name mysql2 -e MYSQL_ALLOW_EMPTY_PASSWORD=true mysql 
+</code></pre></div><p>查看volume</p> <div class="language- extra-class"><pre class="language-text"><code>$ docker volume ls
+DRIVER              VOLUME NAME
+local               my-mysql
+</code></pre></div><p>可以看到，还是只有1个volume</p> <p>进入container内部</p> <div class="language-shell extra-class"><pre class="language-shell"><code>$ docker <span class="token builtin class-name">exec</span> -it mysql2 /bin/bash
+root@2c1ec424075f:/<span class="token comment"># mysql -uroot</span>
+mysql<span class="token operator">&gt;</span> show databases<span class="token punctuation">;</span>
++--------------------+
+<span class="token operator">|</span> Database           <span class="token operator">|</span>
++--------------------+
+<span class="token operator">|</span> docker             <span class="token operator">|</span>
+<span class="token operator">|</span> information_schema <span class="token operator">|</span>
+<span class="token operator">|</span> mysql              <span class="token operator">|</span>
+<span class="token operator">|</span> performance_schema <span class="token operator">|</span>
+<span class="token operator">|</span> sys                <span class="token operator">|</span>
++--------------------+
+<span class="token number">5</span> rows <span class="token keyword">in</span> <span class="token builtin class-name">set</span> <span class="token punctuation">(</span><span class="token number">0.00</span> sec<span class="token punctuation">)</span>
+</code></pre></div><p>数据库数量和mysql1的一样。</p> <p><strong>总结一下</strong></p> <p>docker volume会在host上的一个目录上 做一个软连接，指向cotainer上的一个目录。这两个目录上做修改文件可以相互感知。</p> <p>==volume一般在host机器上的指定目录里：/var/lib/docker/volumes==，我这里路径因为是装了虚拟机，所以前面有一些不一样。<img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-23-224605.png" alt="image-20200324064605274"></p> <p>在containenr里可以看到volume的目录内容，和host里的目录是一致的。这里路径就是我们上面说的mysql的volume<code>/var/lib/mysql</code></p> <p><img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-23-224647.png" alt="image-20200324064646552"></p> <h3 id="bind-mounts"><a href="#bind-mounts" class="header-anchor">#</a> Bind Mounts</h3> <p>Data Volume的host目录是由docker自动创建并管理的，都在<code>/var/lib/docker/volumes</code>目录下</p> <p>那怎么去指定一个自定义的目录呢？</p> <div class="language- extra-class"><pre class="language-text"><code>docker run -d -it --name=edc-nginx -v /app/wwwroot:/usr/share/nginx/html nginx
+</code></pre></div><p>这里指定了将宿主机上的 /app/wwwroot 目录（如果没有会自动创建）挂载到 /usr/share/nginx/html （这个目录是nginx container的目录）</p> <p>这里host机器==目录路径必须为全路径==(准确的说需要以<code>/</code>或<code>~/</code>开始的路径)，不然docker会将其当做volume name，而不是bind mounst处理。</p> <h4 id="nginx-demo"><a href="#nginx-demo" class="header-anchor">#</a> nginx demo</h4> <p>沿用之前的Demo，做一些改造。</p> <p>目录结构：</p> <img src="https://ipic-coda.oss-cn-beijing.aliyuncs.com/2020-03-23-232423.png" alt="image-20200324072422444" style="zoom:50%;"> <p>static.conf是nginx的配置文件，内容如下：</p> <div class="language-shell extra-class"><pre class="language-shell"><code>server <span class="token punctuation">{</span>
+	listen <span class="token number">8080</span><span class="token punctuation">;</span>
+
+	server_name localhost<span class="token punctuation">;</span>
+
+    root /home/docker/static-htmls<span class="token punctuation">;</span>
+
+    location / <span class="token punctuation">{</span>
+        try_files <span class="token variable">$uri</span> <span class="token variable">$uri</span>/ @router<span class="token punctuation">;</span> 
+        index  index.html index.htm<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    location @router <span class="token punctuation">{</span>
+        rewrite ^.*$ /index.html last<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>修改Dockerfile:</p> <div class="language-shell extra-class"><pre class="language-shell"><code>FROM nginx
+COPY static-htmls/* /home/docker/static-htmls/
+copy static.conf /etc/nginx/conf.d
+expose <span class="token number">8080</span>
+</code></pre></div><p>Build Image</p> <div class="language-shell extra-class"><pre class="language-shell"><code>docker build -t nginx-mount <span class="token builtin class-name">.</span>
+</code></pre></div><p>创建容器，指明挂载目录。</p> <div class="language-shell extra-class"><pre class="language-shell"><code>docker run -d -v <span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">pwd</span><span class="token variable">)</span></span>:/home/docker -p <span class="token number">7777</span>:8080 nginx-mount
+</code></pre></div><p>这里我把我的目录挂载到/home/docker目录下，和nginx里读取的目录一致。</p> <p>这样，当我在本地修改代码时，容器里的文件就一起被修改了。</p> <p>演示就省略了。</p></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"><div></div></div></div>
+    <script src="/assets/js/app.32e12eb3.js" defer></script><script src="/assets/js/2.6edd83cd.js" defer></script><script src="/assets/js/9.0861933c.js" defer></script>
+  </body>
+</html>
