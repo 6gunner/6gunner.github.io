@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>什么是动态规划？ | Coda的博客</title>
+    <meta name="generator" content="VuePress 1.5.1">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="description" content="闲着无聊？那就读书吧">
+    <link rel="preload" href="/assets/css/0.styles.c3659042.css" as="style"><link rel="preload" href="/assets/js/app.6ebcd220.js" as="script"><link rel="preload" href="/assets/js/2.c5c14eb8.js" as="script"><link rel="preload" href="/assets/js/86.4aec46f5.js" as="script"><link rel="prefetch" href="/assets/js/10.18134ce1.js"><link rel="prefetch" href="/assets/js/11.bded85d3.js"><link rel="prefetch" href="/assets/js/12.e8f292c9.js"><link rel="prefetch" href="/assets/js/13.ba959793.js"><link rel="prefetch" href="/assets/js/14.e71fe2b7.js"><link rel="prefetch" href="/assets/js/15.973e36e2.js"><link rel="prefetch" href="/assets/js/16.48ea97ee.js"><link rel="prefetch" href="/assets/js/17.44165697.js"><link rel="prefetch" href="/assets/js/18.7656306f.js"><link rel="prefetch" href="/assets/js/19.3b73be2d.js"><link rel="prefetch" href="/assets/js/20.74c7944b.js"><link rel="prefetch" href="/assets/js/21.ee47864a.js"><link rel="prefetch" href="/assets/js/22.106ca3e0.js"><link rel="prefetch" href="/assets/js/23.37778393.js"><link rel="prefetch" href="/assets/js/24.99018c24.js"><link rel="prefetch" href="/assets/js/25.53e9b0e1.js"><link rel="prefetch" href="/assets/js/26.b1aadda8.js"><link rel="prefetch" href="/assets/js/27.e9e05bde.js"><link rel="prefetch" href="/assets/js/28.3ff82e9d.js"><link rel="prefetch" href="/assets/js/29.97176bda.js"><link rel="prefetch" href="/assets/js/3.c86745ee.js"><link rel="prefetch" href="/assets/js/30.a378177d.js"><link rel="prefetch" href="/assets/js/31.43afb959.js"><link rel="prefetch" href="/assets/js/32.f60c48f3.js"><link rel="prefetch" href="/assets/js/33.29b7618e.js"><link rel="prefetch" href="/assets/js/34.50a3f818.js"><link rel="prefetch" href="/assets/js/35.5d6f2d1f.js"><link rel="prefetch" href="/assets/js/36.e27c24e7.js"><link rel="prefetch" href="/assets/js/37.09556d81.js"><link rel="prefetch" href="/assets/js/38.4aa948d2.js"><link rel="prefetch" href="/assets/js/39.56b69b9c.js"><link rel="prefetch" href="/assets/js/4.c4955446.js"><link rel="prefetch" href="/assets/js/40.803f4708.js"><link rel="prefetch" href="/assets/js/41.d42e8ce8.js"><link rel="prefetch" href="/assets/js/42.102bd00b.js"><link rel="prefetch" href="/assets/js/43.ae134fa6.js"><link rel="prefetch" href="/assets/js/44.bc1a0a5e.js"><link rel="prefetch" href="/assets/js/45.ba1ea934.js"><link rel="prefetch" href="/assets/js/46.57941522.js"><link rel="prefetch" href="/assets/js/47.dfade925.js"><link rel="prefetch" href="/assets/js/48.92d6f106.js"><link rel="prefetch" href="/assets/js/49.2155d235.js"><link rel="prefetch" href="/assets/js/5.790d3fc0.js"><link rel="prefetch" href="/assets/js/50.46c1e26b.js"><link rel="prefetch" href="/assets/js/51.23e0e1c6.js"><link rel="prefetch" href="/assets/js/52.2d925af9.js"><link rel="prefetch" href="/assets/js/53.dcca9380.js"><link rel="prefetch" href="/assets/js/54.46e08df9.js"><link rel="prefetch" href="/assets/js/55.310ccb34.js"><link rel="prefetch" href="/assets/js/56.18f98f6d.js"><link rel="prefetch" href="/assets/js/57.4e46f709.js"><link rel="prefetch" href="/assets/js/58.ecefb308.js"><link rel="prefetch" href="/assets/js/59.df68fb41.js"><link rel="prefetch" href="/assets/js/6.bf536f2f.js"><link rel="prefetch" href="/assets/js/60.8e9d2e8f.js"><link rel="prefetch" href="/assets/js/61.786397c8.js"><link rel="prefetch" href="/assets/js/62.a43e2779.js"><link rel="prefetch" href="/assets/js/63.6fbec2db.js"><link rel="prefetch" href="/assets/js/64.e0011917.js"><link rel="prefetch" href="/assets/js/65.09edff59.js"><link rel="prefetch" href="/assets/js/66.e2a89994.js"><link rel="prefetch" href="/assets/js/67.60e97c7e.js"><link rel="prefetch" href="/assets/js/68.5d7e2bd2.js"><link rel="prefetch" href="/assets/js/69.c166c24d.js"><link rel="prefetch" href="/assets/js/7.2fa27e95.js"><link rel="prefetch" href="/assets/js/70.3e5db67f.js"><link rel="prefetch" href="/assets/js/71.a3edb676.js"><link rel="prefetch" href="/assets/js/72.441ffffc.js"><link rel="prefetch" href="/assets/js/73.ef99c4b8.js"><link rel="prefetch" href="/assets/js/74.f62c83dc.js"><link rel="prefetch" href="/assets/js/75.a6f971cd.js"><link rel="prefetch" href="/assets/js/76.fb19d408.js"><link rel="prefetch" href="/assets/js/77.e0a1e54a.js"><link rel="prefetch" href="/assets/js/78.6eb8207f.js"><link rel="prefetch" href="/assets/js/79.9769f834.js"><link rel="prefetch" href="/assets/js/8.c6c4c9d5.js"><link rel="prefetch" href="/assets/js/80.1e55760b.js"><link rel="prefetch" href="/assets/js/81.ebfb0081.js"><link rel="prefetch" href="/assets/js/82.270ea569.js"><link rel="prefetch" href="/assets/js/83.d18f615f.js"><link rel="prefetch" href="/assets/js/84.3f75606a.js"><link rel="prefetch" href="/assets/js/85.79dbbd2b.js"><link rel="prefetch" href="/assets/js/87.6d89973c.js"><link rel="prefetch" href="/assets/js/88.f6191eb9.js"><link rel="prefetch" href="/assets/js/89.5c6e938e.js"><link rel="prefetch" href="/assets/js/9.75d01cd2.js"><link rel="prefetch" href="/assets/js/90.46d0c508.js"><link rel="prefetch" href="/assets/js/91.7fbe3ba6.js"><link rel="prefetch" href="/assets/js/92.f670c6ef.js"><link rel="prefetch" href="/assets/js/93.34bce2ff.js"><link rel="prefetch" href="/assets/js/94.a05eb24e.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.c3659042.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">Coda的博客</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  主页
+</a></div><div class="nav-item"><a href="/服务端/" class="nav-link">
+  服务端
+</a></div><div class="nav-item"><a href="/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/node/" class="nav-link">
+  node
+</a></div><div class="nav-item"><a href="/android/" class="nav-link">
+  android
+</a></div><div class="nav-item"><a href="/DevOps/" class="nav-link">
+  devOps
+</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  主页
+</a></div><div class="nav-item"><a href="/服务端/" class="nav-link">
+  服务端
+</a></div><div class="nav-item"><a href="/前端/" class="nav-link">
+  前端
+</a></div><div class="nav-item"><a href="/node/" class="nav-link">
+  node
+</a></div><div class="nav-item"><a href="/android/" class="nav-link">
+  android
+</a></div><div class="nav-item"><a href="/DevOps/" class="nav-link">
+  devOps
+</a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>什么是动态规划？</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92.html#什么是动态规划？" class="sidebar-link">什么是动态规划？</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92.html#例题1-换钱" class="sidebar-link">例题1 换钱</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92.html#例题2-换线2" class="sidebar-link">例题2 换线2</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92.html#例题3-回文" class="sidebar-link">例题3 回文</a><ul class="sidebar-sub-headers"></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h2 id="什么是动态规划？"><a href="#什么是动态规划？" class="header-anchor">#</a> 什么是动态规划？</h2> <p><img src="image-20200730095754513.png" alt="image-20200730095754513"></p> <p>动态规划的算法，都是先从递归，然后演变成记忆化搜索，最后演变成动态规划的。</p> <p>一般动态规划都是有固定套路：</p> <p>1.找一个可变参数</p> <p>2.将可变参数映射成一张表</p> <p>3.标记一下答案的位置</p> <p>4.根据base case, 来填写表里面不需要依赖其他位置的值</p> <p>5.==分析其他位置的值怎么计算得到==</p> <p>6.填表，返回最终答案。</p> <p>网上找到一个<a href="https://www.bilibili.com/video/BV1Q5411p7nc?from=search&amp;seid=10441564160242997758" target="_blank" rel="noopener noreferrer">视频<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>，关于找零钱的方法</p> <p><img src="image-20200728213630796.png" alt="image-20200728213630796"></p> <p>动态规划最核心的就是==通用公式怎么推导==</p> <img src="image-20200728215651651.png" alt="image-20200728215651651" style="zoom:50%;"> <p>这道题<code>dp[i][j]</code>的值 等于</p> <div class="language- extra-class"><pre class="language-text"><code>dp[i][j] = dp[i-1][j] + dp[i-1][j-arr[i]] + dp[i-1][j-arr[i]*2] +...+ dp[i][j-arr[i]*k]
+
+当j - arr[i] * k &gt;= 0 即可
+</code></pre></div><p>优化</p> <p><img src="image-20200729083236969.png" alt="image-20200729083236969"></p> <h2 id="例题1-换钱"><a href="#例题1-换钱" class="header-anchor">#</a> 例题1 换钱</h2> <p>找了个类似的题目来做</p> <p>https://leetcode-cn.com/problems/coin-change/solution/</p> <p>我的答题思路：<strong>错误的</strong></p> <p>这个错误的原因是因为，我找错了变量。 变量应该只需要amount就可以，因为题目找到是最小数量。</p> <p>所以dp应该只需要用一个1维数组。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">/**
+ * @param {number[]} coins
+ * @param {number} amount
+ * @return {number}
+ */</span>
+<span class="token comment">// 用来保存结果，dp[1][...]表示用coins[0~1]里的硬币，换所有钱的方式</span>
+
+<span class="token keyword">const</span> dp <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> <span class="token function-variable function">coinChange</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">coins<span class="token punctuation">,</span> amount</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> sortCoins <span class="token operator">=</span> <span class="token class-name">Array</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>coins<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">n1<span class="token punctuation">,</span> n2</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> n1 <span class="token operator">-</span> n2<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>sortCoins<span class="token punctuation">)</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> sortCoins<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> j <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> j <span class="token operator">&lt;=</span> amount<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>i <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> j <span class="token operator">%</span> sortCoins<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">?</span> j <span class="token operator">/</span> sortCoins<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">:</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span> 
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                <span class="token comment">// console.log(`${j} % ${sortCoins[i]} = ${j % sortCoins[i]}` );</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>j <span class="token operator">%</span> sortCoins<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> j <span class="token operator">/</span> sortCoins<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+                    <span class="token comment">// console.log(`1dp[${i}][${j}] = ${dp[i][j]}`);</span>
+                <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">let</span> k <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>j <span class="token operator">/</span> sortCoins<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> k <span class="token operator">&gt;=</span> <span class="token number">0</span><span class="token punctuation">;</span> k <span class="token operator">--</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                        <span class="token keyword">if</span> <span class="token punctuation">(</span>dp<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token operator">-</span>k<span class="token operator">*</span>sortCoins<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                            dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> dp<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token operator">-</span>k<span class="token operator">*</span>sortCoins<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">+</span> k<span class="token punctuation">;</span>
+                            <span class="token keyword">break</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                            dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+                        <span class="token punctuation">}</span>
+                    <span class="token punctuation">}</span>
+                    <span class="token comment">// console.log(`2dp[${i}][${j}] = ${dp[i][j]}`);</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// console.log(dp);</span>
+    <span class="token comment">// console.log(dp[2][8]);</span>
+    <span class="token comment">// console.log(dp[1][3]);</span>
+    <span class="token comment">// console.log(dp[0][1]);</span>
+    <span class="token keyword">return</span> dp<span class="token punctuation">[</span>coins<span class="token punctuation">.</span>length<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>amount<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>正确答案</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">// 用来保存结果，dp[1]表示用coins里的硬币，换1块钱最少的方式</span>
+<span class="token keyword">const</span> dp <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> <span class="token function-variable function">coinChange</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">coins<span class="token punctuation">,</span> amount</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>coins<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">let</span> sortCoins <span class="token operator">=</span> <span class="token class-name">Array</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>coins<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">n1<span class="token punctuation">,</span> n2</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> n1 <span class="token operator">-</span> n2<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    dp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> amount<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> Number<span class="token punctuation">.</span><span class="token constant">MAX_SAFE_INTEGER</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> coins<span class="token punctuation">.</span>length<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&gt;=</span> coins<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token keyword">let</span> k <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>i <span class="token operator">/</span> coins<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">%</span> coins<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> k<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>dp<span class="token punctuation">[</span>i<span class="token operator">-</span>coins<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">1</span> <span class="token operator">+</span> dp<span class="token punctuation">[</span>i<span class="token operator">-</span>coins<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> Number<span class="token punctuation">.</span><span class="token constant">MAX_SAFE_INTEGER</span> <span class="token operator">?</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">:</span> dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> dp<span class="token punctuation">[</span>amount<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>优化后的代码</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/**
+ * @param {number[]} coins
+ * @param {number} amount
+ * @return {number}
+ */</span>
+<span class="token comment">// 用来保存最小的结果，dp[1]表示用coins里的硬币，换1块钱最少的方式</span>
+<span class="token keyword">const</span> dp <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> <span class="token function-variable function">coinChange</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">coins<span class="token punctuation">,</span> amount</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  	<span class="token comment">// 可以不排序</span>
+    <span class="token keyword">let</span> sortCoins <span class="token operator">=</span> <span class="token class-name">Array</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>coins<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">n1<span class="token punctuation">,</span> n2</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> n1 <span class="token operator">-</span> n2<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    dp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> amount<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// 定义一个最小值</span>
+        <span class="token keyword">let</span> min <span class="token operator">=</span> Number<span class="token punctuation">.</span><span class="token constant">MAX_VALUE</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> j <span class="token operator">&lt;</span> sortCoins<span class="token punctuation">.</span>length<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          	<span class="token comment">// 用coins的硬币，换 i-sortCoins[j] 后剩余硬币最小数量。</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">&gt;=</span> coins<span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> dp<span class="token punctuation">[</span>i <span class="token operator">-</span> sortCoins<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&lt;</span> min<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                min <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>dp<span class="token punctuation">[</span>i <span class="token operator">-</span> sortCoins<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> min<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> min<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">// console.log(dp);</span>
+    <span class="token keyword">return</span> dp<span class="token punctuation">[</span>amount<span class="token punctuation">]</span> <span class="token operator">==</span> Number<span class="token punctuation">.</span><span class="token constant">MAX_VALUE</span> <span class="token operator">?</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">:</span> dp<span class="token punctuation">[</span>amount<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h2 id="例题2-换线2"><a href="#例题2-换线2" class="header-anchor">#</a> 例题2 换线2</h2> <p>https://leetcode-cn.com/problems/coin-change-2/</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/**
+ * @param {number} amount
+ * @param {number[]} coins
+ * @return {number}
+ */</span>
+<span class="token keyword">var</span> <span class="token function-variable function">change</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">amount<span class="token punctuation">,</span> coins</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>amount <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>coins<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">const</span> dp <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    coins <span class="token operator">=</span> <span class="token class-name">Array</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>coins<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">num1<span class="token punctuation">,</span> num2</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> num1 <span class="token operator">-</span> num2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> coins<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i <span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> j <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> j <span class="token operator">&lt;=</span> amount<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// -1代表不能凑成，最后来改为0. </span>
+        dp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> j <span class="token operator">%</span> coins<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">?</span> <span class="token number">1</span> <span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> coins<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i <span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> j <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> j <span class="token operator">&lt;=</span> amount<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span> j <span class="token operator">%</span> coins<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+            <span class="token punctuation">}</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span> j <span class="token operator">&gt;=</span> coins<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment">// 不用coins[i]来凑j的数量 和 用coins[i]来凑j-coins[i]的数量</span>
+                dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> dp<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">+</span> dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token operator">-</span>coins<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                dp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span> <span class="token operator">=</span> dp<span class="token punctuation">[</span>i<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>j<span class="token punctuation">]</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> dp<span class="token punctuation">[</span>coins<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">[</span>amount<span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h2 id="例题3-回文"><a href="#例题3-回文" class="header-anchor">#</a> 例题3 回文</h2> <p>https://leetcode-cn.com/problems/longest-palindromic-substring/</p> <p><strong>暴力解法</strong></p> <p>利用广度优先的算法，将str分成二叉树，(0, str-1)  (1, str) 一次去寻找</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token comment">/**
+ * @param {string} s
+ * @return {string}
+ */</span>
+<span class="token keyword">var</span> <span class="token function-variable function">longestPalindrome</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">s</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+    <span class="token keyword">function</span> <span class="token function">isPalindrome</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      	<span class="token comment">// 根据中心判断是否对称</span>
+        <span class="token keyword">let</span> length <span class="token operator">=</span> str<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>length <span class="token operator">%</span> <span class="token number">2</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> length <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">==</span> str<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span>length<span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">,</span> length<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> length <span class="token operator">/</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">==</span> str<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span>length<span class="token operator">/</span><span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> length<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>s<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">''</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>s<span class="token punctuation">.</span>length <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> s<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token string">&quot;&quot;</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> array <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    array<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span>array<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> str <span class="token operator">=</span> array<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isPalindrome</span><span class="token punctuation">(</span>str<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            result <span class="token operator">=</span>  str<span class="token punctuation">;</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        array<span class="token punctuation">.</span><span class="token function">unshift</span><span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">substr</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> str<span class="token punctuation">.</span>length<span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        array<span class="token punctuation">.</span><span class="token function">unshift</span><span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">substr</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> str<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>失败案例： 当传入类似这样的结构时<code>sssssssssssssabssssssssssssssss&quot;</code>会超出时间限制 。</p> <p>失败原因：这个算法会占用太多资源去计算。</p> <p>==正确思路==</p> <p><strong>动态规划</strong></p> <p>回文串的特点是字符串无论是正读还是反读，都是一样的顺序。</p> <p>当一个字符串是回文串时，在字符串两端加上两个同样的字符串，那么字符串依然还是回文串。</p> <p>反之，如果一个字符串本身不是回文串，那么无论两端加上什么，都无法是回文串。</p> <p>所以，这道题用动态规划解的思路就是去判断字符串去掉收尾之后，是否依然是回文串</p> <p>用<code>dp[i][j]</code>代表从i截取到j是否是回文串，那么<code>dp[i][j]=dp[i+1][j-1] &amp;&amp; s[i]== s[j]</code>。</p> <p>我的答案</p> <div class="language- extra-class"><pre class="language-text"><code>/**
+ * @param {string} s
+ * @return {string}
+ */
+var longestPalindrome = function(s) {
+
+    function isPalindrome(str) {
+        let length = str.length;
+        if (length % 2 == 0) {
+            return str.slice(0, length / 2) == str.slice(length/2, length);
+        } else {
+            return str.slice(0, length / 2) == str.slice(length/2 + 1, length);
+        }
+    }
+
+    if (!s.length) {
+        return '';
+    }
+    if (s.length == 1) {
+        return s;
+    }
+    let i = 0; // 指针1 在→
+    let j = 0; // 指针2 在←
+    const sArray = s.split('');
+    // dp[i][j]表示从j到i是回文串
+    const dp = [];
+    // max表示从max[1]到max[0]是最大长度
+    let max = [0, 0];
+    for (i = 0; i &lt;= s.length; i++) {
+        dp[i] = [];
+        dp[i][i] = true;
+        if (i &gt; 0) {
+            dp[i][i-1] = true;
+            if (max[0] - max[1] &lt; 1) {
+                max = [i, i-1];
+            }
+        } 
+        if (i &gt; 1) {   
+            for (j = 0; j &lt; i - 1; j ++) {
+                dp[i][j] = dp[i-1][j+1] &amp;&amp; sArray[i-1] == sArray[j]; // 首尾相同
+                // console.log(`dp[${i}][${j}] = ${dp[i][j]}`)
+                if (dp[i][j] &amp;&amp; i - j &gt; max[0] - max[1]) {
+                    max = [i, j];
+                }
+            }
+        }
+    }
+    // 最后一次性截取
+    return s.slice(max[1], max[0])
+};
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"><div></div></div></div>
+    <script src="/assets/js/app.6ebcd220.js" defer></script><script src="/assets/js/2.c5c14eb8.js" defer></script><script src="/assets/js/86.4aec46f5.js" defer></script>
+  </body>
+</html>
